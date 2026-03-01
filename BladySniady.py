@@ -15,7 +15,7 @@ if 'schedule' not in st.session_state:
     }
 if 'view' not in st.session_state: st.session_state.view = 'home'
 
-# 2. CSS - Nowe Style Przycisków
+# 2. CSS - Naprawiony i domknięty blok (Linia 19 - 80)
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -28,7 +28,7 @@ st.markdown("""
         text-align: center; text-shadow: 0 0 20px #ff2222, 0 0 40px #aa0000; text-transform: uppercase;
     }
 
-    /* --- STYL PRZYCISKU ENTER (PULSUJĄCY NEON) --- */
+    /* PRZYCISK ENTER */
     div.stButton > button:first-child {
         background: rgba(255, 0, 0, 0.1) !important;
         color: #ff2222 !important;
@@ -48,11 +48,72 @@ st.markdown("""
         background: #ff2222 !important;
         color: white !important;
         box-shadow: 0 0 50px #ff2222 !important;
-        transform: translateY(-3px) scale(1.02) !important;
     }
 
-    /* --- STYL PRZYCISKU POWRÓT (SUBTELNY BACK) --- */
+    /* PRZYCISK POWRÓT */
     .back-btn div.stButton > button {
         background: transparent !important;
         color: rgba(255, 255, 255, 0.6) !important;
-        border: 1
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        font-size: 14px !important;
+        letter-spacing: 2px !important;
+    }
+    
+    .back-btn div.stButton > button:hover {
+        color: #ff2222 !important;
+        border-color: #ff2222 !important;
+    }
+
+    @keyframes pulse-red {
+        0% { box-shadow: 0 0 0 0 rgba(255, 34, 34, 0.7); }
+        70% { box-shadow: 0 0 0 20px rgba(255, 34, 34, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 34, 34, 0); }
+    }
+
+    .stream-wrapper { border: 2px solid #ff2222; border-radius: 15px; overflow: hidden; box-shadow: 0 0 30px rgba(255, 34, 34, 0.4); background: black; }
+    .schedule-table { width: 100%; border-collapse: collapse; background: rgba(255, 0, 0, 0.05); border: 1px solid #ff2222; }
+    .schedule-table td { padding: 12px; border-bottom: 1px solid rgba(255, 34, 34, 0.2); font-size: 14px; }
+</style>
+""", unsafe_allow_html=True)
+
+# --- HOME ---
+if st.session_state.view == 'home':
+    st.write("<br><br><br><br>", unsafe_allow_html=True)
+    st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
+    st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px; font-weight:bold;'>ENTER THE SYSTEM</p>", unsafe_allow_html=True)
+    
+    _, col_btn, _ = st.columns([1, 1.2, 1])
+    with col_btn:
+        if st.button("ENTER ARENA", use_container_width=True):
+            st.session_state.view = 'arena'
+            st.rerun()
+
+# --- ARENA ---
+elif st.session_state.view == 'arena':
+    st.markdown('<div class="neon-title" style="font-size: 45px; margin-top: 2vh;">ARENA LIVE</div>', unsafe_allow_html=True)
+    
+    left_side, right_side = st.columns([3, 1])
+    with left_side:
+        st.markdown(f"""<div class="stream-wrapper">
+            <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost"
+            height="500" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
+
+    with right_side:
+        st.markdown('<p style="color:#ff2222; font-weight:bold; text-align:center; letter-spacing:2px;">📅 SCHEDULE</p>', unsafe_allow_html=True)
+        sched_html = '<table class="schedule-table">'
+        for day, time in st.session_state.schedule.items():
+            sched_html += f'<tr><td style="color:#ff2222; font-weight:bold;">{day}</td><td>{time}</td></tr>'
+        sched_html += '</table>'
+        st.markdown(sched_html, unsafe_allow_html=True)
+
+        st.markdown('<div class="back-btn">', unsafe_allow_html=True)
+        if st.button("BACK TO HUB", use_container_width=True):
+            st.session_state.view = 'home'
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# --- ADMIN PANEL ---
+if is_admin():
+    with st.expander("🔐 EDIT SCHEDULE"):
+        new_sched = {}
+        for d, t in st.session_state.schedule.items
