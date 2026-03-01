@@ -1,91 +1,63 @@
 import streamlit as st
 
-# 1. Konfiguracja strony (musi być na samej górze)
-st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_sidebar_state="collapsed")
+# 1. Podstawowe ustawienia - to musi być PIERWSZA linia kodu
+st.set_page_config(page_title="BladySniady", layout="wide")
 
-# 2. Blok wizualny - Animacje, CSS i HTML
+# 2. Ukrywanie menu i zmiana tła na czarne
 st.markdown("""
-<style>
-    /* Ukrywanie elementów Streamlit */
+    <style>
     #MainMenu, footer, header {visibility: hidden;}
-    .block-container {padding: 0px !important;}
-    
-    /* Animowane tło */
-    .stApp {
-        background: radial-gradient(circle at center, #1a0505 0%, #050507 100%);
-        overflow: hidden;
-    }
-
-    .hero-section {
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    /* Efekt Glitch dla Logo */
-    .logo {
+    .stApp {background-color: #050507;}
+    .stButton>button {
+        background-color: transparent;
         color: #ff2222;
-        font-size: clamp(40px, 8vw, 80px);
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 10px;
-        margin-bottom: 10px;
-        text-shadow: 0 0 20px rgba(255, 34, 34, 0.5);
-        animation: pulse 2s infinite;
-    }
-
-    .subtitle {
-        color: rgba(255,255,255,0.6);
-        font-size: 18px;
-        letter-spacing: 3px;
-        margin-bottom: 50px;
-        text-transform: uppercase;
-    }
-
-    /* NOWOCZESNY PRZYCISK NEONOWY */
-    .arena-btn {
-        position: relative;
-        display: inline-block;
-        padding: 20px 60px;
-        color: #ff2222;
-        font-size: 22px;
-        font-weight: bold;
-        text-decoration: none;
-        text-transform: uppercase;
         border: 2px solid #ff2222;
-        border-radius: 5px;
-        overflow: hidden;
-        transition: 0.4s;
-        letter-spacing: 4px;
-        z-index: 1;
+        padding: 20px 80px;
+        font-size: 30px;
+        font-weight: bold;
+        border-radius: 10px;
+        width: 100%;
+        transition: 0.3s;
     }
-
-    .arena-btn:hover {
-        color: white;
-        background: #ff2222;
-        box-shadow: 0 0 50px #ff2222, 0 0 100px #ff2222;
-        transform: translateY(-5px);
+    .stButton>button:hover {
+        background-color: #ff2222 !important;
+        color: white !important;
+        box-shadow: 0 0 50px #ff2222;
     }
-
-    @keyframes pulse {
-        0% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.02); opacity: 0.8; }
-        100% { transform: scale(1); opacity: 1; }
-    }
-</style>
-
-<div class="hero-section">
-    <div class="logo">Blady Sniady</div>
-    <div class="subtitle">Official Arena Access</div>
-    
-    <a href="https://bladysniady2-s7hetwn5yfujcgtdkhzhff.streamlit.app/" 
-       target="_top" 
-       class="arena-btn">
-       Enter Arena
-    </a>
-</div>
+    </style>
 """, unsafe_allow_html=True)
+
+# 3. Logo i Napisy
+st.write("") # Odstęp od góry
+st.write("")
+col_main = st.columns([1, 2, 1])
+
+with col_main[1]:
+    st.markdown("<h1 style='text-align: center; color: #ff2222; font-size: 70px; letter-spacing: 10px; margin-bottom: 0px;'>BLADY SNIADY</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: white; font-size: 20px; opacity: 0.6; margin-bottom: 50px;'>OFFICIAL ARENA ACCESS</p>", unsafe_allow_html=True)
+    
+    # PRZYCISK
+    # Streamlit nie lubi linków w przyciskach, więc używamy triku z HTML
+    st.markdown("""
+        <a href="https://bladysniady2-s7hetwn5yfujcgtdkhzhff.streamlit.app/" target="_top" style="text-decoration: none;">
+            <div style="
+                text-align: center;
+                color: #ff2222;
+                border: 3px solid #ff2222;
+                padding: 15px;
+                font-size: 25px;
+                font-weight: bold;
+                border-radius: 5px;
+                text-transform: uppercase;
+                letter-spacing: 3px;
+                cursor: pointer;
+            ">ENTER ARENA</div>
+        </a>
+    """, unsafe_allow_html=True)
+
+# 4. Statystyki na dole
+st.markdown("<br><br><br>", unsafe_allow_html=True)
+c1, c2, c3 = st.columns(3)
+c1.metric("FOLLOWERS", "250K+")
+c2.metric("WINS", "1,200+")
+c3.metric("HOURS", "5,000+")
