@@ -44,12 +44,34 @@ st.markdown("""
     .schedule-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,34,34,0.3); }
     .schedule-table td { padding: 12px; border-bottom: 1px solid rgba(255,34,34,0.1); font-size: 13px; }
 
-    /* Button Styling */
-    div.stButton > button {
-        background: rgba(255, 0, 0, 0.1) !important; color: #ff2222 !important;
-        border: 2px solid #ff2222 !important; transition: 0.3s !important;
+    /* Custom Social Links */
+    .social-link {
+        display: block;
+        text-decoration: none !important;
+        color: #ff2222 !important;
+        background: rgba(255, 0, 0, 0.1);
+        border: 2px solid #ff2222;
+        padding: 10px;
+        text-align: center;
+        margin-bottom: 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: 0.3s;
     }
-    div.stButton > button:hover { background: #ff2222 !important; color: white !important; box-shadow: 0 0 30px #ff2222 !important; }
+    .social-link:hover {
+        background: #ff2222;
+        color: white !important;
+        box-shadow: 0 0 20px #ff2222;
+        transform: scale(1.02);
+    }
+
+    /* Standard Button for Exit */
+    div.stButton > button {
+        background: transparent !important; color: white !important;
+        border: 1px solid rgba(255,255,255,0.3) !important; width: 100%;
+    }
+    div.stButton > button:hover { border-color: #ff2222 !important; color: #ff2222 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -60,7 +82,7 @@ if st.session_state.view == 'home':
     st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
     _, col_btn, _ = st.columns([1, 1, 1])
     with col_btn:
-        if st.button("ENTER ARENA", use_container_width=True):
+        if st.button("ENTER ARENA", key="enter_btn"):
             st.session_state.view = 'arena'
             st.rerun()
 
@@ -93,13 +115,19 @@ elif st.session_state.view == 'arena':
         sched_html += '</table>'
         st.markdown(sched_html, unsafe_allow_html=True)
         
-        # SOCIALS QUICK LINK
+        # SOCIAL LINKS
         st.write("<br>", unsafe_allow_html=True)
         st.markdown('<div class="widget-title" style="text-align:center;">🔗 LINKS</div>', unsafe_allow_html=True)
-        st.button("DISCORD SERVER", use_container_width=True)
-        st.button("TIKTOK PROFILE", use_container_width=True)
         
-        if st.button("⬅ EXIT HUB", use_container_width=True):
+        # Przycisk Instagram
+        st.markdown('<a href="https://www.instagram.com/bladysniady/" target="_blank" class="social-link">📸 INSTAGRAM</a>', unsafe_allow_html=True)
+        # Przycisk TikTok (możesz podmienić link poniżej)
+        st.markdown('<a href="https://tiktok.com/@bladysniady" target="_blank" class="social-link">🎵 TIKTOK</a>', unsafe_allow_html=True)
+        # Przycisk Discord (możesz podmienić link poniżej)
+        st.markdown('<a href="#" target="_blank" class="social-link">💬 DISCORD</a>', unsafe_allow_html=True)
+        
+        st.write("<br>", unsafe_allow_html=True)
+        if st.button("⬅ EXIT HUB", key="exit_btn"):
             st.session_state.view = 'home'
             st.rerun()
 
