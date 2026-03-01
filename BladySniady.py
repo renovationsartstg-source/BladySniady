@@ -1,106 +1,109 @@
 import streamlit as st
 
 # 1. Konfiguracja strony
-st.set_page_config(page_title="BladySniady", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_sidebar_state="collapsed")
 
 # Inicjalizacja widoku
 if 'view' not in st.session_state:
     st.session_state.view = 'home'
 
-# 2. CSS - Centrowanie, Neon i Stylistyka
+# 2. Zaawansowany CSS - Graficzny Upgrade
 st.markdown("""
 <style>
+    /* Reset i Tło z Głębią */
     #MainMenu, footer, header {visibility: hidden;}
-    .stApp {background-color: #050507;}
     [data-testid="stSidebar"] {display: none;}
+    .stApp {
+        background: radial-gradient(circle, #1a0505 0%, #050507 100%);
+        color: white;
+        font-family: 'Arial Black', sans-serif;
+    }
     
-    /* Centrowanie przycisku Streamlit */
+    /* Centrowanie Przycisku Głównego */
     .stButton {
         display: flex;
         justify-content: center;
+        margin-top: 30px;
     }
 
+    /* NAGŁÓWKI - Mocny Neon */
     .neon-title {
         text-align: center;
         color: #ff2222;
-        font-size: clamp(40px, 8vw, 80px);
+        font-size: clamp(50px, 10vw, 100px);
         font-weight: 900;
-        letter-spacing: 12px;
-        text-shadow: 0 0 20px #ff2222;
-        margin-top: 15vh;
+        letter-spacing: 15px;
+        text-shadow: 0 0 10px #ff2222, 0 0 20px #ff2222, 0 0 40px #ff0000;
+        margin-top: 10vh;
         margin-bottom: 0px;
+        text-transform: uppercase;
     }
     
     .sub-title {
         text-align: center;
         color: white;
-        opacity: 0.6;
-        letter-spacing: 5px;
-        margin-bottom: 50px;
-        font-size: 14px;
+        opacity: 0.7;
+        letter-spacing: 7px;
+        margin-bottom: 60px;
+        font-size: 16px;
         text-transform: uppercase;
     }
 
-    /* Stylizacja Przycisków */
-    div.stButton > button {
-        background-color: transparent !important;
-        color: #ff2222 !important;
-        border: 3px solid #ff2222 !important;
-        padding: 20px 80px !important;
-        font-size: 26px !important;
-        font-weight: bold !important;
-        border-radius: 10px !important;
-        text-transform: uppercase !important;
-        transition: 0.4s !important;
-        box-shadow: 0 0 20px rgba(255, 34, 34, 0.4) !important;
-        letter-spacing: 4px !important;
+    /* --- STYLIZACJA ARENY --- */
+    
+    /* Karty Statystyk (Metric Cards) */
+    [data-testid="stMetric"] {
+        background: rgba(255, 255, 255, 0.03);
+        border: 2px solid #ff2222;
+        border-radius: 15px;
+        padding: 20px !important;
+        box-shadow: 0 0 15px rgba(255, 34, 34, 0.3);
+        transition: 0.3s;
+        text-align: center;
+    }
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 30px rgba(255, 34, 34, 0.6);
     }
     
-    div.stButton > button:hover {
-        background-color: #ff2222 !important;
-        color: white !important;
-        box-shadow: 0 0 60px #ff2222 !important;
-        transform: scale(1.05) !important;
-    }
-
-    /* Stylizacja Metryk */
     [data-testid="stMetricValue"] {
         color: #ff2222 !important;
-        text-align: center !important;
-        font-size: 40px !important;
+        font-size: 50px !important;
+        font-weight: bold !important;
         text-shadow: 0 0 10px #ff2222;
     }
     [data-testid="stMetricLabel"] {
-        text-align: center !important;
         color: white !important;
-        width: 100%;
-        letter-spacing: 2px;
+        opacity: 0.9 !important;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        font-size: 14px !important;
     }
 
-    .hr-neon {
-        border: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, #ff2222, transparent);
-        margin: 40px 0;
+    /* Panel Środkowy z Pulsującym Neonem */
+    .status-panel {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 50px;
+        border-radius: 20px;
+        border: 2px solid #ff2222;
+        text-align: center;
+        margin-top: 30px;
+        position: relative;
+        overflow: hidden;
+        animation: panel-pulse 2s infinite alternate;
     }
-</style>
-""", unsafe_allow_html=True)
+    @keyframes panel-pulse {
+        0% { box-shadow: 0 0 20px rgba(255, 34, 34, 0.2); }
+        100% { box-shadow: 0 0 50px rgba(255, 34, 34, 0.5); }
+    }
 
-# --- WIDOK 1: STRONA GŁÓWNA ---
-if st.session_state.view == 'home':
-    st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-title">OFFICIAL HUB ACCESS</div>', unsafe_allow_html=True)
-    
-    if st.button("ENTER ARENA"):
-        st.session_state.view = 'arena'
-        st.rerun()
-
-# --- WIDOK 2: ARENA ---
-elif st.session_state.view == 'arena':
-    st.markdown('<div class="neon-title" style="margin-top: 5vh;">ARENA</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-title">STATISTICS & LIVE FEED</div>', unsafe_allow_html=True)
-    st.markdown('<div class="hr-neon"></div>', unsafe_allow_html=True)
-
-    # Statystyki w rzędzie
-    c1, c2, c3, c4 = st.columns(4)
-    with c1: st.metric("FOLLOWERS", "250K+")
+    /* Przycisk Głównego Wejścia */
+    div.stButton > button:first-of-type {
+        background-color: transparent !important;
+        color: #ff2222 !important;
+        border: 3px solid #ff2222 !important;
+        padding: 25px 100px !important;
+        font-size: 30px !important;
+        font-weight: bold !important;
+        border-radius: 12px !important;
+        text
