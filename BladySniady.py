@@ -7,22 +7,16 @@ st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_side
 if 'view' not in st.session_state:
     st.session_state.view = 'home'
 
-# 2. Pełny, poprawiony CSS
+# 2. CSS - Naprawiony i domknięty
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
     [data-testid="stSidebar"] {display: none;}
-    
     .stApp {
         background: radial-gradient(circle at center, #250a0a 0%, #050507 100%);
         color: white;
     }
-
-    .stButton {
-        display: flex;
-        justify-content: center;
-    }
-
+    .stButton { display: flex; justify-content: center; }
     .neon-title {
         text-align: center;
         color: #ff2222;
@@ -34,7 +28,6 @@ st.markdown("""
         margin-top: 8vh;
         text-transform: uppercase;
     }
-    
     .sub-title {
         text-align: center;
         color: white;
@@ -42,24 +35,80 @@ st.markdown("""
         letter-spacing: 8px;
         margin-bottom: 50px;
         font-size: 14px;
-        text-shadow: 0 0 5px white;
     }
-
     [data-testid="stMetric"] {
         background: rgba(255, 0, 0, 0.05) !important;
         border: 1px solid #ff2222 !important;
         border-radius: 10px !important;
         padding: 25px !important;
-        box-shadow: inset 0 0 15px rgba(255, 34, 34, 0.2), 0 0 15px rgba(255, 34, 34, 0.2) !important;
         text-align: center !important;
     }
-
     [data-testid="stMetricValue"] {
         color: #ff2222 !important;
         font-size: 45px !important;
         text-shadow: 0 0 15px #ff2222 !important;
     }
-
     .arena-panel {
         background: rgba(0, 0, 0, 0.7);
-        border: 2px solid #ff2222
+        border: 2px solid #ff2222;
+        padding: 60px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 0 40px rgba(255, 34, 34, 0.3);
+    }
+    div.stButton > button {
+        background-color: transparent !important;
+        color: #ff2222 !important;
+        border: 3px solid #ff2222 !important;
+        padding: 20px 70px !important;
+        font-size: 26px !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        box-shadow: 0 0 20px rgba(255, 34, 34, 0.4) !important;
+    }
+    div.stButton > button:hover {
+        background-color: #ff2222 !important;
+        color: white !important;
+        box-shadow: 0 0 60px #ff2222 !important;
+    }
+    .hr-neon {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #ff2222, transparent);
+        margin: 40px 0;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# 3. Logika widoków
+if st.session_state.view == 'home':
+    st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-title">OFFICIAL HUB ACCESS</div>', unsafe_allow_html=True)
+    if st.button("ENTER ARENA"):
+        st.session_state.view = 'arena'
+        st.rerun()
+
+elif st.session_state.view == 'arena':
+    st.markdown('<div class="neon-title" style="font-size: 70px; margin-top: 4vh;">ARENA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hr-neon"></div>', unsafe_allow_html=True)
+    
+    c1, c2, c3, c4 = st.columns(4)
+    with c1: st.metric("FOLLOWERS", "250K+")
+    with c2: st.metric("WINS", "1,200+")
+    with c3: st.metric("HOURS", "5,000+")
+    with c4: st.metric("RANK", "#1")
+    
+    st.markdown('<div class="hr-neon"></div>', unsafe_allow_html=True)
+    
+    _, mid, _ = st.columns([1, 4, 1])
+    with mid:
+        st.markdown("""
+            <div class="arena-panel">
+                <h1 style="color: white; letter-spacing: 5px; margin-bottom: 10px;">SYSTEM ONLINE</h1>
+                <p style="color: #ff2222; font-size: 20px; text-transform: uppercase;">Witaj w Arenie Bladego Sniadego</p>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    st.write("")
+    if st.button("EXIT ARENA"):
+        st.session_state.view = 'home'
+        st.rerun()
