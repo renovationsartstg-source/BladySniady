@@ -17,8 +17,8 @@ if 'news' not in st.session_state:
 if 'view' not in st.session_state: 
     st.session_state.view = 'home'
 
-# 2. CSS (Naprawiony blok stylów)
-style_css = """
+# 2. CSS
+st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
     [data-testid="stSidebar"] {display: none;}
@@ -54,8 +54,10 @@ style_css = """
     }
     div.stButton > button:hover { border-color: #ff2222 !important; color: #ff2222 !important; }
 </style>
-"""
-st.markdown(style_css, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # --- HOME ---
-if st
+if st.session_state.view == 'home':
+    st.write("<br><br><br><br>", unsafe_allow_html=True)
+    st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
+    st.write("<p style='text-align:center;
