@@ -1,6 +1,5 @@
-from flask import Flask, render_template
-
-app = Flask(_name_)
+import streamlit as st
+import streamlit.components.v1 as components
 
 # Główna trasa (Twoja strona główna)
 @app.route('/')
@@ -224,3 +223,4 @@ st.markdown("""
         © 2026 Bladysniady | Built with Streamlit & Python
     </div>
     """, unsafe_allow_html=True)
+
