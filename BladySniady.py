@@ -7,7 +7,7 @@ st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_side
 if 'view' not in st.session_state:
     st.session_state.view = 'home'
 
-# 2. CSS (Naprawiony i domknięty)
+# 2. CSS (Kod naprawiony - cudzysłowy zamknięte w linii 76)
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -74,4 +74,48 @@ st.markdown("""
     [data-testid="stMetric"] {
         background: rgba(255, 0, 0, 0.05) !important;
         border: 1px solid #ff2222 !important;
-        border-radius: 10px
+        border-radius: 10px !important;
+        padding: 15px !important;
+        text-align: center !important;
+    }
+    
+    .arena-panel {
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid #ff2222;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# 3. Logika widoków
+if st.session_state.view == 'home':
+    st.markdown('<div class="main-container">', unsafe_allow_html=True)
+    st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-title">OFFICIAL HUB ACCESS</div>', unsafe_allow_html=True)
+    if st.button("ENTER ARENA"):
+        st.session_state.view = 'arena'
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+elif st.session_state.view == 'arena':
+    st.markdown('<div class="neon-title" style="font-size: 60px; text-align: center; margin-top: 5vh;">ARENA</div>', unsafe_allow_html=True)
+    st.markdown("<hr style='border-color: #ff2222;'>", unsafe_allow_html=True)
+    
+    c1, c2, c3, c4 = st.columns(4)
+    with c1: st.metric("FOLLOWERS", "250K+")
+    with c2: st.metric("WINS", "1,200+")
+    with c3: st.metric("HOURS", "5,000+")
+    with c4: st.metric("RANK", "#1")
+    
+    st.markdown("<hr style='border-color: #ff2222;'>", unsafe_allow_html=True)
+    
+    _, mid, _ = st.columns([1, 4, 1])
+    with mid:
+        st.markdown('<div class="arena-panel"><h2 style="color:white; letter-spacing:3px;">SYSTEM ONLINE</h2><p style="color:#ff2222;">OPERATIONS ACTIVE</p></div>', unsafe_allow_html=True)
+    
+    st.write("")
+    if st.button("EXIT ARENA"):
+        st.session_state.view = 'home'
+        st.rerun()
