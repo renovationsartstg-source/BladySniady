@@ -3,28 +3,38 @@ import streamlit.components.v1 as components
 import base64
 
 # --- KONFIGURACJA ---
-st.set_page_config(page_title="Bladysniady | Admin", layout="wide")
+st.set_page_config(page_title="Bladysniady | Esports", layout="wide")
 
-# --- PANEL ADMINISTRATORA ---
-with st.sidebar:
-    st.title("🛠️ Panel Sterowania")
-    password = st.text_input("Hasło", type="password")
-    if password == "admin123":
-        st.success("Zalogowano!")
-        fols = st.text_input("Obserwujący", "250K+")
-        wins = st.text_input("Wygrane", "1,200+")
-        hours = st.text_input("Godziny", "5,000+")
-        is_live = st.toggle("Status LIVE", True)
-        l_text = "LIVE NOW" if is_live else "OFFLINE"
-        l_color = "#ff2e2e" if is_live else "#555555"
-    else:
-        st.info("Podaj hasło, aby edytować")
-        fols, wins, hours, l_text, l_color = "250K+", "1,200+", "5,000+", "LIVE NOW", "#ff2e2e"
+# --- LOGIKA UKRYTEGO PANELU (URL Query Params) ---
+# Sprawdzamy, czy w adresie URL jest ?admin=true
+query_params = st.query_params
+show_admin = query_params.get("admin") == "true"
 
-# --- UKRYCIE ELEMENTÓW STREAMLIT ---
+# Domyślne wartości
+fols, wins, hours, l_text, l_color = "250K+", "1,200+", "5,000+", "LIVE NOW", "#ff2e2e"
+
+if show_admin:
+    with st.sidebar:
+        st.title("🛠️ Panel Tajny")
+        password = st.text_input("Hasło", type="password")
+        if password == "admin123":
+            st.success("Witaj Szefie!")
+            fols = st.text_input("Obserwujący", fols)
+            wins = st.text_input("Wygrane", wins)
+            hours = st.text_input("Godziny", hours)
+            is_live = st.toggle("Status LIVE", True)
+            l_text = "LIVE NOW" if is_live else "OFFLINE"
+            l_color = "#ff2e2e" if is_live else "#555555"
+        else:
+            st.warning("Podaj hasło administratora.")
+else:
+    # Jeśli nie ma ?admin=true, pasek boczny jest całkowicie ukryty
+    st.markdown("<style>section[data-testid='stSidebar'] {display: none;}</style>", unsafe_allow_html=True)
+
+# --- STYLE STREAMLIT ---
 st.markdown("<style>#MainMenu,footer,header{visibility:hidden;}.block-container{padding:0px!important;}</style>", unsafe_allow_html=True)
 
-# --- KOD HTML (Wersja stabilna) ---
+# --- KOD HTML ---
 raw_html = f"""
 <!DOCTYPE html>
 <html>
@@ -77,7 +87,6 @@ raw_html = f"""
 </html>
 """
 
-# --- BEZPIECZNE RENDEROWANIE (BASE64) ---
-# To rozwiązuje problemy z cudzysłowami w Streamlit Cloud
+# --- RENDEROWANIE BASE64 ---
 b64_html = base64.b64encode(raw_html.encode()).decode()
 components.html(f'<iframe src="data:text/html;base64,{b64_html}" width="100%" height="1500" style="border:none;"></iframe>', height=1500)
