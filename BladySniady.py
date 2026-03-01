@@ -72,4 +72,14 @@ elif st.session_state.view == 'arena':
         for d, t in days:
             cl = "#ff2222" if t != "BRAK" else "#444"
             st.markdown(f'<div class="sched-row"><span>{d}</span><span style="color:{cl}; font-weight:900;">{t}</span></div>', unsafe_allow_html=True)
-        st.markdown('</div>
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        if st.button("⬅ WYJDŹ"):
+            st.session_state.view = 'home'
+            st.rerun()
+
+# --- 5. PANEL ADMINA ---
+if is_admin():
+    with st.expander("🛠 USTAWIENIA"):
+        st.session_state.news = st.text_input("News:", st.session_state.news)
+        if st.button("Zapisz"): st.rerun()
