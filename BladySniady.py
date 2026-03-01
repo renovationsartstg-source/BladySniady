@@ -7,10 +7,9 @@ st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_side
 if 'view' not in st.session_state:
     st.session_state.view = 'home'
 
-# 2. Pełny CSS - Naprawiony i ulepszony graficznie
+# 2. Pełny CSS
 st.markdown("""
 <style>
-    /* Reset i Tło */
     #MainMenu, footer, header {visibility: hidden;}
     [data-testid="stSidebar"] {display: none;}
     
@@ -19,19 +18,7 @@ st.markdown("""
         color: white;
     }
 
-    /* Efekt skanowania tła (Scanline) */
-    .stApp::before {
-        content: " ";
-        display: block;
-        position: absolute;
-        top: 0; left: 0; bottom: 0; right: 0;
-        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-        z-index: 2;
-        background-size: 100% 4px, 3px 100%;
-        pointer-events: none;
-    }
-
-    /* Centrowanie kontenera przycisku */
+    /* Centrowanie przycisków */
     .stButton {
         display: flex;
         justify-content: center;
@@ -60,7 +47,7 @@ st.markdown("""
         text-shadow: 0 0 5px white;
     }
 
-    /* Karty Statystyk - Styl Gamingowy */
+    /* Karty Statystyk */
     [data-testid="stMetric"] {
         background: rgba(255, 0, 0, 0.05) !important;
         border: 1px solid #ff2222 !important;
@@ -76,7 +63,7 @@ st.markdown("""
         text-shadow: 0 0 15px #ff2222 !important;
     }
 
-    /* Panel Główny z Animacją */
+    /* Panel Główny */
     .arena-panel {
         background: rgba(0, 0, 0, 0.7);
         border: 2px solid #ff2222;
@@ -87,7 +74,7 @@ st.markdown("""
         border-style: double;
     }
 
-    /* Przycisk Wejścia */
+    /* Przycisk Główny (ENTER) */
     div.stButton > button {
         background-color: transparent !important;
         color: #ff2222 !important;
@@ -98,6 +85,7 @@ st.markdown("""
         text-transform: uppercase !important;
         box-shadow: 0 0 20px rgba(255, 34, 34, 0.4) !important;
         transition: 0.3s !important;
+        letter-spacing: 3px;
     }
 
     div.stButton > button:hover {
@@ -106,46 +94,24 @@ st.markdown("""
         box-shadow: 0 0 60px #ff2222 !important;
     }
 
+    /* Specyficzny styl dla przycisku POWRÓT (EXIT) */
+    .exit-container div.stButton > button {
+        font-size: 14px !important;
+        padding: 10px 30px !important;
+        border: 1px solid #ff2222 !important;
+        margin-top: 50px !important;
+        opacity: 0.6;
+    }
+    
+    .exit-container div.stButton > button:hover {
+        opacity: 1;
+        background-color: rgba(255, 34, 34, 0.1) !important;
+    }
+
     .hr-neon {
         height: 2px;
         background: linear-gradient(90deg, transparent, #ff2222, transparent);
         margin: 40px 0;
     }
 </style>
-""", unsafe_allow_html=True)
-
-# --- WIDOK 1: HOME ---
-if st.session_state.view == 'home':
-    st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-title">OFFICIAL HUB ACCESS</div>', unsafe_allow_html=True)
-    
-    if st.button("ENTER ARENA"):
-        st.session_state.view = 'arena'
-        st.rerun()
-
-# --- WIDOK 2: ARENA ---
-elif st.session_state.view == 'arena':
-    st.markdown('<div class="neon-title" style="font-size: 70px;">ARENA</div>', unsafe_allow_html=True)
-    st.markdown('<div class="hr-neon"></div>', unsafe_allow_html=True)
-
-    c1, c2, c3, c4 = st.columns(4)
-    with c1: st.metric("FOLLOWERS", "250K+")
-    with c2: st.metric("WINS", "1,200+")
-    with c3: st.metric("HOURS", "5,000+")
-    with c4: st.metric("RANK", "#1")
-
-    st.markdown('<div class="hr-neon"></div>', unsafe_allow_html=True)
-
-    _, mid, _ = st.columns([1, 4, 1])
-    with mid:
-        st.markdown("""
-            <div class="arena-panel">
-                <h1 style="color: white; letter-spacing: 5px;">SYSTEM ONLINE</h1>
-                <p style="color: #ff2222; font-size: 20px;">OPERATIONS READY</p>
-            </div>
-        """, unsafe_allow_html=True)
-
-    st.write("")
-    if st.button("EXIT ARENA"):
-        st.session_state.view = 'home'
-        st.rerun()
+""", unsafe_allow
