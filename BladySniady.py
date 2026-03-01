@@ -1,74 +1,60 @@
 import streamlit as st
 
-# Usuwamy marginesy i ustawiamy czarne tło
+# Podstawowe ustawienia
 st.set_page_config(page_title="BladySniady", layout="wide")
 
+# CSS i HTML w jednym bloku
 st.markdown("""
-    <style>
-    /* Chowa menu i stopkę Streamlit */
-    #MainMenu, footer, header {visibility: hidden;}
-    .block-container {padding: 0px !important;}
-    
-    /* Główny kontener strony */
+<style>
+    /* Styl tła i tekstu */
     .stApp {
         background-color: #050507;
+    }
+    .main-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-    }
-
-    .container {
+        height: 80vh;
         text-align: center;
-        margin-top: 150px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: sans-serif;
     }
-
     .logo {
         color: #ff2222;
         font-size: 60px;
-        font-weight: 900;
+        font-weight: bold;
         letter-spacing: 5px;
-        margin-bottom: 0px;
+        margin-bottom: 20px;
     }
-
-    .subtitle {
-        color: white;
-        font-size: 20px;
-        opacity: 0.7;
-        margin-bottom: 50px;
-    }
-
-    /* PRZYCISK - KLUCZ DO PRZEKIEROWANIA */
-    .arena-button {
+    /* STYL PRZYCISKU */
+    .arena-btn {
         display: inline-block;
         padding: 20px 50px;
         color: #ff2222;
+        border: 2px solid #ff2222;
+        text-decoration: none;
         font-size: 24px;
         font-weight: bold;
-        text-decoration: none;
-        border: 3px solid #ff2222;
-        border-radius: 5px;
         text-transform: uppercase;
+        border-radius: 5px;
         transition: 0.3s;
     }
-
-    .arena-button:hover {
+    .arena-btn:hover {
         background-color: #ff2222;
         color: white;
-        box-shadow: 0 0 50px #ff2222;
-        transform: scale(1.05);
+        box-shadow: 0 0 30px #ff2222;
     }
-    </style>
+    #MainMenu, footer, header {visibility: hidden;}
+</style>
 
-    <div class="container">
-        <h1 class="logo">BLADY SNIADY</h1>
-        <p class="subtitle">OFFICIAL SITE</p>
-        
-        <a href="https://bladysniady2-s7hetwn5yfujcgtdkhzhff.streamlit.app/" 
-           target="_top" 
-           class="arena-button">
-           ENTER ARENA
-        </a>
-    </div>
+<div class="main-container">
+    <div class="logo">BLADY SNIADY</div>
+    <p style="color: white; font-size: 20px; margin-bottom: 40px;">OFFICIAL ARENA</p>
+    
+    <a href="https://bladysniady2-s7hetwn5yfujcgtdkhzhff.streamlit.app/" 
+       target="_top" 
+       class="arena-btn">
+       ENTER ARENA
+    </a>
+</div>
 """, unsafe_allow_html=True)
