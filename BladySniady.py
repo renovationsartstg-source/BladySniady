@@ -1,131 +1,129 @@
 import streamlit as st
+import streamlit.components.v1 as components
 
-# 1. KONFIGURACJA STRONY
+# 1. Podstawowa konfiguracja Streamlit
 st.set_page_config(
     page_title="Bladysniady | Esports",
     page_icon="🎮",
-    layout="wide"
+    layout="wide",
 )
 
-# 2. STYLIZACJA I ANIMOWANE TŁO
+# 2. Ukrycie standardowych elementów Streamlit (paski boczne, menu), 
+# aby Twój design wypełnił cały ekran.
 st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-    
-    .stApp { background: transparent; }
-    
-    #particles {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
-        z-index: -1;
-        background: #050507;
-    }
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .block-container {padding: 0px;}
+    iframe {display: block;}
+    </style>
+    """, unsafe_allow_html=True)
 
-    html, body, [data-testid="stWidgetLabel"], .stMarkdown {
-        font-family: 'Orbitron', sans-serif !important;
-        color: white !important;
-    }
-
-    header, footer, #MainMenu {visibility: hidden;}
-
-    .hero-title {
-        font-size: clamp(40px, 8vw, 80px);
-        font-weight: 900;
-        color: #ff2e2e;
-        text-shadow: 0 0 30px #ff2e2e;
-        text-align: center;
-        padding-top: 50px;
-    }
-    
-    .stat-box {
-        background: rgba(17, 17, 17, 0.8);
-        padding: 30px;
-        border: 1px solid #222;
-        border-radius: 15px;
-        text-align: center;
-        transition: 0.4s;
-    }
-    
-    .stat-box:hover {
-        border-color: #ff2e2e;
-        box-shadow: 0 0 25px rgba(255, 46, 46, 0.4);
-    }
-</style>
-
-<canvas id="particles"></canvas>
-
-<script>
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
-    let w, h, particles = [];
-
-    function init() {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-        particles = [];
-        for(let i=0; i<100; i++) {
+# 3. Twój kod HTML/CSS/JS zapisany jako tekst
+html_code = """
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; scroll-behavior:smooth; }
+        body { font-family:'Orbitron',sans-serif; background:#050507; color:white; overflow-x:hidden; }
+        #particles { position:fixed; width:100%; height:100%; top:0; left:0; z-index:-1; background:#050507; }
+        nav { position:fixed; width:100%; top:0; display:flex; justify-content:space-between; align-items:center; padding:20px 10%; background:rgba(0,0,0,0.6); backdrop-filter:blur(10px); z-index:1000; }
+        nav h1 { color:#ff2e2e; letter-spacing:3px; }
+        nav a { color:white; text-decoration:none; margin-left:30px; transition:0.3s; }
+        nav a:hover { color:#ff2e2e; }
+        .hero { height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding-top:80px; }
+        .hero h2 { font-size:75px; font-weight:900; text-shadow:0 0 30px red; }
+        .hero p { margin:20px 0 40px; color:#aaa; }
+        .btn { padding:15px 40px; border:2px solid #ff2e2e; border-radius:10px; color:white; text-decoration:none; transition:0.3s; font-weight:bold; }
+        .btn:hover { background:#ff2e2e; box-shadow:0 0 30px red; transform:translateY(-5px); }
+        section { padding:120px 10%; text-align:center; }
+        h3 { font-size:34px; margin-bottom:60px; color:#ff2e2e; }
+        .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px; }
+        .stat { background:#111; padding:40px; border-radius:15px; border:1px solid #222; transition:0.3s; }
+        .stat:hover { transform:scale(1.05); border-color:#ff2e2e; box-shadow:0 0 30px red; }
+        .stat h4 { font-size:40px; margin-bottom:10px; color:#ff2e2e; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:30px; }
+        .card { padding:50px; background:#111; border-radius:15px; border:1px solid #222; transition:0.4s; }
+        .card:hover { transform:translateY(-10px) scale(1.05); border-color:#ff2e2e; box-shadow:0 0 30px red; }
+        .live-badge { display:inline-flex; align-items:center; gap:10px; padding:10px 20px; border:2px solid red; border-radius:20px; box-shadow:0 0 20px red; margin-top:20px; }
+        .dot { width:10px; height:10px; background:red; border-radius:50%; animation:blink 1s infinite; }
+        footer { padding:40px; background:black; color:#666; text-align: center; }
+        @keyframes blink { 50%{opacity:0;} }
+        .reveal { opacity:0; transform:translateY(40px); transition:1s ease; }
+        .reveal.active { opacity:1; transform:translateY(0); }
+    </style>
+</head>
+<body>
+    <canvas id="particles"></canvas>
+    <nav>
+        <h1>BLADYSNIADY</h1>
+        <div><a href="#stats">STATS</a><a href="#games">GAMES</a></div>
+    </nav>
+    <section class="hero">
+        <h2>ESPORTS ATHLETE</h2>
+        <p>Fortnite • CS2 • Call of Duty • Metin2</p>
+        <a href="#stats" class="btn">ENTER ARENA</a>
+        <div class="live-badge"><div class="dot"></div>LIVE NOW</div>
+    </section>
+    <section id="stats" class="reveal">
+        <h3>PLAYER STATS</h3>
+        <div class="stats">
+            <div class="stat"><h4>250K+</h4><p>Followers</p></div>
+            <div class="stat"><h4>1,200+</h4><p>Wins</p></div>
+            <div class="stat"><h4>5,000+</h4><p>Hours Streamed</p></div>
+        </div>
+    </section>
+    <section id="games" class="reveal">
+        <h3>MAIN GAMES</h3>
+        <div class="grid">
+            <div class="card">Fortnite</div>
+            <div class="card">Counter-Strike 2</div>
+            <div class="card">Call of Duty</div>
+            <div class="card">Metin2</div>
+        </div>
+    </section>
+    <footer>© 2026 Bladysniady | Full Esports Mode</footer>
+    <script>
+        window.addEventListener('scroll',()=>{
+            document.querySelectorAll('.reveal').forEach(el=>{
+                const top=el.getBoundingClientRect().top;
+                if(top<window.innerHeight-100){ el.classList.add('active'); }
+            });
+        });
+        const canvas=document.getElementById('particles');
+        const ctx=canvas.getContext('2d');
+        canvas.width=window.innerWidth;
+        canvas.height=window.innerHeight;
+        let particles=[];
+        for(let i=0;i<80;i++){
             particles.push({
-                x: Math.random() * w,
-                y: Math.random() * h,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: Math.random() * 1 + 0.5,
-                size: Math.random() * 2
+                x:Math.random()*canvas.width,
+                y:Math.random()*canvas.height,
+                r:Math.random()*2,
+                d:Math.random()*1
             });
         }
-    }
+        function draw(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle="red";
+            particles.forEach(p=>{
+                ctx.beginPath();
+                ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+                ctx.fill();
+                p.y+=p.d;
+                if(p.y>canvas.height){p.y=0;}
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
+</html>
+"""
 
-    function animate() {
-        ctx.clearRect(0, 0, w, h);
-        ctx.fillStyle = '#ff2e2e';
-        particles.forEach(p => {
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
-            p.y += p.vy; p.x += p.vx;
-            if (p.y > h) p.y = 0;
-            if (p.x > w) p.x = 0;
-            if (p.x < 0) p.x = w;
-        });
-        requestAnimationFrame(animate);
-    }
-
-    window.addEventListener('resize', init);
-    init(); animate();
-</script>
-""", unsafe_allow_html=True)
-
-# 3. TREŚĆ
-st.markdown('<h1 class="hero-title">BLADYSNIADY</h1>', unsafe_allow_html=True)
-st.markdown('<p style="text-align:center; letter-spacing:5px; color:#aaa;">PROFESSIONAL ESPORTS ATHLETE</p>', unsafe_allow_html=True)
-
-st.write("---")
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.markdown('<div class="stat-box"><h2 style="color:#ff2e2e; margin:0;">250K+</h2><p>Followers</p></div>', unsafe_allow_html=True)
-with col2:
-    st.markdown('<div class="stat-box"><h2 style="color:#ff2e2e; margin:0;">1,200</h2><p>Wins</p></div>', unsafe_allow_html=True)
-with col3:
-    st.markdown('<div class="stat-box"><h2 style="color:#ff2e2e; margin:0;">5K+</h2><p>Hours</p></div>', unsafe_allow_html=True)
-
-st.write("##")
-
-# Sidebar
-with st.sidebar:
-    st.title("🛡️ Player Panel")
-    status = st.toggle("Live Status", value=True)
-    if status:
-        st.error("🔴 LIVE NOW")
-    else:
-        st.info("⚪ OFFLINE")
-    
-    st.markdown("---")
-    st.subheader("Current Game")
-    game = st.selectbox("Playing:", ["Fortnite", "CS2", "Call of Duty", "Metin2"])
-
-# Kontakt
-st.subheader("📩 Contact")
-with st.form("mail_form"):
-    user_mail = st.text_input("Your Email")
-    message = st.text_area("Message")
-    if st.form_submit_button("SEND"):
-        st.success("Wysłano!")
+# 4. Wyświetlenie całości jako komponentu
+components.html(html_code, height=2000, scrolling=True)
