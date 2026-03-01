@@ -1,28 +1,62 @@
 import streamlit as st
-import streamlit.components.v1 as components
 
-# --- CONFIG ---
-st.set_page_config(page_title="BladySniady", layout="wide", initial_sidebar_state="collapsed")
+# --- KONFIGURACJA STRONY ---
+st.set_page_config(page_title="BladySniady", layout="wide")
 
-# --- HIDE UI ---
-st.markdown("<style>#MainMenu,footer,header{visibility:hidden;}.block-container{padding:0px!important;}</style>", unsafe_allow_html=True)
+# --- UKRYCIE ELEMENTÓW STREAMLIT ---
+st.markdown("""
+    <style>
+    #MainMenu, footer, header {visibility: hidden;}
+    .block-container {padding: 0px !important;}
+    body {background-color: #050507; color: white;}
+    </style>
+""", unsafe_allow_html=True)
 
-# --- METODA NIEZNISZCZALNA ---
-# Używamy nawiasów (), które zmuszają Pythona do ignorowania enterów.
-# Każdy kawałek tekstu jest ekstremalnie krótki.
-final_b64 = (
-    "PCFET0NUWVBFIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0nVVRGLTgnPg"
-    "PHN0eWxlPip7bWFyZ2luOjA7cGFkZGluZzowO2JveC1zaXppbmc6Ym9yZGVyLWJveDtz"
-    "Y3JvbGwtYmVoYXZpb3I6c21vb3RoO31ib2R5e2ZhbWlseTpzYW5zLXNlcmlmO2JhY2"
-    "tncm91bmQ6IzA1MDUwNztjb2xvcjp3aGl0ZTtvdmVyZmxvdzpoaWRkZW47fSNwYXJ0"
-    "aWNsZXN7cG9zaXRpb246Zml4ZWQ7d2lkdGg6MTAwJTtoZWlnaHQ6MTAwJTt0b3A6MD"
-    "tsZWZ0OjA7ei1pbmRleDotMTt9bmF2e3Bvc2l0aW9uOmZpeGVkO3dpZHRoOjEwMCU7"
-    "dG9wOjA7ZGlzcGxheTpmbGV4O2p1c3RpZnktY29udGVudDpzcGFjZS1iZXR3ZWVuO2"
-    "FsaWduLWl0ZW1zOmNlbnRlcjtwYWRkaW5nOjE1cHggMTAlO2JhY2tncm91bmQ6cmdi"
-    "YSgwLDAsMCwwLjgpO2JhY2tkcm9wLWZpbHRlcjpibHVyKDEwcHgpO3otaW5kZXg6MT"
-    "AwMDtib3JkZXItYm90dG9tOjFweCBzb2xpZDogI2ZmMjIyMjt9LmxvZ297Zm9udC1z"
-    "aXplOjI4cHg7Y29sb3I6I2ZmMjIyMjtsZXR0ZXItc3BhY2luZzoycHg7Zm9udC13ZW"
-    "lnaHQ6Ym9sZDt9c2VjdGlvbntoZWlnaHQ6MTAwdmg7ZGlzcGxheTpmbGV4O2ZfcmV4"
-    "ZGlyZWN0aW9uOmNvbHVtbjtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO2FsaWduLWl0ZW"
-    "1zOmNlbnRlcjt0ZXh0LWFsaWduOmNlbnRlcjt9Lm5lb24tYm57ZGlzcGxheTppbmxp"
-    "bmUtYmxvY2s7cGFkZGluZzoyMHB4IDUwcHg7Zm9udC1zaXplOjIwcHg7Zm9udC
+# --- STYLIZACJA CSS (KRÓTKIE LINIE) ---
+st.markdown("""
+    <style>
+    .main-box {
+        text-align: center;
+        padding: 100px 20px;
+        background: #050507;
+        min-height: 100vh;
+        font-family: 'sans-serif';
+    }
+    .logo {
+        font-size: 50px;
+        color: #ff2222;
+        font-weight: bold;
+        letter-spacing: 5px;
+        margin-bottom: 20px;
+    }
+    .btn {
+        display: inline-block;
+        padding: 20px 40px;
+        font-size: 20px;
+        color: #ff2222;
+        text-decoration: none;
+        border: 2px solid #ff2222;
+        border-radius: 10px;
+        transition: 0.3s;
+        font-weight: bold;
+    }
+    .btn:hover {
+        background: #ff2222;
+        color: white;
+        box-shadow: 0 0 30px #ff2222;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- TREŚĆ STRONY ---
+st.markdown("""
+    <div class="main-box">
+        <div class="logo">BLADY SNIADY</div>
+        <h2 style="margin-bottom:40px;">OFFICIAL SITE</h2>
+        <a href="https://bladysniady2-s7hetwn5yfujcgtdkhzhff.streamlit.app/" 
+           target="_top" 
+           class="btn">
+           ENTER ARENA
+        </a>
+    </div>
+""", unsafe_allow_html=True)
