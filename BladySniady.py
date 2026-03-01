@@ -6,7 +6,7 @@ st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_side
 def is_admin():
     return st.query_params.get("admin") == "true"
 
-# Inicjalizacja danych
+# Inicjalizacja danych sesji
 if 'schedule' not in st.session_state:
     st.session_state.schedule = {
         "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
@@ -15,7 +15,7 @@ if 'schedule' not in st.session_state:
 if 'news' not in st.session_state: st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
 if 'view' not in st.session_state: st.session_state.view = 'home'
 
-# 2. CSS
+# 2. CSS - Naprawiony blok (zamknięty w linii 81)
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -40,4 +40,50 @@ st.markdown("""
     }
 
     .stream-wrapper { border: 2px solid #ff2222; border-radius: 15px; overflow: hidden; box-shadow: 0 0 30px rgba(255, 34, 34, 0.3); background: black; }
-    .schedule-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,34,34,0.3
+    .schedule-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,34,34,0.3); }
+    .schedule-table td { padding: 12px; border-bottom: 1px solid rgba(255,34,34,0.1); font-size: 13px; }
+
+    .social-link {
+        display: block;
+        text-decoration: none !important;
+        color: #ff2222 !important;
+        background: rgba(255, 0, 0, 0.05);
+        border: 1px solid #ff2222;
+        padding: 12px;
+        text-align: center;
+        margin-bottom: 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: 0.3s;
+        border-radius: 5px;
+    }
+    .social-link:hover {
+        background: #ff2222;
+        color: white !important;
+        box-shadow: 0 0 25px #ff2222;
+        transform: scale(1.03);
+    }
+
+    div.stButton > button {
+        background: transparent !important; color: white !important;
+        border: 1px solid rgba(255,255,255,0.2) !important; width: 100%;
+        margin-top: 10px;
+    }
+    div.stButton > button:hover { border-color: #ff2222 !important; color: #ff2222 !important; }
+</style>
+""", unsafe_allow_html=True)
+
+# --- HOME ---
+if st.session_state.view == 'home':
+    st.write("<br><br><br><br>", unsafe_allow_html=True)
+    st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
+    st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
+    _, col_btn, _ = st.columns([1, 1, 1])
+    with col_btn:
+        if st.button("ENTER ARENA", key="enter_btn"):
+            st.session_state.view = 'arena'
+            st.rerun()
+
+# --- ARENA ---
+elif st.session_state.view == 'arena':
