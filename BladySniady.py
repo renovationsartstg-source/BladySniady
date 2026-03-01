@@ -49,27 +49,29 @@ st.markdown("""
         display: block;
         text-decoration: none !important;
         color: #ff2222 !important;
-        background: rgba(255, 0, 0, 0.1);
-        border: 2px solid #ff2222;
-        padding: 10px;
+        background: rgba(255, 0, 0, 0.05);
+        border: 1px solid #ff2222;
+        padding: 12px;
         text-align: center;
         margin-bottom: 10px;
         font-weight: bold;
         text-transform: uppercase;
         letter-spacing: 2px;
         transition: 0.3s;
+        border-radius: 5px;
     }
     .social-link:hover {
         background: #ff2222;
         color: white !important;
-        box-shadow: 0 0 20px #ff2222;
-        transform: scale(1.02);
+        box-shadow: 0 0 25px #ff2222;
+        transform: scale(1.03);
     }
 
     /* Standard Button for Exit */
     div.stButton > button {
         background: transparent !important; color: white !important;
-        border: 1px solid rgba(255,255,255,0.3) !important; width: 100%;
+        border: 1px solid rgba(255,255,255,0.2) !important; width: 100%;
+        margin-top: 10px;
     }
     div.stButton > button:hover { border-color: #ff2222 !important; color: #ff2222 !important; }
 </style>
@@ -119,24 +121,7 @@ elif st.session_state.view == 'arena':
         st.write("<br>", unsafe_allow_html=True)
         st.markdown('<div class="widget-title" style="text-align:center;">🔗 LINKS</div>', unsafe_allow_html=True)
         
+        # Przycisk YouTube
+        st.markdown('<a href="https://www.youtube.com/@Blady%C5%9Aniady" target="_blank" class="social-link">🎥 YOUTUBE</a>', unsafe_allow_html=True)
         # Przycisk Instagram
-        st.markdown('<a href="https://www.instagram.com/bladysniady/" target="_blank" class="social-link">📸 INSTAGRAM</a>', unsafe_allow_html=True)
-        # Przycisk TikTok (możesz podmienić link poniżej)
-        st.markdown('<a href="https://tiktok.com/@bladysniady" target="_blank" class="social-link">🎵 TIKTOK</a>', unsafe_allow_html=True)
-        # Przycisk Discord (możesz podmienić link poniżej)
-        st.markdown('<a href="#" target="_blank" class="social-link">💬 DISCORD</a>', unsafe_allow_html=True)
-        
-        st.write("<br>", unsafe_allow_html=True)
-        if st.button("⬅ EXIT HUB", key="exit_btn"):
-            st.session_state.view = 'home'
-            st.rerun()
-
-# --- ADMIN ---
-if is_admin():
-    st.write("---")
-    with st.expander("🛠 ADMIN WIDGET CONTROL"):
-        st.session_state.news = st.text_input("Komunikat Dnia:", value=st.session_state.news)
-        st.write("Edytuj godziny:")
-        for d, t in st.session_state.schedule.items():
-            st.session_state.schedule[d] = st.text_input(f"{d}:", value=t)
-        if st.button("UPDATE SYSTEM"): st.rerun()
+        st.markdown('<a href="
