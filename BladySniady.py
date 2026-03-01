@@ -17,7 +17,7 @@ if 'news' not in st.session_state:
 if 'view' not in st.session_state: 
     st.session_state.view = 'home'
 
-# 2. CSS
+# 2. CSS - Poprawiony blok stylów
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -60,4 +60,7 @@ st.markdown("""
 if st.session_state.view == 'home':
     st.write("<br><br><br><br>", unsafe_allow_html=True)
     st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
-    st.write("<p style='text-align:center;
+    # Naprawiona linia 63
+    st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
+    _, col_btn, _ = st.columns([1, 1, 1])
+    with col_
