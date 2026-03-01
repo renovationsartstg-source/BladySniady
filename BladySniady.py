@@ -1,45 +1,50 @@
 import streamlit as st
 
-# 1. Konfiguracja strony
-st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_sidebar_state="collapsed")
+# 1. Konfiguracja
+st.set_page_config(page_title="BladySniady", layout="wide")
 
-# 2. Inicjalizacja danych sesji
-if 'view' not in st.session_state: 
-    st.session_state.view = 'home'
+if 'view' not in st.session_state: st.session_state.view = 'home'
+if 'news' not in st.session_state: st.session_state.news = "STARTUJEMY O 18:00!"
 
-if 'schedule' not in st.session_state:
-    st.session_state.schedule = {
-        "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
-        "Czwartek": "19:00", "Piątek": "20:00", "Sobota": "12:00", "Niedziela": "BRAK"
-    }
-
-if 'news' not in st.session_state: 
-    st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
-
-def is_admin():
-    return st.query_params.get("admin") == "true"
-
-# 3. CSS - Stylizacja (Upewnij się, że na końcu są trzy cudzysłowy)
+# 2. CSS
 st.markdown("""
 <style>
-    #MainMenu, footer, header {visibility: hidden;}
-    [data-testid="stSidebar"] {display: none;}
-    .stApp { background: radial-gradient(circle at center, #1a0505 0%, #050507 100%); color: white; }
-    .neon-title { color: #ff2222; font-family: sans-serif; font-size: 50px; font-weight: 900; text-align: center; text-shadow: 0 0 20px #ff2222; }
-    .news-bar { background: rgba(255, 0, 0, 0.1); border-left: 5px solid #ff2222; padding: 10px 20px; margin-bottom: 20px; color: #ffcccc; }
-    .widget-title { color: #ff2222; font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px; }
-    .stream-wrapper { border: 2px solid #ff2222; border-radius: 15px; overflow: hidden; background: black; }
-    .social-link { display: block; text-decoration: none !important; color: #ff2222 !important; background: rgba(255, 0, 0, 0.05); border: 1px solid #ff2222; padding: 12px; text-align: center; margin-bottom: 10px; font-weight: bold; border-radius: 5px; }
-    .social-link:hover { background: #ff2222; color: white !important; }
-    div.stButton > button { background: transparent !important; color: white !important; border: 1px solid rgba(255,255,255,0.2) !important; width: 100%; }
+    .stApp { background: #050507; color: white; }
+    .neon-text { color: #ff2222; text-shadow: 0 0 10px #ff2222; font-size: 40px; text-align: center; font-weight: bold; }
+    .social-link { display: block; background: #1a0505; border: 1px solid #ff2222; color: #ff2222 !important; padding: 10px; text-align: center; text-decoration: none; border-radius: 5px; margin: 5px 0; }
+    div.stButton > button { width: 100%; background: transparent; color: white; border: 1px solid #444; }
 </style>
 """, unsafe_allow_html=True)
 
 # --- WIDOK: HOME ---
 if st.session_state.view == 'home':
     st.write("<br><br>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
+    c1, c2, c3 = st.columns([1, 2, 1])
+    with c2:
         try:
-            # Wyświetlanie Twojej grafiki
-            st.image("e975d1ae-cb53-4242-a957-1db574
+            # Upewnij się, że poniższa linia NIE jest przełamana
+            st.image("e975d1ae-cb53-4242-a957-1db57413f05a.jfif", use_container_width=True)
+        except:
+            st.markdown('<div class="neon-text">BLADY SNIADY</div>', unsafe_allow_html=True)
+    
+    st.write("<p style='text-align:center; opacity:0.5;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
+    if st.button("ENTER ARENA"):
+        st.session_state.view = 'arena'
+        st.rerun()
+
+# --- WIDOK: ARENA ---
+elif st.session_state.view == 'arena':
+    st.info(f"⚡ {st.session_state.news}")
+    col_l, col_r = st.columns([3, 1])
+    
+    with col_l:
+        st.markdown(f'<iframe src="https://player.twitch.tv/?channel=bladysniady&parent={st.query_params.get("host", "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app")}&parent=localhost" height="500" width="100%" allowfullscreen="true"></iframe>', unsafe_allow_html=True)
+    
+    with col_r:
+        st.markdown("### 🔗 LINKS")
+        st.markdown('<a href="https://kick.com/bladysniadyofficial" class="social-link">🟢 KICK.COM</a>', unsafe_allow_html=True)
+        st.markdown('<a href="https://www.youtube.com/@BladyŚniady" class="social-link">🎥 YOUTUBE</a>', unsafe_allow_html=True)
+        st.markdown('<a href="https://www.instagram.com/bladysniady/" class="social-link">📸 INSTAGRAM</a>', unsafe_allow_html=True)
+        if st.button("⬅ EXIT"):
+            st.session_state.view = 'home'
+            st.rerun()
