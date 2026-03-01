@@ -1,20 +1,13 @@
 import streamlit as st
 
-# 1. KONFIGURACJA STRONY
+# 1. KONFIGURACJA GŁÓWNA
 st.set_page_config(
     page_title="BladySniady | Multiverse",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# 2. NAWIGACJA
-st.sidebar.title("🌐 NAWIGACJA")
-wybor = st.sidebar.radio("Wybierz sekcję:", ["🔥 ARENA", "📦 DRUGA APLIKACJA"])
-
-def is_admin():
-    return st.query_params.get("admin") == "true"
-
-# Inicjalizacja danych sesji
+# Inicjalizacja danych (musi być przed użyciem w kodzie)
 if 'schedule' not in st.session_state:
     st.session_state.schedule = {
         "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
@@ -25,94 +18,42 @@ if 'news' not in st.session_state:
 if 'view' not in st.session_state: 
     st.session_state.view = 'home'
 
-# --- SEKCJA ARENA ---
-if wybor == "🔥 ARENA":
-    # POPRAWIONY BLOK CSS (Linie 30-53)
-    st.markdown("""
-    <style>
-        #MainMenu, footer, header {visibility: hidden;}
-        .stApp { background: radial-gradient(circle at center, #1a0505 0%, #050507 100%); color: white; }
-        .neon-title {
-            color: #ff2222; font-family: 'Arial Black', sans-serif;
-            font-size: clamp(30px, 6vw, 75px); font-weight: 900;
-            text-align: center; text-shadow: 0 0 20px #ff2222; text-transform: uppercase;
-        }
-        .news-bar {
-            background: rgba(255, 0, 0, 0.1); border-left: 5px solid #ff2222;
-            padding: 10px 20px; margin-bottom: 20px; font-style: italic;
-            color: #ffcccc; font-size: 14px; letter-spacing: 1px;
-        }
-        .widget-title {
-            color: #ff2222; font-size: 18px; font-weight: bold; 
-            text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px;
-        }
-        .stream-wrapper { border: 2px solid #ff2222; border-radius: 15px; overflow: hidden; box-shadow: 0 0 30px rgba(255, 34, 34, 0.3); background: black; }
-        .schedule-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,34,34,0.3); }
-        .schedule-table td { padding: 12px; border-bottom: 1px solid rgba(255,34,34,0.1); font-size: 13px; }
-        .social-link {
-            display: block; text-decoration: none !important; color: #ff2222 !important;
-            background: rgba(255, 0, 0, 0.05); border: 1px solid #ff2222;
-            padding: 12px; text-align: center; margin-bottom: 10px;
-            font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
-            transition: 0.3s; border-radius: 5px;
-        }
-        .social-link:hover { background: #ff2222; color: white !important; box-shadow: 0 0 25px #ff2222; transform: scale(1.03); }
-    </style>
-    """, unsafe_allow_html=True)
+def is_admin():
+    return st.query_params.get("admin") == "true"
 
-    if st.session_state.view == 'home':
-        st.write("<br><br><br>", unsafe_allow_html=True)
-        st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
-        st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
-        _, col_btn, _ = st.columns([1, 1, 1])
-        with col_btn:
-            if st.button("ENTER ARENA", key="main_enter"):
-                st.session_state.view = 'arena'
-                st.rerun()
-
-    elif st.session_state.view == 'arena':
-        st.markdown(f'<div class="news-bar">⚡ SYSTEM NEWS: {st.session_state.news}</div>', unsafe_allow_html=True)
-        col_main, col_side = st.columns([3, 1])
-        
-        with col_main:
-            st.markdown(f"""<div class="stream-wrapper">
-                <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost"
-                height="480" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
-            
-            st.write("<br>", unsafe_allow_html=True)
-            st.markdown('<div class="widget-title">🔥 RECENT HIGHLIGHTS</div>', unsafe_allow_html=True)
-            
-            st.markdown(f"""<iframe src="https://clips.twitch.tv/embed?clip=CoyTransparentWrenCopyThis-f_3WbVvS5Z6Uv0Kx&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost" 
-                height="300" width="100%" allowfullscreen="true"></iframe>""", unsafe_allow_html=True)
-
-        with col_side:
-            st.markdown('<div class="widget-title" style="text-align:center;">📅 SCHEDULE</div>', unsafe_allow_html=True)
-            
-            sched_html = '<table class="schedule-table">'
-            for day, time in st.session_state.schedule.items():
-                sched_html += f'<tr><td style="color:#ff2222;">{day}</td><td style="text-align:right;">{time}</td></tr>'
-            sched_html += '</table>'
-            st.markdown(sched_html, unsafe_allow_html=True)
-            
-            st.write("<br>", unsafe_allow_html=True)
-            st.markdown('<div class="widget-title" style="text-align:center;">🔗 LINKS</div>', unsafe_allow_html=True)
-            
-            st.markdown('<a href="https://kick.com/bladysniadyofficial" target="_blank" class="social-link">🟢 KICK.COM</a>', unsafe_allow_html=True)
-            st.markdown('<a href="https://www.youtube.com/@Blady%C5%9Aniady" target="_blank" class="social-link">🎥 YOUTUBE</a>', unsafe_allow_html=True)
-            st.markdown('<a href="https://www.instagram.com/bladysniady/" target="_blank" class="social-link">📸 INSTAGRAM</a>', unsafe_allow_html=True)
-            st.markdown('<a href="https://tiktok.com/@bladysniady" target="_blank" class="social-link">🎵 TIKTOK</a>', unsafe_allow_html=True)
-            
-            if st.button("⬅ EXIT HUB", key="exit_arena"):
-                st.session_state.view = 'home'
-                st.rerun()
-
+# 2. MENU BOCZNE
+with st.sidebar:
+    st.title("🌐 NAWIGACJA")
+    wybor = st.radio("Przełącz widok:", ["🔥 ARENA", "📦 DRUGA APLIKACJA"])
+    st.markdown("---")
     if is_admin():
-        with st.expander("🛠 ADMIN PANEL"):
-            st.session_state.news = st.text_input("News:", value=st.session_state.news)
-            if st.button("UPDATE SYSTEM"):
-                st.rerun()
+        st.success("Tryb Admin: Aktywny")
 
-# --- SEKCJA DRUGA APLIKACJA ---
-elif wybor == "📦 DRUGA APLIKACJA":
-    st.title("📦 Panel Drugiej Aplikacji")
-    st.write("Tutaj możesz dodać kod swojej drugiej aplikacji.")
+# 3. STYLE CSS (Wspólne dla obu sekcji)
+st.markdown("""
+<style>
+    #MainMenu, footer, header {visibility: hidden;}
+    .stApp { background: radial-gradient(circle at center, #1a0505 0%, #050507 100%); color: white; }
+    .neon-title {
+        color: #ff2222; font-family: 'Arial Black', sans-serif;
+        font-size: clamp(30px, 6vw, 75px); font-weight: 900;
+        text-align: center; text-shadow: 0 0 20px #ff2222; text-transform: uppercase;
+    }
+    .news-bar {
+        background: rgba(255, 0, 0, 0.1); border-left: 5px solid #ff2222;
+        padding: 10px 20px; margin-bottom: 20px; font-style: italic;
+        color: #ffcccc; font-size: 14px; letter-spacing: 1px;
+    }
+    .widget-title {
+        color: #ff2222; font-size: 18px; font-weight: bold; 
+        text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px;
+    }
+    .stream-wrapper { border: 2px solid #ff2222; border-radius: 15px; overflow: hidden; box-shadow: 0 0 30px rgba(255, 34, 34, 0.3); background: black; }
+    .schedule-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,34,34,0.3); }
+    .schedule-table td { padding: 12px; border-bottom: 1px solid rgba(255,34,34,0.1); font-size: 13px; }
+    .social-link {
+        display: block; text-decoration: none !important; color: #ff2222 !important;
+        background: rgba(255, 0, 0, 0.05); border: 1px solid #ff2222;
+        padding: 12px; text-align: center; margin-bottom: 10px;
+        font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
+        transition: 0.3
