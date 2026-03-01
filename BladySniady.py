@@ -7,7 +7,7 @@ st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_side
 if 'view' not in st.session_state:
     st.session_state.view = 'home'
 
-# 2. CSS (Blok domknięty w linii 73)
+# 2. CSS (Naprawiony i domknięty)
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -36,19 +36,19 @@ st.markdown("""
     .neon-title {
         color: #ff2222;
         font-family: 'Arial Black', sans-serif;
-        font-size: clamp(45px, 9vw, 95px);
+        font-size: clamp(40px, 8vw, 90px);
         font-weight: 900;
-        letter-spacing: 15px;
-        text-shadow: 0 0 10px #ff2222, 0 0 30px #ff2222, 0 0 60px #ff0000;
+        letter-spacing: 12px;
+        text-shadow: 0 0 15px #ff2222, 0 0 30px #ff2222;
         text-transform: uppercase;
-        margin-bottom: 0px;
+        margin-bottom: 5px;
     }
     
     .sub-title {
         color: white;
         opacity: 0.8;
-        letter-spacing: 8px;
-        margin-bottom: 50px;
+        letter-spacing: 6px;
+        margin-bottom: 40px;
         font-size: 14px;
         text-transform: uppercase;
     }
@@ -57,6 +57,21 @@ st.markdown("""
         background-color: transparent !important;
         color: #ff2222 !important;
         border: 3px solid #ff2222 !important;
-        padding: 20px 80px !important;
-        font-size: 26px !important;
+        padding: 15px 60px !important;
+        font-size: 24px !important;
         font-weight: bold !important;
+        text-transform: uppercase !important;
+        box-shadow: 0 0 15px rgba(255, 34, 34, 0.4) !important;
+        transition: 0.3s !important;
+    }
+
+    div.stButton > button:hover {
+        background-color: #ff2222 !important;
+        color: white !important;
+        box-shadow: 0 0 50px #ff2222 !important;
+    }
+
+    [data-testid="stMetric"] {
+        background: rgba(255, 0, 0, 0.05) !important;
+        border: 1px solid #ff2222 !important;
+        border-radius: 10px
