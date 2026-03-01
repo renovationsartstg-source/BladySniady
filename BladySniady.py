@@ -49,3 +49,31 @@ if st.session_state.view == 'home':
     _, btn_col, _ = st.columns([1, 1, 1])
     with btn_col:
         if st.button("ENTER ARENA"):
+            st.session_state.view = 'arena'
+            st.rerun()
+
+# --- WIDOK: ARENA ---
+elif st.session_state.view == 'arena':
+    st.markdown(f'<div class="news-bar">⚡ SYSTEM NEWS: {st.session_state.news}</div>', unsafe_allow_html=True)
+    col_main, col_side = st.columns([3, 1])
+    
+    with col_main:
+        # Stream Twitch
+        parent_url = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
+        st.markdown(f'<iframe src="https://player.twitch.tv/?channel=bladysniady&parent={parent_url}&parent=localhost" height="500" width="100%" allowfullscreen="true"></iframe>', unsafe_allow_html=True)
+        
+    with col_side:
+        st.markdown("<h3 style='color:#ff2222; text-align:center;'>LINKS</h3>", unsafe_allow_html=True)
+        st.markdown('<a href="https://kick.com/bladysniadyofficial" target="_blank" class="social-link">🟢 KICK.COM</a>', unsafe_allow_html=True)
+        st.markdown('<a href="https://www.youtube.com/@Blady%C5%9Aniady" target="_blank" class="social-link">🎥 YOUTUBE</a>', unsafe_allow_html=True)
+        st.markdown('<a href="https://tiktok.com/@bladysniady" target="_blank" class="social-link">🎵 TIKTOK</a>', unsafe_allow_html=True)
+        
+        if st.button("⬅ EXIT HUB"):
+            st.session_state.view = 'home'
+            st.rerun()
+
+# --- ADMIN ---
+if is_admin():
+    with st.sidebar:
+        st.session_state.news = st.text_input("News:", value=st.session_state.news)
+        if st.button("SAVE"): st.rerun()
