@@ -1,18 +1,19 @@
 import streamlit as st
+from datetime import datetime
 
 # 1. Konfiguracja strony
-st.set_page_config(page_title="BladySniady | Live Arena", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_sidebar_state="collapsed")
 
-# Funkcja Admina (URL: ?admin=true)
 def is_admin():
     return st.query_params.get("admin") == "true"
 
-# Dane sesji
+# Inicjalizacja danych
 if 'schedule' not in st.session_state:
     st.session_state.schedule = {
-        "Poniedziałek": "18:00 - Arena", "Wtorek": "BRAK", "Środa": "18:00 - Tryhard",
-        "Czwartek": "19:00 - Community", "Piątek": "20:00 - Nocne", "Sobota": "12:00 - Stream", "Niedziela": "BRAK"
+        "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
+        "Czwartek": "19:00", "Piątek": "20:00", "Sobota": "12:00", "Niedziela": "BRAK"
     }
+if 'news' not in st.session_state: st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
 if 'view' not in st.session_state: st.session_state.view = 'home'
 
 # 2. CSS
@@ -24,55 +25,31 @@ st.markdown("""
     
     .neon-title {
         color: #ff2222; font-family: 'Arial Black', sans-serif;
-        font-size: clamp(35px, 8vw, 85px); font-weight: 900;
-        text-align: center; text-shadow: 0 0 20px #ff2222, 0 0 40px #aa0000; text-transform: uppercase;
+        font-size: clamp(30px, 6vw, 75px); font-weight: 900;
+        text-align: center; text-shadow: 0 0 20px #ff2222; text-transform: uppercase;
     }
 
-    /* PRZYCISK ENTER */
-    div.stButton > button:first-child {
-        background: rgba(255, 0, 0, 0.1) !important;
-        color: #ff2222 !important;
-        border: 2px solid #ff2222 !important;
-        border-radius: 5px !important;
-        padding: 20px 60px !important;
-        font-size: 26px !important;
-        font-weight: 900 !important;
-        letter-spacing: 5px !important;
-        text-transform: uppercase !important;
-        box-shadow: 0 0 15px rgba(255, 0, 0, 0.4) !important;
-        transition: all 0.4s ease-in-out !important;
-        animation: pulse-red 2s infinite;
-    }
-    
-    div.stButton > button:first-child:hover {
-        background: #ff2222 !important;
-        color: white !important;
-        box-shadow: 0 0 50px #ff2222 !important;
+    .news-bar {
+        background: rgba(255, 0, 0, 0.1); border-left: 5px solid #ff2222;
+        padding: 10px 20px; margin-bottom: 20px; font-style: italic;
+        color: #ffcccc; font-size: 14px; letter-spacing: 1px;
     }
 
-    /* PRZYCISK POWRÓT */
-    .back-btn div.stButton > button {
-        background: transparent !important;
-        color: rgba(255, 255, 255, 0.6) !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        font-size: 14px !important;
-        letter-spacing: 2px !important;
-    }
-    
-    .back-btn div.stButton > button:hover {
-        color: #ff2222 !important;
-        border-color: #ff2222 !important;
+    .widget-title {
+        color: #ff2222; font-size: 18px; font-weight: bold; 
+        text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px;
     }
 
-    @keyframes pulse-red {
-        0% { box-shadow: 0 0 0 0 rgba(255, 34, 34, 0.7); }
-        70% { box-shadow: 0 0 0 20px rgba(255, 34, 34, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 34, 34, 0); }
-    }
+    .stream-wrapper { border: 2px solid #ff2222; border-radius: 15px; overflow: hidden; box-shadow: 0 0 30px rgba(255, 34, 34, 0.3); background: black; }
+    .schedule-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,34,34,0.3); }
+    .schedule-table td { padding: 12px; border-bottom: 1px solid rgba(255,34,34,0.1); font-size: 13px; }
 
-    .stream-wrapper { border: 2px solid #ff2222; border-radius: 15px; overflow: hidden; box-shadow: 0 0 30px rgba(255, 34, 34, 0.4); background: black; }
-    .schedule-table { width: 100%; border-collapse: collapse; background: rgba(255, 0, 0, 0.05); border: 1px solid #ff2222; }
-    .schedule-table td { padding: 12px; border-bottom: 1px solid rgba(255, 34, 34, 0.2); font-size: 14px; }
+    /* Button Styling */
+    div.stButton > button {
+        background: rgba(255, 0, 0, 0.1) !important; color: #ff2222 !important;
+        border: 2px solid #ff2222 !important; transition: 0.3s !important;
+    }
+    div.stButton > button:hover { background: #ff2222 !important; color: white !important; box-shadow: 0 0 30px #ff2222 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -80,9 +57,8 @@ st.markdown("""
 if st.session_state.view == 'home':
     st.write("<br><br><br><br>", unsafe_allow_html=True)
     st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
-    st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px; font-weight:bold;'>ENTER THE SYSTEM</p>", unsafe_allow_html=True)
-    
-    _, col_btn, _ = st.columns([1, 1.2, 1])
+    st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
+    _, col_btn, _ = st.columns([1, 1, 1])
     with col_btn:
         if st.button("ENTER ARENA", use_container_width=True):
             st.session_state.view = 'arena'
@@ -90,37 +66,49 @@ if st.session_state.view == 'home':
 
 # --- ARENA ---
 elif st.session_state.view == 'arena':
-    st.markdown('<div class="neon-title" style="font-size: 45px; margin-top: 2vh;">ARENA LIVE</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="news-bar">⚡ SYSTEM NEWS: {st.session_state.news}</div>', unsafe_allow_html=True)
     
-    left_side, right_side = st.columns([3, 1])
-    with left_side:
+    col_main, col_side = st.columns([3, 1])
+    
+    with col_main:
+        # TWITCH PLAYER
         st.markdown(f"""<div class="stream-wrapper">
             <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost"
-            height="500" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
+            height="480" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
+        
+        # WIDGET: TOP CLIPS
+        st.write("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="widget-title">🔥 RECENT HIGHLIGHTS</div>', unsafe_allow_html=True)
+        st.markdown(f"""
+            <iframe src="https://clips.twitch.tv/embed?clip=CoyTransparentWrenCopyThis-f_3WbVvS5Z6Uv0Kx&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost" 
+            height="300" width="100%" allowfullscreen="true"></iframe>
+        """, unsafe_allow_html=True)
 
-    with right_side:
-        st.markdown('<p style="color:#ff2222; font-weight:bold; text-align:center; letter-spacing:2px;">📅 SCHEDULE</p>', unsafe_allow_html=True)
+    with col_side:
+        # SCHEDULE
+        st.markdown('<div class="widget-title" style="text-align:center;">📅 SCHEDULE</div>', unsafe_allow_html=True)
         sched_html = '<table class="schedule-table">'
         for day, time in st.session_state.schedule.items():
-            sched_html += f'<tr><td style="color:#ff2222; font-weight:bold;">{day}</td><td>{time}</td></tr>'
+            sched_html += f'<tr><td style="color:#ff2222;">{day}</td><td style="text-align:right;">{time}</td></tr>'
         sched_html += '</table>'
         st.markdown(sched_html, unsafe_allow_html=True)
-
-        st.markdown('<div class="back-btn">', unsafe_allow_html=True)
-        if st.button("BACK TO HUB", use_container_width=True):
+        
+        # SOCIALS QUICK LINK
+        st.write("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="widget-title" style="text-align:center;">🔗 LINKS</div>', unsafe_allow_html=True)
+        st.button("DISCORD SERVER", use_container_width=True)
+        st.button("TIKTOK PROFILE", use_container_width=True)
+        
+        if st.button("⬅ EXIT HUB", use_container_width=True):
             st.session_state.view = 'home'
             st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
 
-# --- ADMIN PANEL ---
+# --- ADMIN ---
 if is_admin():
     st.write("---")
-    with st.expander("🔐 EDIT SCHEDULE"):
-        new_sched = {}
+    with st.expander("🛠 ADMIN WIDGET CONTROL"):
+        st.session_state.news = st.text_input("Komunikat Dnia:", value=st.session_state.news)
+        st.write("Edytuj godziny:")
         for d, t in st.session_state.schedule.items():
-            new_sched[d] = st.text_input(d, value=t)
-        
-        if st.button("SAVE CHANGES"):
-            st.session_state.schedule = new_sched
-            st.success("Zapisano!")
-            st.rerun()
+            st.session_state.schedule[d] = st.text_input(f"{d}:", value=t)
+        if st.button("UPDATE SYSTEM"): st.rerun()
