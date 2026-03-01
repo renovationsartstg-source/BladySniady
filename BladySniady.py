@@ -1,19 +1,20 @@
 import streamlit as st
 
-# 1. Konfiguracja
+# 1. Konfiguracja strony
 st.set_page_config(page_title="BladySniady", layout="wide", initial_sidebar_state="collapsed")
 
+# Inicjalizacja widoku
 if 'view' not in st.session_state:
     st.session_state.view = 'home'
 
-# 2. CSS - Centrowanie i Neon
+# 2. CSS - Centrowanie, Neon i Stylistyka
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
     .stApp {background-color: #050507;}
     [data-testid="stSidebar"] {display: none;}
     
-    /* Centrowanie kontenera przycisku */
+    /* Centrowanie przycisku Streamlit */
     .stButton {
         display: flex;
         justify-content: center;
@@ -27,6 +28,7 @@ st.markdown("""
         letter-spacing: 12px;
         text-shadow: 0 0 20px #ff2222;
         margin-top: 15vh;
+        margin-bottom: 0px;
     }
     
     .sub-title {
@@ -36,6 +38,7 @@ st.markdown("""
         letter-spacing: 5px;
         margin-bottom: 50px;
         font-size: 14px;
+        text-transform: uppercase;
     }
 
     /* Stylizacja Przycisków */
@@ -49,7 +52,7 @@ st.markdown("""
         border-radius: 10px !important;
         text-transform: uppercase !important;
         transition: 0.4s !important;
-        box-shadow: 0 0 20px rgba(255, 34, 34, 0.4), inset 0 0 10px rgba(255, 34, 34, 0.2) !important;
+        box-shadow: 0 0 20px rgba(255, 34, 34, 0.4) !important;
         letter-spacing: 4px !important;
     }
     
@@ -60,7 +63,7 @@ st.markdown("""
         transform: scale(1.05) !important;
     }
 
-    /* Stylizacja Metryk w Arenie */
+    /* Stylizacja Metryk */
     [data-testid="stMetricValue"] {
         color: #ff2222 !important;
         text-align: center !important;
@@ -71,11 +74,7 @@ st.markdown("""
         text-align: center !important;
         color: white !important;
         width: 100%;
-    }
-    [data-testid="stMetric"] {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        letter-spacing: 2px;
     }
 
     .hr-neon {
@@ -92,7 +91,6 @@ if st.session_state.view == 'home':
     st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-title">OFFICIAL HUB ACCESS</div>', unsafe_allow_html=True)
     
-    # Przycisk bez kolumn, bo CSS sam go teraz wyśrodkuje
     if st.button("ENTER ARENA"):
         st.session_state.view = 'arena'
         st.rerun()
@@ -101,4 +99,8 @@ if st.session_state.view == 'home':
 elif st.session_state.view == 'arena':
     st.markdown('<div class="neon-title" style="margin-top: 5vh;">ARENA</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-title">STATISTICS & LIVE FEED</div>', unsafe_allow_html=True)
-    st.markdown('<div
+    st.markdown('<div class="hr-neon"></div>', unsafe_allow_html=True)
+
+    # Statystyki w rzędzie
+    c1, c2, c3, c4 = st.columns(4)
+    with c1: st.metric("FOLLOWERS", "250K+")
