@@ -15,7 +15,7 @@ if 'schedule' not in st.session_state:
     }
 if 'view' not in st.session_state: st.session_state.view = 'home'
 
-# 2. CSS - Naprawiony i domknięty blok (Linia 19 - 80)
+# 2. CSS
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -114,6 +114,13 @@ elif st.session_state.view == 'arena':
 
 # --- ADMIN PANEL ---
 if is_admin():
+    st.write("---")
     with st.expander("🔐 EDIT SCHEDULE"):
         new_sched = {}
-        for d, t in st.session_state.schedule.items
+        for d, t in st.session_state.schedule.items():
+            new_sched[d] = st.text_input(d, value=t)
+        
+        if st.button("SAVE CHANGES"):
+            st.session_state.schedule = new_sched
+            st.success("Zapisano!")
+            st.rerun()
