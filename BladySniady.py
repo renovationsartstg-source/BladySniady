@@ -7,7 +7,7 @@ st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_side
 if 'view' not in st.session_state:
     st.session_state.view = 'home'
 
-# 2. CSS (Naprawiony i domknięty w linii 65)
+# 2. CSS (Kod naprawiony - cudzysłowy zamknięte w linii 72)
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -54,4 +54,32 @@ st.markdown("""
     }
 
     div.stButton > button {
-        background-color:
+        background-color: transparent !important;
+        color: #ff2222 !important;
+        border: 3px solid #ff2222 !important;
+        padding: 20px 80px !important;
+        font-size: 26px !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        box-shadow: 0 0 20px rgba(255, 34, 34, 0.4) !important;
+        transition: 0.3s !important;
+        letter-spacing: 5px;
+    }
+
+    div.stButton > button:hover {
+        background-color: #ff2222 !important;
+        color: white !important;
+        box-shadow: 0 0 60px #ff2222 !important;
+        transform: scale(1.05);
+    }
+
+    [data-testid="stMetric"] {
+        background: rgba(255, 0, 0, 0.05) !important;
+        border: 1px solid #ff2222 !important;
+        border-radius: 10px !important;
+        padding: 20px !important;
+        text-align: center !important;
+    }
+    
+    .arena-panel {
+        background: rgba(0,
