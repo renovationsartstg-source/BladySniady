@@ -1,63 +1,83 @@
 import streamlit as st
 
-# 1. Podstawowe ustawienia - to musi być PIERWSZA linia kodu
+# 1. Konfiguracja (Musi być na początku)
 st.set_page_config(page_title="BladySniady", layout="wide")
 
-# 2. Ukrywanie menu i zmiana tła na czarne
+# 2. Główny blok: CSS + HTML + SKRYPT
 st.markdown("""
-    <style>
-    #MainMenu, footer, header {visibility: hidden;}
-    .stApp {background-color: #050507;}
-    .stButton>button {
-        background-color: transparent;
+<style>
+    /* Reset tła i ukrycie elementów Streamlit */
+    .stApp { background-color: #050507; }
+    header, footer, #MainMenu {visibility: hidden;}
+    .block-container {padding: 0px !important;}
+
+    /* Stylizacja Kontenera */
+    .hero {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle, #1a0505 0%, #050507 100%);
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    /* NEONOWE LOGO */
+    .logo {
         color: #ff2222;
-        border: 2px solid #ff2222;
-        padding: 20px 80px;
-        font-size: 30px;
+        font-size: 80px;
+        text-transform: uppercase;
+        letter-spacing: 12px;
+        text-shadow: 0 0 10px #ff2222, 0 0 20px #ff2222, 0 0 40px #ff0000;
+        margin-bottom: 5px;
+        animation: flicker 3s infinite;
+    }
+
+    .sub {
+        color: white;
+        font-size: 18px;
+        letter-spacing: 5px;
+        margin-bottom: 50px;
+        opacity: 0.7;
+    }
+
+    /* NEONOWY PRZYCISK - FIX */
+    .btn {
+        padding: 20px 60px;
+        color: #ff2222;
+        text-decoration: none;
+        font-size: 26px;
         font-weight: bold;
-        border-radius: 10px;
-        width: 100%;
-        transition: 0.3s;
+        border: 3px solid #ff2222;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        transition: 0.4s;
+        box-shadow: 0 0 15px rgba(255, 34, 34, 0.3);
+        cursor: pointer;
+        display: inline-block;
     }
-    .stButton>button:hover {
-        background-color: #ff2222 !important;
-        color: white !important;
-        box-shadow: 0 0 50px #ff2222;
+
+    .btn:hover {
+        background: #ff2222;
+        color: white;
+        box-shadow: 0 0 50px #ff2222, 0 0 100px #ff2222;
+        transform: scale(1.05);
     }
-    </style>
-""", unsafe_allow_html=True)
 
-# 3. Logo i Napisy
-st.write("") # Odstęp od góry
-st.write("")
-col_main = st.columns([1, 2, 1])
+    /* Animacja migotania neonu */
+    @keyframes flicker {
+        0%, 18%, 22%, 25%, 53%, 57%, 100% { text-shadow: 0 0 10px #ff2222, 0 0 20px #ff2222, 0 0 40px #ff0000; }
+        20%, 24%, 55% { text-shadow: none; }
+    }
+</style>
 
-with col_main[1]:
-    st.markdown("<h1 style='text-align: center; color: #ff2222; font-size: 70px; letter-spacing: 10px; margin-bottom: 0px;'>BLADY SNIADY</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: white; font-size: 20px; opacity: 0.6; margin-bottom: 50px;'>OFFICIAL ARENA ACCESS</p>", unsafe_allow_html=True)
+<div class="hero">
+    <div class="logo">BLADY SNIADY</div>
+    <div class="sub">OFFICIAL ARENA ACCESS</div>
     
-    # PRZYCISK
-    # Streamlit nie lubi linków w przyciskach, więc używamy triku z HTML
-    st.markdown("""
-        <a href="https://bladysniady2-s7hetwn5yfujcgtdkhzhff.streamlit.app/" target="_top" style="text-decoration: none;">
-            <div style="
-                text-align: center;
-                color: #ff2222;
-                border: 3px solid #ff2222;
-                padding: 15px;
-                font-size: 25px;
-                font-weight: bold;
-                border-radius: 5px;
-                text-transform: uppercase;
-                letter-spacing: 3px;
-                cursor: pointer;
-            ">ENTER ARENA</div>
-        </a>
-    """, unsafe_allow_html=True)
-
-# 4. Statystyki na dole
-st.markdown("<br><br><br>", unsafe_allow_html=True)
-c1, c2, c3 = st.columns(3)
-c1.metric("FOLLOWERS", "250K+")
-c2.metric("WINS", "1,200+")
-c3.metric("HOURS", "5,000+")
+    <a href="https://bladysniady2-s7hetwn5yfujcgtdkhzhff.streamlit.app/" target="_top" class="btn">
+        ENTER ARENA
+    </a>
+</div>
+""", unsafe_allow_html=True)
