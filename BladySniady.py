@@ -56,4 +56,79 @@ st.markdown("""
         background: rgba(255, 0, 0, 0.05); border: 1px solid #ff2222;
         padding: 12px; text-align: center; margin-bottom: 10px;
         font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
-        transition: 0.3
+        transition: 0.3s; border-radius: 5px;
+    }
+    .social-link:hover { background: #ff2222; color: white !important; box-shadow: 0 0 25px #ff2222; transform: scale(1.03); }
+</style>
+""", unsafe_allow_html=True)
+
+# 4. LOGIKA WYBORU APLIKACJI
+if wybor == "🔥 ARENA":
+    # --- WIDOK STARTOWY ---
+    if st.session_state.view == 'home':
+        st.write("<br><br><br><br>", unsafe_allow_html=True)
+        st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
+        st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
+        
+        _, col_btn, _ = st.columns([1, 1, 1])
+        with col_btn:
+            if st.button("ENTER ARENA", use_container_width=True):
+                st.session_state.view = 'arena'
+                st.rerun()
+
+    # --- WIDOK ARENY ---
+    elif st.session_state.view == 'arena':
+        st.markdown(f'<div class="news-bar">⚡ SYSTEM NEWS: {st.session_state.news}</div>', unsafe_allow_html=True)
+        
+        col_main, col_side = st.columns([3, 1])
+        
+        with col_main:
+            # Player Twitch
+            st.markdown(f"""<div class="stream-wrapper">
+            <iframe src="https://player.twitch.tv/?channel=bladysniady&parent={st.query_params.get('host', 'share.streamlit.io')}&parent=localhost" 
+            height="480" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
+            
+            st.write("<br>", unsafe_allow_html=True)
+            st.markdown('<div class="widget-title">🔥 RECENT HIGHLIGHTS</div>', unsafe_allow_html=True)
+            
+            # Clip Twitch
+            st.markdown(f"""<iframe src="https://clips.twitch.tv/embed?clip=CoyTransparentWrenCopyThis-f_3WbVvS5Z6Uv0Kx&parent={st.query_params.get('host', 'share.streamlit.io')}&parent=localhost" 
+            height="300" width="100%" allowfullscreen="true"></iframe>""", unsafe_allow_html=True)
+
+        with col_side:
+            st.markdown('<div class="widget-title" style="text-align:center;">📅 SCHEDULE</div>', unsafe_allow_html=True)
+            
+            # Harmonogram
+            html_table = '<table class="schedule-table">'
+            for day, time in st.session_state.schedule.items():
+                html_table += f'<tr><td style="color:#ff2222;">{day}</td><td style="text-align:right;">{time}</td></tr>'
+            html_table += '</table>'
+            st.markdown(html_table, unsafe_allow_html=True)
+            
+            st.write("<br>", unsafe_allow_html=True)
+            st.markdown('<div class="widget-title" style="text-align:center;">🔗 LINKS</div>', unsafe_allow_html=True)
+            
+            # Linki Social Media
+            st.markdown('<a href="https://kick.com/bladysniadyofficial" target="_blank" class="social-link">🟢 KICK.COM</a>', unsafe_allow_html=True)
+            st.markdown('<a href="https://www.youtube.com/@Blady%C5%9Aniady" target="_blank" class="social-link">🎥 YOUTUBE</a>', unsafe_allow_html=True)
+            st.markdown('<a href="https://www.instagram.com/bladysniady/" target="_blank" class="social-link">📸 INSTAGRAM</a>', unsafe_allow_html=True)
+            st.markdown('<a href="https://tiktok.com/@bladysniady" target="_blank" class="social-link">🎵 TIKTOK</a>', unsafe_allow_html=True)
+            
+            if st.button("⬅ EXIT HUB", use_container_width=True):
+                st.session_state.view = 'home'
+                st.rerun()
+
+    # Panel Admina na dole Areny
+    if is_admin():
+        with st.expander("🛠 USTAWIENIA ADMINA"):
+            new_news = st.text_input("Edytuj news:", value=st.session_state.news)
+            if st.button("Zapisz news"):
+                st.session_state.news = new_news
+                st.rerun()
+
+elif wybor == "📦 DRUGA APLIKACJA":
+    st.title("📦 Druga Aplikacja")
+    st.write("To miejsce na kod z Twojej drugiej aplikacji.")
+    st.info("Wklej tutaj kod z linku nr 2, ale pomiń w nim 'st.set_page_config'.")
+    
+    # Tutaj możesz wkleić funkcje z drugiej apki
