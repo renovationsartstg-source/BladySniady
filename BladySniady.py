@@ -1,39 +1,59 @@
-from flask import Flask, render_template_string
+import streamlit as st
 
-app = Flask(__name__)
+# Konfiguracja strony
+st.set_page_config(page_title="RAJU - Gaming Hub", page_icon="🎮")
 
-# Twój kod HTML przeniesiony do zmiennej (lub oddzielnego pliku)
-html_content = """
-<!DOCTYPE html>
-<html>
-<head>
-    <title>RAJU - Gaming Hub</title>
+# Wstrzyknięcie Twojego stylu CSS
+st.markdown("""
     <style>
-        body { background-color: #0f0f0f; color: white; text-align: center; font-family: Arial; }
-        h1 { color: #00ffcc; }
-        .social a {
-            display: block; margin: 15px auto; padding: 10px; width: 200px;
-            background: #1f1f1f; color: white; text-decoration: none;
-            border-radius: 8px; transition: 0.3s;
-        }
-        .social a:hover { background: #00ffcc; color: black; }
+    .main {
+        background-color: #0f0f0f;
+    }
+    h1 {
+        color: #00ffcc;
+        text-align: center;
+        font-family: Arial;
+    }
+    .subtitle {
+        color: white;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .social-link {
+        display: block;
+        margin: 10px auto;
+        padding: 15px;
+        background-color: #1f1f1f;
+        color: white !important;
+        text-decoration: none;
+        text-align: center;
+        border-radius: 8px;
+        transition: 0.3s;
+        width: 100%;
+        max-width: 400px;
+        font-family: Arial;
+        border: 1px solid transparent;
+    }
+    .social-link:hover {
+        background-color: #00ffcc;
+        color: black !important;
+        border: 1px solid #00ffcc;
+    }
     </style>
-</head>
-<body>
-    <h1>🎮 RAJU</h1>
-    <p>FPS Grinder | Competitive Mindset</p>
-    <div class="social">
-        <a href="https://youtube.com/twojlink" target="_blank">YouTube</a>
-        <a href="https://twitch.tv/twojlink" target="_blank">Twitch</a>
-        <a href="https://discord.gg/twojlink" target="_blank">Discord</a>
-    </div>
-</body>
-</html>
-"""
+    """, unsafe_allow_html=True)
 
-@app.route('/')
-def home():
-    return render_template_string(html_content)
+# Treść strony
+st.markdown("<h1>🎮 RAJU</h1>", unsafe_allow_html=True)
+st.markdown("<p class='subtitle'>FPS Grinder | Competitive Mindset</p>", unsafe_allow_html=True)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# Przyciski (Linki)
+links = {
+    "YouTube": "https://youtube.com/twojlink",
+    "Twitch": "https://twitch.tv/twojlink",
+    "Instagram": "https://instagram.com/twojlink",
+    "TikTok": "https://tiktok.com/@twojlink",
+    "Discord": "https://discord.gg/twojlink"
+}
+
+for name, url in links.items():
+    st.markdown(f'<a href="{url}" target="_blank" class="social-link">{name}</a>', unsafe_allow_html=True)
