@@ -7,7 +7,7 @@ st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_side
 if 'view' not in st.session_state:
     st.session_state.view = 'home'
 
-# 2. CSS
+# 2. CSS (Naprawiony i domknięty w linii 65)
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -39,4 +39,19 @@ st.markdown("""
         font-size: clamp(45px, 9vw, 95px);
         font-weight: 900;
         letter-spacing: 15px;
-        text-shadow: 0 0 1
+        text-shadow: 0 0 10px #ff2222, 0 0 30px #ff2222, 0 0 60px #ff0000;
+        text-transform: uppercase;
+        margin-bottom: 0px;
+    }
+    
+    .sub-title {
+        color: white;
+        opacity: 0.8;
+        letter-spacing: 8px;
+        margin-bottom: 50px;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+
+    div.stButton > button {
+        background-color:
