@@ -10,37 +10,36 @@ st.markdown("<style>#MainMenu,footer,header{visibility:hidden;} .stApp{backgroun
 st.markdown("<h1 style='text-align:center;color:#ff2222;font-size:60px;margin-top:100px;letter-spacing:10px;'>BLADY SNIADY</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center;color:white;opacity:0.7;letter-spacing:5px;'>OFFICIAL ARENA ACCESS</p>", unsafe_allow_html=True)
 
-# 4. PRZYCISK Z WYMUSZONYM KLIKNIĘCIEM (JavaScript Fix)
+# 4. PRZYCISK - Metoda "Invisible Link Layer"
+# Tworzymy stylowy div, a w środku link, który zajmuje 100% jego powierzchni.
 st.markdown("""
 <div style="text-align:center; margin-top:50px;">
-    <div id="neon-btn" onclick="openArena()" style="
+    <a href="https://bladysniady2-s7hetwn5yfujcgtdkhzhff.streamlit.app/" target="_top" id="neon-link" style="
         display: inline-block;
         padding: 20px 60px;
         color: #ff2222;
-        text-transform: uppercase;
+        text-decoration: none;
         font-size: 26px;
         font-weight: bold;
         border: 3px solid #ff2222;
         border-radius: 10px;
-        cursor: pointer;
+        text-transform: uppercase;
         box-shadow: 0 0 20px #ff2222, inset 0 0 10px #ff2222;
         transition: 0.3s;
         letter-spacing: 3px;
-    ">ENTER ARENA</div>
+    ">ENTER ARENA</a>
 </div>
 
-<script>
-    function openArena() {
-        // To polecenie wymusza otwarcie strony w nadrzędnym oknie (cała karta)
-        window.top.location.href = "https://bladysniady2-s7hetwn5yfujcgtdkhzhff.streamlit.app/";
-    }
-</script>
-
 <style>
-    #neon-btn:hover {
+    /* Naprawa działania na Streamlit Cloud */
+    #neon-link:hover {
         background-color: #ff2222 !important;
         color: white !important;
         box-shadow: 0 0 60px #ff2222 !important;
+        transform: scale(1.05);
+    }
+    #neon-link:active {
+        transform: scale(0.95);
     }
 </style>
 """, unsafe_allow_html=True)
