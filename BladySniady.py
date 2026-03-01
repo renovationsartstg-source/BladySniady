@@ -22,7 +22,7 @@ else:
 
 st.markdown("<style>#MainMenu,footer,header{visibility:hidden;}.block-container{padding:0px!important;}</style>", unsafe_allow_html=True)
 
-# --- SAFE CONSTRUCTION (Short lines to prevent SyntaxError) ---
+# --- CONSTRUCTION ---
 p = []
 p.append("<!DOCTYPE html><html><head><meta charset='UTF-8'>")
 p.append("<link href='https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Russo+One&display=swap' rel='stylesheet'>")
@@ -40,7 +40,7 @@ p.append(".box{background:rgba(17,17,17,0.8);padding:60px;border-radius:20px;bor
 p.append(".neon-btn{display:inline-block;padding:20px 50px;font-size:18px;font-weight:900;color:#f22;")
 p.append("text-decoration:none;text-transform:uppercase;border:2px solid #f22;border-radius:5px;")
 p.append("transition:0.5s;letter-spacing:4px;box-shadow:0 0 15px #f22;}")
-p.append(".neon-btn:hover{background:#f22;color:#fff;box-shadow:0 0 50px #f22;}")
+p.append(".neon-btn:hover{background:#f22;color:#fff;box-shadow:0 0 50px #f22;transform:scale(1.05);}")
 p.append(".stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;}")
 p.append(".stat{background:#000;padding:40px;border-radius:15px;border:1px solid #222;}")
 p.append(".stat h4{font-size:45px;color:#f22;}")
@@ -50,7 +50,11 @@ p.append("<nav><div class='logo'>BLADY SNIADY</div>")
 p.append("<div class='navbar-links'><a href='#home'>Home</a><a href='#stats'>Stats</a></div></nav>")
 p.append("<section id='home' class='box reveal'>")
 p.append("<h2 style='font-size:50px;margin-bottom:20px;'>OFFICIAL SITE</h2>")
-p.append("<a href='#stats' class='neon-btn'>ENTER ARENA</a></section>")
+
+# --- TUTAJ ZMIANA LINKU ---
+target_link = "https://bladysniady2-s7hetwn5yfujcgtdkhzhff.streamlit.app/"
+p.append(f"<a href='{target_link}' target='_top' class='neon-btn'>ENTER ARENA</a></section>")
+
 p.append("<section id='stats' class='box reveal'><h3>MY STATS</h3><div class='stats'>")
 p.append(f"<div class='stat'><h4>{st.session_state.fols}</h4><p>Followers</p></div>")
 p.append(f"<div class='stat'><h4>{st.session_state.wins}</h4><p>Wins</p></div>")
