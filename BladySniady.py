@@ -10,7 +10,7 @@ if 'news' not in st.session_state: st.session_state.news = "ZAPRASZAM NA TIKTOK 
 def is_admin():
     return st.query_params.get("admin") == "true"
 
-# 2. CSS - Stylizacja Neonowa
+# 2. CSS - Stabilny i Neonowy
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden; display: none !important;}
@@ -34,27 +34,34 @@ st.markdown("""
         text-transform: uppercase !important;
         animation: neon-pulse 2s infinite ease-in-out;
         transition: 0.3s !important;
+        width: 100%;
     }
     
     div.stButton > button:hover {
         background: #ff2222 !important;
         box-shadow: 0 0 60px #ff2222 !important;
-        transform: scale(1.05);
+        transform: scale(1.02);
     }
 
     .neon-text {
         text-shadow: 0 0 15px #ff2222, 0 0 30px #ff2222;
         color: white; font-weight: 900; text-transform: uppercase; text-align: center;
     }
+
+    /* Usunięcie marginesów Streamlit */
+    .spacer { margin-top: 40px; }
+    .small-spacer { margin-top: 20px; }
 </style>
 """, unsafe_allow_html=True)
 
 # --- WIDOK GŁÓWNY (HOME) ---
 if st.session_state.view == 'home':
-    st.write("<br><br><br><br>", unsafe_allow_html=True)
+    st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
     st.markdown('<h1 style="font-size:80px;" class="neon-text">BLADY SNIADY</h1>', unsafe_allow_html=True)
     st.write("<p style='text-align:center; opacity:0.5; letter-spacing:10px;'>OFFICIAL STREAM HUB</p>", unsafe_allow_html=True)
     
+    st.markdown('<div class="small-spacer"></div>', unsafe_allow_html=True)
     _, col_btn, _ = st.columns([1, 1.2, 1])
     with col_btn:
         if st.button("🔴 ENTER ARENA"):
@@ -64,12 +71,11 @@ if st.session_state.view == 'home':
 # --- WIDOK ARENA (STREAM) ---
 elif st.session_state.view == 'arena':
     st.markdown(f'<div style="border:1px solid #ff2222; padding:15px; text-align:center; border-radius:10px; background:rgba(255,0,0,0.1);">⚡ {st.session_state.news}</div>', unsafe_allow_html=True)
-    st.write("<br>", unsafe_allow_html=True)
+    st.markdown('<div class="small-spacer"></div>', unsafe_allow_html=True)
     
     col_main, col_side = st.columns([3, 1])
     
     with col_main:
-        # TIKTOK PLAYER - Uproszczony kod HTML, by uniknąć SyntaxError
         tt_code = """
         <div style="background:black; border:2px solid #ff2222; border-radius:15px; overflow:hidden;">
             <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@bladysniady" data-unique-id="bladysniady" data-embed-type="creator" style="width:100%;">
@@ -83,7 +89,6 @@ elif st.session_state.view == 'arena':
     with col_side:
         st.markdown('<p class="neon-text">🔗 LINKI</p>', unsafe_allow_html=True)
         
-        # Linki jako przyciski HTML dla lepszego wyglądu
         st.markdown("""
         <style>
             .btn-link { display: block; padding: 15px; margin: 10px 0; text-align: center; border-radius: 10px; 
@@ -95,7 +100,9 @@ elif st.session_state.view == 'arena':
         <a href="https://youtube.com/@BladySniady" target="_blank" class="btn-link y-btn">🎥 YOUTUBE</a>
         """, unsafe_allow_html=True)
         
-        st.write("<br>")
+        # Zamiast st.write("<br>"), używamy klasy CSS spacer
+        st.markdown('<div class="small-spacer"></div>', unsafe_allow_html=True)
+        
         if st.button("⬅ POWRÓT"):
             st.session_state.view = 'home'
             st.rerun()
