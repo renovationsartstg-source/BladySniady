@@ -3,21 +3,24 @@ import streamlit as st
 # 1. Konfiguracja strony
 st.set_page_config(page_title="BladySniady | Live Arena", layout="wide", initial_sidebar_state="collapsed")
 
-# Domyślny harmonogram
-default_schedule = {
-    "Poniedziałek": "18:00 - Arena",
-    "Wtorek": "BRAK",
-    "Środa": "18:00 - Tryhard",
-    "Czwartek": "19:00 - Community Games",
-    "Piątek": "20:00 - Nocne Granie",
-    "Sobota": "12:00 - Stream",
-    "Niedziela": "BRAK"
-}
+# Funkcja sprawdzająca, czy użytkownik jest adminem przez URL
+def is_admin():
+    query_params = st.query_params
+    return query_params.get("admin") == "true"
 
-# Inicjalizacja stanów
+# Domyślny harmonogram
+if 'schedule' not in st.session_state:
+    st.session_state.schedule = {
+        "Poniedziałek": "18:00 - Arena",
+        "Wtorek": "BRAK",
+        "Środa": "18:00 - Tryhard",
+        "Czwartek": "19:00 - Community Games",
+        "Piątek": "20:00 - Nocne Granie",
+        "Sobota": "12:00 - Stream",
+        "Niedziela": "BRAK"
+    }
+
 if 'view' not in st.session_state: st.session_state.view = 'home'
-if 'schedule' not in st.session_state: st.session_state.schedule = default_schedule
-if 'admin_mode' not in st.session_state: st.session_state.admin_mode = False
 
 # 2. CSS
 st.markdown("""
@@ -37,10 +40,7 @@ st.markdown("""
         background: rgba(255, 0, 0, 0.05); border: 1px solid #ff2222;
     }
     .schedule-table td { padding: 10px; border-bottom: 1px solid rgba(255, 34, 34, 0.2); font-size: 14px; }
-    .day-name { color: #ff2222; font-weight: bold; width: 40%; }
-    
-    .admin-link { position: fixed; bottom: 10px; right: 10px; opacity: 0.3; cursor: pointer; font-size: 20px; }
-    .admin-link:hover { opacity: 1; }
+    .day-name { color: #ff2222; font-weight: bold; }
     
     .stream-wrapper { border: 2px solid #ff2222; border-radius: 15px; overflow: hidden; box-shadow: 0 0 30px rgba(255, 34, 34, 0.4); background: black; }
 </style>
@@ -65,7 +65,6 @@ elif st.session_state.view == 'arena':
     left_side, right_side = st.columns([3, 1])
 
     with left_side:
-        # TWITCH PLAYER
         st.markdown(f"""
             <div class="stream-wrapper">
                 <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost"
@@ -74,9 +73,7 @@ elif st.session_state.view == 'arena':
         """, unsafe_allow_html=True)
 
     with right_side:
-        # HARMONOGRAM
-        st.markdown('<p style="color:#ff2222; font-weight:bold; margin-bottom:5px; text-align:center;">📅 HARMONOGRAM</p>', unsafe_allow_html=True)
-        
+        st.markdown('<p style="color:#ff2222; font-weight:bold; text-align:center;">📅 HARMONOGRAM</p>', unsafe_allow_html=True)
         sched_html = '<table class="schedule-table">'
         for day, time in st.session_state.schedule.items():
             sched_html += f'<tr><td class="day-name">{day}</td><td>{time}</td></tr>'
@@ -88,20 +85,16 @@ elif st.session_state.view == 'arena':
             st.session_state.view = 'home'
             st.rerun()
 
-# --- PANEL ADMINISTRATORA (UKRYTY) ---
-if st.markdown('<div class="admin-link">⚙️</div>', unsafe_allow_html=True):
-    with st.expander("Panel Administratora"):
-        password = st.text_input("Hasło dostępu", type="password")
-        if password == "sniady2024": # ZMIEŃ HASŁO TUTAJ
-            st.success("Zalogowano jako Admin")
-            st.write("Edytuj godziny streamów:")
-            new_schedule = {}
-            for day, time in st.session_state.schedule.items():
-                new_schedule[day] = st.text_input(day, value=time)
-            
-            if st.button("Zapisz zmiany"):
-                st.session_state.schedule = new_schedule
-                st.success("Zaktualizowano harmonogram!")
-                st.rerun()
-        elif password != "":
-            st.error("Błędne hasło")
+# --- PANEL ADMINISTRATORA (WIDOCZNY TYLKO PRZEZ TAJNY LINK) ---
+if is_admin():
+    st.write("---")
+    with st.expander("🔐 PANEL ZARZĄDZANIA ARENĄ"):
+        st.info("Ten panel widzisz tylko Ty dzięki tajnemu parametrowi w URL.")
+        updated_schedule = {}
+        for day, time in st.session_state.schedule.items():
+            updated_schedule[day] = st.text_input(f"Godzina: {day}", value=time)
+        
+        if st.button("Zapisz Harmonogram"):
+            st.session_state.schedule = updated_schedule
+            st.success("Zmiany zapisane!")
+            st.rerun()
