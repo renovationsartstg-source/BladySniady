@@ -11,7 +11,7 @@ st.set_page_config(
 def is_admin():
     return st.query_params.get("admin") == "true"
 
-# Inicjalizacja danych
+# Inicjalizacja danych sesji
 if 'schedule' not in st.session_state:
     st.session_state.schedule = {
         "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
@@ -22,45 +22,34 @@ if 'news' not in st.session_state:
 if 'view' not in st.session_state: 
     st.session_state.view = 'home'
 
-# 2. CSS - NAPRAWA KOLORÓW PRZYCISKÓW
+# 2. CSS - NAPRAWA SKŁADNI I KOLORÓW
 st.markdown("""
 <style>
-    /* Ukrycie elementów Streamlit */
+    /* Ukrycie standardowych elementów Streamlit */
     #MainMenu, footer, header, [data-testid="stHeader"] {visibility: hidden; display: none !important;}
     
+    /* Tło całej aplikacji */
     .stApp {
-        background: radial-gradient(circle at top, #1a0505 0%, #020205 100%);
-        color: white;
+        background: radial-gradient(circle at top, #1a0505 0%, #020205 100%) !important;
+        color: white !important;
     }
 
-    /* Styl dla standardowych przycisków st.button (np. ENTER, POWRÓT) */
+    /* Styl dla przycisków Streamlit (ENTER / WYJDŹ) */
     div.stButton > button {
         background-color: #ff2222 !important;
         color: white !important;
         border: 2px solid #ff2222 !important;
         border-radius: 10px !important;
+        padding: 10px 20px !important;
         font-weight: bold !important;
         text-transform: uppercase !important;
         width: 100% !important;
-        transition: 0.3s !important;
     }
     div.stButton > button:hover {
-        background-color: transparent !important;
-        color: #ff2222 !important;
         box-shadow: 0 0 20px #ff2222 !important;
+        background-color: #aa0000 !important;
     }
 
     /* Tytuł Neonowy */
     .neon-title {
-        font-family: 'Arial Black', sans-serif;
-        font-size: clamp(40px, 8vw, 85px);
-        font-weight: 900;
-        text-align: center;
-        color: white;
-        text-shadow: 0 0 10px #ff2222, 0 0 30px #ff2222;
-        text-transform: uppercase;
-    }
-
-    /* Pasek Newsów */
-    .news-card {
-        background:
+        font-family: 'Arial Black',
