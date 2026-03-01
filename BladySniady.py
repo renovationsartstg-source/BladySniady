@@ -1,6 +1,6 @@
 import streamlit as st
 
-# 1. Konfiguracja strony
+# 1. Konfiguracja strony - Musi być na samym początku
 st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_sidebar_state="collapsed")
 
 # 2. Inicjalizacja danych sesji
@@ -19,7 +19,7 @@ if 'news' not in st.session_state:
 def is_admin():
     return st.query_params.get("admin") == "true"
 
-# 3. CSS - Poprawiona sekcja stylów
+# 3. CSS - Stylizacja
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -47,4 +47,58 @@ st.markdown("""
     .social-link:hover { background: #ff2222; color: white !important; box-shadow: 0 0 25px #ff2222; transform: scale(1.03); }
     div.stButton > button {
         background: transparent !important; color: white !important;
-        border: 1px solid rgba(255,255,255,0.2) !important; width: 100
+        border: 1px solid rgba(255,255,255,0.2) !important; width: 100%; margin-top: 10px;
+    }
+    div.stButton > button:hover { border-color: #ff2222 !important; color: #ff2222 !important; }
+</style>
+""", unsafe_allow_html=True)
+
+# --- HOME ---
+if st.session_state.view == 'home':
+    st.write("<br><br>", unsafe_allow_html=True)
+    
+    # Wstawienie grafiki zamiast tekstu
+    col_img_1, col_img_2, col_img_3 = st.columns([1, 2, 1])
+    with col_img_2:
+        st.image("e975d1ae-cb53-4242-a957-1db57413f05a.jfif", use_container_width=True)
+    
+    st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
+    
+    _, col_btn, _ = st.columns([1, 1, 1])
+    with col_btn:
+        if st.button("ENTER ARENA", key="enter_btn"):
+            st.session_state.view = 'arena'
+            st.rerun()
+
+# --- ARENA ---
+elif st.session_state.view == 'arena':
+    st.markdown(f'<div class="news-bar">⚡ SYSTEM NEWS: {st.session_state.news}</div>', unsafe_allow_html=True)
+    col_main, col_side = st.columns([3, 1])
+    
+    with col_main:
+        # Główny stream
+        st.markdown(f"""<div class="stream-wrapper">
+            <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost"
+            height="480" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
+        st.write("<br>", unsafe_allow_html=True)
+        
+        # Klipy
+        st.markdown('<div class="widget-title">🔥 RECENT HIGHLIGHTS</div>', unsafe_allow_html=True)
+        st.markdown(f"""<iframe src="https://clips.twitch.tv/embed?clip=CoyTransparentWrenCopyThis-f_3WbVvS5Z6Uv0Kx&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost" 
+            height="300" width="100%" allowfullscreen="true"></iframe>""", unsafe_allow_html=True)
+
+    with col_side:
+        # Harmonogram
+        st.markdown('<div class="widget-title" style="text-align:center;">📅 SCHEDULE</div>', unsafe_allow_html=True)
+        sched_html = '<table class="schedule-table">'
+        for day, time in st.session_state.schedule.items():
+            sched_html += f'<tr><td style="color:#ff2222;">{day}</td><td style="text-align:right;">{time}</td></tr>'
+        sched_html += '</table>'
+        st.markdown(sched_html, unsafe_allow_html=True)
+        
+        st.write("<br>", unsafe_allow_html=True)
+        
+        # Linki społecznościowe
+        st.markdown('<div class="widget-title" style="text-align:center;">🔗 LINKS</div>', unsafe_allow_html=True)
+        st.markdown('<a href="https://kick.com/bladysniadyofficial" target="_blank" class="social-link">🟢 KICK.COM</a>', unsafe_allow_html=True)
+        st.markdown('<a href="https://www.youtube.com/@Blady%C5%9Aniady" target="_blank" class="social-link">🎥 YOUTUBE</a>', unsafe_allow_html=True)
