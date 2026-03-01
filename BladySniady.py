@@ -12,10 +12,12 @@ if 'schedule' not in st.session_state:
         "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
         "Czwartek": "19:00", "Piątek": "20:00", "Sobota": "12:00", "Niedziela": "BRAK"
     }
-if 'news' not in st.session_state: st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
-if 'view' not in st.session_state: st.session_state.view = 'home'
+if 'news' not in st.session_state: 
+    st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
+if 'view' not in st.session_state: 
+    st.session_state.view = 'home'
 
-# 2. CSS - Naprawiony blok (zamknięty w linii 81)
+# 2. CSS
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -44,31 +46,17 @@ st.markdown("""
     .schedule-table td { padding: 12px; border-bottom: 1px solid rgba(255,34,34,0.1); font-size: 13px; }
 
     .social-link {
-        display: block;
-        text-decoration: none !important;
-        color: #ff2222 !important;
-        background: rgba(255, 0, 0, 0.05);
-        border: 1px solid #ff2222;
-        padding: 12px;
-        text-align: center;
-        margin-bottom: 10px;
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        transition: 0.3s;
-        border-radius: 5px;
+        display: block; text-decoration: none !important; color: #ff2222 !important;
+        background: rgba(255, 0, 0, 0.05); border: 1px solid #ff2222;
+        padding: 12px; text-align: center; margin-bottom: 10px;
+        font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
+        transition: 0.3s; border-radius: 5px;
     }
-    .social-link:hover {
-        background: #ff2222;
-        color: white !important;
-        box-shadow: 0 0 25px #ff2222;
-        transform: scale(1.03);
-    }
+    .social-link:hover { background: #ff2222; color: white !important; box-shadow: 0 0 25px #ff2222; transform: scale(1.03); }
 
     div.stButton > button {
         background: transparent !important; color: white !important;
-        border: 1px solid rgba(255,255,255,0.2) !important; width: 100%;
-        margin-top: 10px;
+        border: 1px solid rgba(255,255,255,0.2) !important; width: 100%; margin-top: 10px;
     }
     div.stButton > button:hover { border-color: #ff2222 !important; color: #ff2222 !important; }
 </style>
@@ -85,5 +73,11 @@ if st.session_state.view == 'home':
             st.session_state.view = 'arena'
             st.rerun()
 
-# --- ARENA ---
+# --- ARENA --- (Tutaj był błąd wcięcia)
 elif st.session_state.view == 'arena':
+    st.markdown(f'<div class="news-bar">⚡ SYSTEM NEWS: {st.session_state.news}</div>', unsafe_allow_html=True)
+    
+    col_main, col_side = st.columns([3, 1])
+    
+    with col_main:
+        # TW
