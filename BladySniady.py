@@ -1,24 +1,29 @@
 import streamlit as st
 
-# 1. GŁÓWNA KONFIGURACJA STRONY (Zawsze na samej górze, tylko raz!)
-st.set_page_config(page_title="BladySniady | Multiverse", layout="wide", initial_sidebar_state="expanded")
-
-# 2. MENU NAWIGACYJNE W PASKU BOCZNYM
-st.sidebar.markdown("## 🌐 MENU GŁÓWNE")
-wybrana_aplikacja = st.sidebar.radio("Wybierz aplikację:", ["🔥 ARENA (Main Hub)", "📦 APLIKACJA 2"])
-
-st.sidebar.write("---")
-st.sidebar.info("Przełączaj się między aplikacjami za pomocą powyższego menu.")
+# ==========================================
+# 1. GŁÓWNA KONFIGURACJA (Tylko raz!)
+# ==========================================
+st.set_page_config(
+    page_title="BladySniady | Multiverse",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # ==========================================
-#         APLIKACJA 1: ARENA (HUB)
+# 2. NAWIGACJA (Sidebar)
 # ==========================================
-if wybrana_aplikacja == "🔥 ARENA (Main Hub)":
+st.sidebar.title("🌐 NAWIGACJA")
+wybor = st.sidebar.radio("Przejdź do:", ["🔥 ARENA", "📦 DRUGA APLIKACJA"])
+
+# ==========================================
+# 3. APLIKACJA 1: ARENA
+# ==========================================
+if wybor == "🔥 ARENA":
     
     def is_admin():
         return st.query_params.get("admin") == "true"
 
-    # Inicjalizacja danych sesji dla Areny
+    # Inicjalizacja danych sesji
     if 'schedule' not in st.session_state:
         st.session_state.schedule = {
             "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
@@ -29,7 +34,7 @@ if wybrana_aplikacja == "🔥 ARENA (Main Hub)":
     if 'view' not in st.session_state: 
         st.session_state.view = 'home'
 
-    # CSS - UWAGA: Usunięto ukrywanie paska bocznego, aby menu działało!
+    # CSS (Usunięto ukrywanie Sidebara, by menu było widoczne)
     st.markdown("""
     <style>
         #MainMenu, footer, header {visibility: hidden;}
@@ -59,51 +64,35 @@ if wybrana_aplikacja == "🔥 ARENA (Main Hub)":
             transition: 0.3s; border-radius: 5px;
         }
         .social-link:hover { background: #ff2222; color: white !important; box-shadow: 0 0 25px #ff2222; transform: scale(1.03); }
-        div.stButton > button {
-            background: transparent !important; color: white !important;
-            border: 1px solid rgba(255,255,255,0.2) !important; width: 100%; margin-top: 10px;
-        }
-        div.stButton > button:hover { border-color: #ff2222 !important; color: #ff2222 !important; }
     </style>
     """, unsafe_allow_html=True)
 
-    # --- HOME (ARENA) ---
+    # --- LOGIKA ARENY ---
     if st.session_state.view == 'home':
-        st.write("<br><br><br><br>", unsafe_allow_html=True)
+        st.write("<br><br><br>", unsafe_allow_html=True)
         st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
         st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
         _, col_btn, _ = st.columns([1, 1, 1])
         with col_btn:
-            if st.button("ENTER ARENA", key="enter_btn"):
+            if st.button("ENTER ARENA", key="enter_arena_main"):
                 st.session_state.view = 'arena'
                 st.rerun()
 
-    # --- WNĘTRZE ARENY ---
     elif st.session_state.view == 'arena':
         st.markdown(f'<div class="news-bar">⚡ SYSTEM NEWS: {st.session_state.news}</div>', unsafe_allow_html=True)
         col_main, col_side = st.columns([3, 1])
         
         with col_main:
             st.markdown(f"""<div class="stream-wrapper">
-                <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost"
+                <iframe src="https://player.twitch.tv/?channel=bladysniady&parent={st.query_params.get('parent', 'localhost')}"
                 height="480" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
             st.write("<br>", unsafe_allow_html=True)
             st.markdown('<div class="widget-title">🔥 RECENT HIGHLIGHTS</div>', unsafe_allow_html=True)
-            st.markdown(f"""<iframe src="https://clips.twitch.tv/embed?clip=CoyTransparentWrenCopyThis-f_3WbVvS5Z6Uv0Kx&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost" 
+            st.markdown(f"""<iframe src="https://clips.twitch.tv/embed?clip=CoyTransparentWrenCopyThis-f_3WbVvS5Z6Uv0Kx&parent={st.query_params.get('parent', 'localhost')}" 
                 height="300" width="100%" allowfullscreen="true"></iframe>""", unsafe_allow_html=True)
 
         with col_side:
             st.markdown('<div class="widget-title" style="text-align:center;">📅 SCHEDULE</div>', unsafe_allow_html=True)
             sched_html = '<table class="schedule-table">'
             for day, time in st.session_state.schedule.items():
-                sched_html += f'<tr><td style="color:#ff2222;">{day}</td><td style="text-align:right;">{time}</td></tr>'
-            sched_html += '</table>'
-            st.markdown(sched_html, unsafe_allow_html=True)
-            
-            st.write("<br>", unsafe_allow_html=True)
-            st.markdown('<div class="widget-title" style="text-align:center;">🔗 LINKS</div>', unsafe_allow_html=True)
-            
-            st.markdown('<a href="https://kick.com/bladysniadyofficial" target="_blank" class="social-link">🟢 KICK.COM</a>', unsafe_allow_html=True)
-            st.markdown('<a href="https://www.youtube.com/@Blady%C5%9Aniady" target="_blank" class="social-link">🎥 YOUTUBE</a>', unsafe_allow_html=True)
-            st.markdown('<a href="https://www.instagram.com/bladysniady/" target="_blank" class="social-link">📸 INSTAGRAM</a>', unsafe_allow_html=True)
-            st.markdown('<a href
+                sched_html += f'<tr><td style="color:#ff2222
