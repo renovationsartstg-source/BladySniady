@@ -1,125 +1,135 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 1. Konfiguracja musi być na samym początku
+# 1. Konfiguracja strony
 st.set_page_config(page_title="CyberPlayer Portfolio", page_icon="🎮", layout="wide")
 
-# 2. Bardziej stabilny sposób na tło Matrix (wstrzykujemy bezpośrednio jako komponent)
-# Zwiększamy wysokość do 100vh i wymuszamy pozycję fixed w CSS
-matrix_script = """
-<style>
-    canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: -1;
-    }
-    body {
-        margin: 0;
-        background-color: #050505;
-        overflow: hidden;
-    }
-</style>
-<canvas id="matrix"></canvas>
+# 2. Poprawiony Matrix Background - Wstrzyknięcie bezpośrednie
+# Używamy triku z iframe, który rozciąga się na cały ekran
+matrix_html = """
+<div id="matrix-container" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;">
+    <canvas id="canvas"></canvas>
+</div>
+
 <script>
-    const canvas = document.getElementById('matrix');
+    const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*';
     const fontSize = 16;
     const columns = canvas.width / fontSize;
     const drops = Array(Math.floor(columns)).fill(1);
 
     function draw() {
-        ctx.fillStyle = 'rgba(5, 5, 5, 0.05)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        drops.forEach((y, i) => {
-            const text = chars[Math.floor(Math.random() * chars.length)];
-            // Kolorowanie: błękit i fiolet
-            ctx.fillStyle = Math.random() > 0.5 ? '#00f3ff' : '#bc13fe';
-            ctx.fillText(text, i * fontSize, y * fontSize);
+        for (let i = 0; i < drops.length; i++) {
+            const text = letters[Math.floor(Math.random() * letters.length)];
+            
+            // Kolory Cyberpunk: fiolet i błękit
+            ctx.fillStyle = (i % 2 === 0) ? '#00f3ff' : '#bc13fe';
+            
+            ctx.font = fontSize + 'px monospace';
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-            if (y * fontSize > canvas.height && Math.random() > 0.975) {
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
                 drops[i] = 0;
             }
             drops[i]++;
-        });
+        }
     }
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
     setInterval(draw, 33);
 </script>
+
+<style>
+    /* Ukrywamy obramowania iframe Streamlita */
+    iframe {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+</style>
 """
 
-# Wyświetlamy tło (uwaga: height=0 sprawia, że skrypt działa w tle bez zajmowania miejsca)
-components.html(matrix_script, height=0)
+# Wstrzykujemy komponent na całą wysokość ekranu
+components.html(matrix_html, height=2000) # Wysokość ustawiona wysoko, by pokryć scroll
 
-# 3. CSS dla Streamlita
+# 3. CSS dla interfejsu (szkło / blur)
 st.markdown("""
     <style>
-    /* Przezroczystość dla głównego kontenera */
+    /* Sprawiamy, że aplikacja jest przezroczysta */
     .stApp {
-        background: transparent;
+        background: transparent !important;
     }
-    
-    /* Stylizacja nagłówków i kart */
+
+    /* Szklane panele dla czytelności (Glassmorphism) */
+    .cyber-card {
+        background: rgba(10, 10, 10, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(188, 19, 254, 0.5);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        margin-bottom: 20px;
+    }
+
     h1, h2, h3 {
         color: #00f3ff !important;
         text-shadow: 0 0 10px #bc13fe;
-        font-family: 'Courier New', monospace;
+        text-transform: uppercase;
+        font-family: 'Segoe UI', sans-serif;
     }
     
-    .cyber-box {
-        background: rgba(10, 10, 10, 0.8);
-        border: 2px solid #bc13fe;
-        padding: 20px;
-        border-radius: 10px;
-        color: white;
-        margin-bottom: 20px;
+    p, span {
+        color: #ffffff !important;
     }
-    
-    /* Przycisk */
-    .stButton>button {
-        background: linear-gradient(45deg, #bc13fe, #00f3ff) !important;
-        color: white !important;
-        border: none !important;
-        font-weight: bold !important;
-        width: 100%;
-    }
+
+    /* Ukrycie elementów menu */
+    header, footer {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
 
-# 4. Treść strony
-st.title("⚡ CYBERPLAYER")
-st.subheader("Digital Creator & Gamer")
-
+# 4. Treść Portfolio
+st.markdown('<div class="cyber-card">', unsafe_allow_html=True)
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    st.markdown("""
-    <div class="cyber-box">
-        <h3>System Status: ONLINE</h3>
-        <p>Witaj w mojej cyfrowej przestrzeni. Zajmuję się montażem wideo i streamingiem.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if st.button("KANAŁ TWITCH"):
-        st.write("Przekierowanie... (dodaj st.link_button w nowszej wersji Streamlit)")
-
+    st.title("⚡ CYBERPLAYER")
+    st.markdown("### Digital Creator | Pro Gamer")
+    st.write("Witaj w systemie. Moja strona jest teraz zintegrowana z deszczem Matrixa.")
+    st.link_button("OBSERWUJ NA TWITCHU", "https://twitch.tv")
 with col2:
-    st.image("https://via.placeholder.com/200/bc13fe/ffffff?text=AVATAR")
+    st.image("https://via.placeholder.com/200x200/00f3ff/050505?text=AVATAR", width=200)
+st.markdown('</div>', unsafe_allow_html=True)
 
-# Sekcja Portfolio
-st.markdown("## 🖥️ Setup")
-c1, c2 = st.columns(2)
-c1.image("https://via.placeholder.com/400x250/050505/00f3ff?text=PC+Setup")
-c2.image("https://via.placeholder.com/400x250/050505/bc13fe?text=Design+Work")
+# Sekcja Setup
+st.markdown("## 🖥️ SYSTEM SETUP")
+c1, c2, c3 = st.columns(3)
+with c1:
+    st.markdown('<div class="cyber-card"><b>GPU:</b> RTX 4080<br><b>CPU:</b> i9-13900K</div>', unsafe_allow_html=True)
+with c2:
+    st.markdown('<div class="cyber-card"><b>Monitor:</b> 240Hz OLED<br><b>Mouse:</b> Superlight</div>', unsafe_allow_html=True)
+with c3:
+    st.markdown('<div class="cyber-card"><b>Vibe:</b> Cyberpunk<br><b>Status:</b> Online</div>', unsafe_allow_html=True)
 
 # Kontakt
-st.markdown("## 📩 Kontakt")
-with st.container():
-    st.text_input("Email")
+st.markdown('<div class="cyber-card">', unsafe_allow_html=True)
+st.subheader("📩 WYŚLIJ SYGNAŁ")
+with st.form("contact"):
+    st.text_input("Twoje ID")
     st.text_area("Wiadomość")
-    st.button("Wyślij")
+    st.form_submit_button("TRANSFERUJ")
+st.markdown('</div>', unsafe_allow_html=True)
