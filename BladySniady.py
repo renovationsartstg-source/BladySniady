@@ -1,21 +1,12 @@
 import streamlit as st
 
-# --- 1. KONFIGURACJA STRONY ---
-st.set_page_config(
-    page_title="BladySniady | Arena V2", 
-    layout="wide", 
-    initial_sidebar_state="collapsed"
-)
+# 1. Konfiguracja strony
+st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_sidebar_state="collapsed")
 
-# Funkcja sprawdzająca admina
 def is_admin():
     return st.query_params.get("admin") == "true"
 
 # Inicjalizacja danych sesji
-if 'view' not in st.session_state: 
-    st.session_state.view = 'home'
-if 'user_xp' not in st.session_state:
-    st.session_state.user_xp = 0
 if 'schedule' not in st.session_state:
     st.session_state.schedule = {
         "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
@@ -23,63 +14,48 @@ if 'schedule' not in st.session_state:
     }
 if 'news' not in st.session_state: 
     st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
+if 'view' not in st.session_state: 
+    st.session_state.view = 'home'
 
-# System Rang
-RANKS = [
-    {"min": 0, "n": "REKRUT", "next": 100},
-    {"min": 100, "n": "WIDZ", "next": 500},
-    {"min": 500, "n": "ELITA", "next": 2000},
-    {"min": 2000, "n": "ARENA MASTER", "next": 10000}
-]
-
-def get_rank_data(xp):
-    current = RANKS[0]
-    for r in RANKS:
-        if xp >= r["min"]:
-            current = r
-    prog = min(((xp - current["min"]) / (current["next"] - current["min"])) * 100, 100)
-    return current["n"], prog, current["next"]
-
-# --- 2. STYLE CSS (NAPRAWIONE) ---
-style_code = """
+# 2. CSS (Naprawiony blok stylów)
+style_css = """
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500;700&display=swap');
-
     #MainMenu, footer, header {visibility: hidden;}
-    .stApp { background: radial-gradient(circle at center, #1a0505 0%, #050507 100%); color: white; font-family: 'Rajdhani', sans-serif; }
-    
+    [data-testid="stSidebar"] {display: none;}
+    .stApp { background: radial-gradient(circle at center, #1a0505 0%, #050507 100%); color: white; }
     .neon-title {
-        color: #ff2222; font-family: 'Orbitron', sans-serif;
+        color: #ff2222; font-family: 'Arial Black', sans-serif;
         font-size: clamp(30px, 6vw, 75px); font-weight: 900;
         text-align: center; text-shadow: 0 0 20px #ff2222; text-transform: uppercase;
     }
-    
-    .panel {
-        background: #0f0f12; border: 1px solid #1a1a1f;
-        border-radius: 4px; padding: 15px; margin-bottom: 15px;
-    }
-    .panel-header {
-        background: #16161a; padding: 8px 12px;
-        color: #ff2222; font-family: 'Orbitron';
-        font-size: 11px; font-weight: 900;
-        border-bottom: 1px solid #222; margin: -15px -15px 15px -15px;
-    }
-
     .news-bar {
         background: rgba(255, 0, 0, 0.1); border-left: 5px solid #ff2222;
         padding: 10px 20px; margin-bottom: 20px; font-style: italic;
-        color: #ffcccc; font-size: 14px;
+        color: #ffcccc; font-size: 14px; letter-spacing: 1px;
     }
-
-    .rank-display {
-        font-size: 28px; color: #ff2222; font-family: 'Orbitron';
-        text-shadow: 0 0 10px #ff2222; text-align: center;
+    .widget-title {
+        color: #ff2222; font-size: 18px; font-weight: bold; 
+        text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px;
     }
-    .progress-bg { height: 6px; background: #222; border-radius: 3px; margin: 10px 0; overflow: hidden; }
-    .progress-fill { height: 100%; background: #ff2222; box-shadow: 0 0 10px #ff2222; transition: 0.5s; }
-
+    .stream-wrapper { border: 2px solid #ff2222; border-radius: 15px; overflow: hidden; box-shadow: 0 0 30px rgba(255, 34, 34, 0.3); background: black; }
+    .schedule-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,34,34,0.3); }
+    .schedule-table td { padding: 12px; border-bottom: 1px solid rgba(255,34,34,0.1); font-size: 13px; }
     .social-link {
         display: block; text-decoration: none !important; color: #ff2222 !important;
         background: rgba(255, 0, 0, 0.05); border: 1px solid #ff2222;
         padding: 12px; text-align: center; margin-bottom: 10px;
-        font-weight: bold; text
+        font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
+        transition: 0.3s; border-radius: 5px;
+    }
+    .social-link:hover { background: #ff2222; color: white !important; box-shadow: 0 0 25px #ff2222; transform: scale(1.03); }
+    div.stButton > button {
+        background: transparent !important; color: white !important;
+        border: 1px solid rgba(255,255,255,0.2) !important; width: 100%; margin-top: 10px;
+    }
+    div.stButton > button:hover { border-color: #ff2222 !important; color: #ff2222 !important; }
+</style>
+"""
+st.markdown(style_css, unsafe_allow_html=True)
+
+# --- HOME ---
+if st
