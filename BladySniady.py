@@ -14,8 +14,6 @@ def is_admin():
 # Inicjalizacja danych sesji
 if 'view' not in st.session_state: 
     st.session_state.view = 'home'
-if 'logged_in' not in st.session_state:
-    st.session_state.logged_in = False
 if 'user_xp' not in st.session_state:
     st.session_state.user_xp = 0
 if 'schedule' not in st.session_state:
@@ -42,7 +40,7 @@ def get_rank_data(xp):
     prog = min(((xp - current["min"]) / (current["next"] - current["min"])) * 100, 100)
     return current["n"], prog, current["next"]
 
-# --- 2. STYLE CSS (ZABEZPIECZONE PRZED SYNTAX ERROR) ---
+# --- 2. STYLE CSS (NAPRAWIONE) ---
 style_code = """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500;700&display=swap');
@@ -84,18 +82,4 @@ style_code = """
         display: block; text-decoration: none !important; color: #ff2222 !important;
         background: rgba(255, 0, 0, 0.05); border: 1px solid #ff2222;
         padding: 12px; text-align: center; margin-bottom: 10px;
-        font-weight: bold; text-transform: uppercase; font-family: 'Orbitron';
-        font-size: 12px; transition: 0.3s; border-radius: 5px;
-    }
-    .social-link:hover { background: #ff2222; color: white !important; box-shadow: 0 0 25px #ff2222; transform: scale(1.03); }
-
-    div.stButton > button {
-        background: transparent !important; color: white !important;
-        font-family: 'Orbitron' !important;
-        border: 1px solid rgba(255,255,255,0.2) !important; width: 100%;
-        border-radius: 0 !important; transition: 0.3s;
-    }
-    div.stButton > button:hover { border-color: #ff2222 !important; color: #ff2222 !important; }
-</style>
-"""
-st.markdown(style_code, unsafe_allow
+        font-weight: bold; text
