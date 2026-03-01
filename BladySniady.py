@@ -1,40 +1,28 @@
 import streamlit as st
 
-# ==========================================
-# 1. GŁÓWNA KONFIGURACJA (Tylko raz!)
-# ==========================================
-st.set_page_config(
-    page_title="BladySniady | Multiverse",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# 1. Konfiguracja strony
+st.set_page_config(page_title="BladySniady | Multiverse", layout="wide", initial_sidebar_state="expanded")
 
-# ==========================================
-# 2. NAWIGACJA (Sidebar)
-# ==========================================
+# Menu boczne do przełączania aplikacji
 st.sidebar.title("🌐 NAWIGACJA")
-wybor = st.sidebar.radio("Przejdź do:", ["🔥 ARENA", "📦 DRUGA APLIKACJA"])
+wybor = st.sidebar.radio("Wybierz sekcję:", ["🔥 ARENA", "📦 DRUGA APLIKACJA"])
 
-# ==========================================
-# 3. APLIKACJA 1: ARENA
-# ==========================================
+def is_admin():
+    return st.query_params.get("admin") == "true"
+
+# Inicjalizacja danych sesji
+if 'schedule' not in st.session_state:
+    st.session_state.schedule = {
+        "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
+        "Czwartek": "19:00", "Piątek": "20:00", "Sobota": "12:00", "Niedziela": "BRAK"
+    }
+if 'news' not in st.session_state: 
+    st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
+if 'view' not in st.session_state: 
+    st.session_state.view = 'home'
+
+# --- SEKCJA ARENA ---
 if wybor == "🔥 ARENA":
-    
-    def is_admin():
-        return st.query_params.get("admin") == "true"
-
-    # Inicjalizacja danych sesji
-    if 'schedule' not in st.session_state:
-        st.session_state.schedule = {
-            "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
-            "Czwartek": "19:00", "Piątek": "20:00", "Sobota": "12:00", "Niedziela": "BRAK"
-        }
-    if 'news' not in st.session_state: 
-        st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
-    if 'view' not in st.session_state: 
-        st.session_state.view = 'home'
-
-    # CSS (Usunięto ukrywanie Sidebara, by menu było widoczne)
     st.markdown("""
     <style>
         #MainMenu, footer, header {visibility: hidden;}
@@ -67,14 +55,13 @@ if wybor == "🔥 ARENA":
     </style>
     """, unsafe_allow_html=True)
 
-    # --- LOGIKA ARENY ---
     if st.session_state.view == 'home':
         st.write("<br><br><br>", unsafe_allow_html=True)
         st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
         st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
         _, col_btn, _ = st.columns([1, 1, 1])
         with col_btn:
-            if st.button("ENTER ARENA", key="enter_arena_main"):
+            if st.button("ENTER ARENA", key="main_enter"):
                 st.session_state.view = 'arena'
                 st.rerun()
 
@@ -84,15 +71,4 @@ if wybor == "🔥 ARENA":
         
         with col_main:
             st.markdown(f"""<div class="stream-wrapper">
-                <iframe src="https://player.twitch.tv/?channel=bladysniady&parent={st.query_params.get('parent', 'localhost')}"
-                height="480" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
-            st.write("<br>", unsafe_allow_html=True)
-            st.markdown('<div class="widget-title">🔥 RECENT HIGHLIGHTS</div>', unsafe_allow_html=True)
-            st.markdown(f"""<iframe src="https://clips.twitch.tv/embed?clip=CoyTransparentWrenCopyThis-f_3WbVvS5Z6Uv0Kx&parent={st.query_params.get('parent', 'localhost')}" 
-                height="300" width="100%" allowfullscreen="true"></iframe>""", unsafe_allow_html=True)
-
-        with col_side:
-            st.markdown('<div class="widget-title" style="text-align:center;">📅 SCHEDULE</div>', unsafe_allow_html=True)
-            sched_html = '<table class="schedule-table">'
-            for day, time in st.session_state.schedule.items():
-                sched_html += f'<tr><td style="color:#ff2222
+                <iframe src="
