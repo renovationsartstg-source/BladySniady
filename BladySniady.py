@@ -1,115 +1,108 @@
 import streamlit as st
 import random
-
-# --- 1. DEFINICJE FUNKCJI (Zawsze na górze!) ---
-def is_admin():
-    """Sprawdza, czy w adresie URL jest parametr ?admin=true"""
-    return st.query_params.get("admin") == "true"
-
-# --- 2. KONFIGURACJA STRONY ---
-st.set_page_config(
-    page_title="BladySniady | MMORPG Arena", 
-    layout="wide", 
-    initial_sidebar_state="collapsed"
-)
-
-# --- 3. INICJALIZACJA DANYCH SESJI ---
-# To jest 'mózg' gry - tu trzymamy postępy gracza w trakcie sesji
-if 'view' not in st.session_state: st.session_state.view = 'home'
+st.set_page_config(layout="wide")
+if 'pg' not in st.session_state: st.session_state.pg = "H"
 if 'hp' not in st.session_state: st.session_state.hp = 100
-if 'yang' not in st.session_state: st.session_state.yang = 500
+if 'yang' not in st.session_state: st.session_state.yang = 0
+if 'eq' not in st.session_state: st.session_state.eq = 0
+if 'fms' not in st.session_state: st.session_state.fms = 0
 if 'exp' not in st.session_state: st.session_state.exp = 0
-if 'atk_bonus' not in st.session_state: st.session_state.atk_bonus = 0
-if 'news' not in st.session_state: st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ!"
+if 'teeth' not in st.session_state: st.session_state.teeth = 0
+if 'notes' not in st.session_state: st.session_state.notes = []
+if 'reg' not in st.session_state: st.session_state.reg = "Jinno"
 
-# --- 4. CSS (Wygląd Areny) ---
-C = "#ff2222" 
-st.markdown(f"""
-<style>
-    #MainMenu, footer, header {{visibility: hidden;}}
-    .stApp {{ background: radial-gradient(circle at center, #1a0505 0%, #050507 100%); color: white; }}
-    .neon-title {{
-        color: {C}; font-family: 'Arial Black', sans-serif;
-        font-size: clamp(30px, 6vw, 75px); text-align: center; text-shadow: 0 0 20px {C}; text-transform: uppercase;
-    }}
-    .game-window {{
-        background: rgba(0, 0, 0, 0.6); border: 1px solid {C}44;
-        border-radius: 10px; padding: 20px;
-    }}
-    .bar-bg {{ width: 100%; background: #222; border-radius: 5px; height: 12px; overflow: hidden; border: 1px solid #444; }}
-    .bar-fill {{ height: 100%; background: linear-gradient(90deg, {C}, #880000); transition: width 0.3s; }}
-    div.stButton > button {{
-        background: rgba(255,34,34,0.1) !important; color: white !important;
-        border: 1px solid {C} !important; width: 100%;
-    }}
-</style>
-""", unsafe_allow_html=True)
+H = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
+T_URL = "https://tipply.pl/@bladysniady"
 
-# --- 5. LOGIKA INTERFEJSU ---
+# --- GM PANEL ---
+if st.query_params.get("admin") == "bladypanel":
+ with st.sidebar:
+  st.header("🐲 GM INTERFACE")
+  st.session_state.reg = st.selectbox("KRÓLESTWO:", ["Shinsoo", "Chunjo", "Jinno"])
+  if st.button("EVENT ZUO (FULL HP)"): st.session_state.hp = 100
+  if st.button("ROZDAJ YANG (+1k)"): st.session_state.yang += 1000
 
-# EKRAN STARTOWY
-if st.session_state.view == 'home':
-    st.write("<br><br><br>", unsafe_allow_html=True)
-    st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
-    st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>SYSTEM BOOTING...</p>", unsafe_allow_html=True)
-    _, col_btn, _ = st.columns([1, 1, 1])
-    with col_btn:
-        if st.button("WEJDŹ NA ARENĘ"):
-            st.session_state.view = 'arena'
-            st.rerun()
+# --- STYLE METIN2 ---
+C = "#00ccff" # Jinno
+if st.session_state.reg == "Shinsoo": C = "#ff0000"
+elif st.session_state.reg == "Chunjo": C = "#ffff00"
 
-# ARENA (GRA + STREAM)
-elif st.session_state.view == 'arena':
-    st.markdown(f'<div style="background:rgba(255,0,0,0.1); padding:10px; border-left:5px solid {C}; margin-bottom:20px;">⚡ OGŁOSZENIE: {st.session_state.news}</div>', unsafe_allow_html=True)
-    
-    col_main, col_side = st.columns([3, 1])
+st.markdown("<style>footer{visibility:hidden;}.stApp{background:#050505;color:"+C+";}.b{display:block;padding:10px;border:1px solid "+C+";text-align:center;color:"+C+"!important;text-decoration:none!important;margin:5px;background:rgba(0,0,0,0.5);}</style>",1)
 
-    with col_main:
-        tab_game, tab_stream = st.tabs(["⚔️ WALKA O YANG", "📺 LIVE STREAM"])
-        
-        with tab_game:
-            # Mechanika Walki
-            st.markdown(f"### 💎 KAMIEŃ METIN (HP: {st.session_state.hp}%)")
-            st.markdown(f'<div class="bar-bg"><div class="bar-fill" style="width: {st.session_state.hp}%;"></div></div>', unsafe_allow_html=True)
-            
-            if st.button("ATAKUJ! ⚔️"):
-                st.session_state.hp -= (10 + st.session_state.atk_bonus)
-                st.session_state.yang += random.randint(10, 50)
-                if st.session_state.hp <= 0:
-                    st.session_state.hp = 100
-                    st.balloons()
-                st.rerun()
+# --- HUD (STATUS BAR) ---
+st.markdown(f"### 🛡️ WOJOWNIK {st.session_state.reg} | LVL: {1 + (st.session_state.exp//1000)}")
+c1, c2 = st.columns(2)
+with c1:
+ st.write(f"💰 YANG: {st.session_state.yang}")
+ st.write(f"🦷 ZĘBY ORKA: {st.session_state.teeth}/10")
+with c2:
+ st.write(f"⚔️ ATK: {5 + st.session_state.eq + st.session_state.fms}")
+ st.progress(min(1.0, (st.session_state.exp % 1000) / 1000))
 
-        with tab_stream:
-            # Twój Stream
-            st.markdown(f"""<iframe src="https://player.twitch.tv/?channel=bladysniady&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost"
-                height="450" width="100%" allowfullscreen="true"></iframe>""", unsafe_allow_html=True)
+# --- NAWIGACJA ---
+st.write("---")
+m1, m2, m3, m4 = st.columns(4)
+with m1:
+ if st.button("🏠 WIOSKA"): st.session_state.pg = "H"
+with m2:
+ if st.button("⚔️ DOLINA"): st.session_state.pg = "L"
+with m3:
+ if st.button("🧙 SKLEP"): st.session_state.pg = "S"
+with m4:
+ if st.button("🗿 GROTA"): st.session_state.pg = "F"
 
-    with col_side:
-        # Statystyki gracza w bocznym panelu
-        st.markdown('<div class="game-window">', unsafe_allow_html=True)
-        st.subheader("TWOJA POSTAĆ")
-        st.write(f"💰 YANG: {st.session_state.yang}")
-        st.write(f"⚔️ BONUS ATK: +{st.session_state.atk_bonus}")
-        if st.button("KUP ULEPSZENIE (500 Yang)"):
-            if st.session_state.yang >= 500:
-                st.session_state.yang -= 500
-                st.session_state.atk_bonus += 5
-                st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        if st.button("⬅ WYJDŹ"):
-            st.session_state.view = 'home'
-            st.rerun()
+# --- LOKACJE ---
+if st.session_state.pg == "H":
+ st.markdown(f"#### 💎 KAMIEŃ METIN (HP: {int(st.session_state.hp)}%)")
+ st.progress(st.session_state.hp / 100)
+ if st.button("ATAKUJ! ⚔️", use_container_width=True):
+  dmg = 5 + st.session_state.eq + st.session_state.fms
+  st.session_state.hp -= dmg
+  st.session_state.yang += random.randint(10, 50)
+  st.session_state.exp += 20
+  if random.random() < 0.05: # 5% szansy na drop zęba
+   st.session_state.teeth += 1
+   st.success("Znalazłeś Ząb Orka!")
+  if st.session_state.hp <= 0:
+   st.session_state.hp = 100
+   st.balloons()
+  st.rerun()
 
-# --- 6. PANEL ADMINISTRATORA (Na samym dole, tylko dla Ciebie) ---
-if is_admin():
-    st.write("---")
-    with st.expander("🛠️ PANEL GM (Widoczny tylko z ?admin=true)"):
-        new_msg = st.text_input("Zmień ogłoszenie:", value=st.session_state.news)
-        if st.button("Zapisz ogłoszenie"):
-            st.session_state.news = new_msg
-            st.rerun()
-        if st.button("DODAJ MI 5000 YANG"):
-            st.session_state.yang += 5000
-            st.rerun()
+ st.write("---")
+ st.markdown("#### 🧪 BIOLOG CHAEGIRAB")
+ if st.button("ODDAJ ZĄB ORKA"):
+  if st.session_state.teeth > 0:
+   st.session_state.teeth -= 1
+   st.session_state.fms += 2
+   st.success("Biolog przyjął ząb! Twoja siła wzrosła (+2 ATK)!")
+   st.rerun()
+  else: st.error("Nie masz zębów orka!")
+
+elif st.session_state.pg == "L":
+ st.write("🔴 TRANSMISJA Z ARENY:")
+ u = "https://player.twitch.tv/?channel=bladysniady&parent="+H+"&parent=localhost"
+ st.markdown("<iframe src='"+u+"' height='400' width='100%'></iframe>", 1)
+ st.markdown("<a href='"+T_URL+"' class='b' style='background:"+C+";color:black!important;'>KUP SMOCZE MONETY</a>", 1)
+
+elif st.session_state.pg == "S":
+ st.write("🧙 HANDLARKA RÓŻNOŚCIAMI:")
+ if st.button("KUP MIECZ PEŁNI KSIĘŻYCA (FMS) - 3000 Yang"):
+  if st.session_state.yang >= 3000:
+   st.session_state.yang -= 3000
+   st.session_state.fms += 15
+   st.rerun()
+ if st.button("KUP BODZIO (ULEPSZ EQ) - 1000 Yang"):
+  if st.session_state.yang >= 1000:
+   st.session_state.yang -= 1000
+   st.session_state.eq += 1
+   st.rerun()
+
+elif st.session_state.pg == "F":
+ st.write("🗿 GROTA WYGNAŃCÓW (WPISY):")
+ with st.form("sh"):
+  txt = st.text_input("Napisz coś na ścianie groty:")
+  if st.form_submit_button("RYJUJ W KAMIENIU"):
+   st.session_state.notes.insert(0, txt)
+   st.rerun()
+ for n in st.session_state.notes[:10]:
+  st.markdown(f"> {n}")
