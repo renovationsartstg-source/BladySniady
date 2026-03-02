@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 
-# --- KONFIGURACJA STRONY (Musi być na samej górze) ---
+# --- KONFIGURACJA STRONY ---
 st.set_page_config(
     page_title="METIN2 STREAM HUB",
     layout="wide",
@@ -22,16 +22,14 @@ C = COLORS.get(st.session_state.reg, "#00ccff")
 T_URL = "https://tipply.pl/@bladysniady"
 H = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
 
-# --- ZAAWANSOWANY STYLING CSS (Gaming UI) ---
+# --- ZAAWANSOWANY STYLING CSS ---
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto+Condensed:wght@700&display=swap');
 
-    /* Usunięcie obramowań Streamlit */
     .block-container {{ padding: 0rem !important; max-width: 100% !important; }}
     [data-testid="stHeader"] {{ display: none; }}
     
-    /* Tło ogólne */
     .stApp {{
         background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
                     url("https://r4.wallpaperflare.com/wallpaper/740/490/342/dark-souls-iii-video-games-landscape-wallpaper-48660d2870102ce8a03ca14eb882811a.jpg");
@@ -39,7 +37,6 @@ st.markdown(f"""
         color: white;
     }}
 
-    /* Górny HUD */
     .hud-bar {{
         background: rgba(0, 0, 0, 0.9);
         border-bottom: 2px solid {C};
@@ -47,12 +44,8 @@ st.markdown(f"""
         display: flex;
         justify-content: space-between;
         align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 999;
     }}
 
-    /* Kontenery okien gry */
     .game-window {{
         background: rgba(20, 20, 20, 0.9);
         border: 1px solid {C}44;
@@ -61,6 +54,22 @@ st.markdown(f"""
         box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }}
 
-    /* Paski postępu (HP/EXP) */
     .bar-bg {{ width: 100%; background: #222; border-radius: 5px; height: 12px; border: 1px solid #444; overflow: hidden; }}
-    .bar-hp {{ height: 100%; background: linear-gradient(90deg, #ff0000, #88000
+    .bar-hp {{ height: 100%; background: linear-gradient(90deg, #ff0000, #880000); transition: 0.3s; }}
+
+    .stButton>button {{
+        background: linear-gradient(180deg, #333 0%, #111 100%);
+        color: {C} !important;
+        border: 1px solid {C} !important;
+        font-family: 'Oswald', sans-serif;
+        text-transform: uppercase;
+        width: 100%;
+    }}
+    .stButton>button:hover {{
+        background: {C} !important;
+        color: black !important;
+    }}
+
+    .inv-slot {{
+        width: 50px; height: 50px;
+        background: rgba(255,
