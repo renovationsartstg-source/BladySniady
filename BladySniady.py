@@ -2,44 +2,55 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import os
 
-# 1. Konfiguracja i dane
-st.set_page_config(page_title="BladyHub", layout="wide", initial_sidebar_state="collapsed")
-if 'sch' not in st.session_state: st.session_state.sch = {"Pon": "18:00", "Wt": "BRAK", "Sr": "18:00", "Czw": "19:00", "Pt": "20:00", "Sob": "12:00", "Nie": "BRAK"}
+# 1. Konfiguracja i bazy linków
+st.set_page_config(page_title="BladyHub", layout="wide")
+
+L = {
+    "kick": "https://kick.com/bladysniadyofficial",
+    "yt": "https://www.youtube.com/@Blady%C5%9Aniady",
+    "ig": "https://www.instagram.com/bladysniady/",
+    "tt": "https://tiktok.com/@bladysniady",
+    "tip": "https://tipply.pl/@bladysniady",
+    "img": "e975d1ae-cb53-4242-a957-1db57413f05a.jfif",
+    "parent": "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
+}
+
 if 'msg' not in st.session_state: st.session_state.msg = "STARTUJEMY O 18:00!"
 
-# 2. Stylizacja (Zintegrowana)
+# 2. CSS
 st.markdown("""<style>
 #MainMenu,footer,header{visibility:hidden;}
-.stApp{background:radial-gradient(circle,#1a0505 0%,#050507 100%);color:white;}
-.stImage>img{border-radius:20px;box-shadow:0 0 30px red;}
-.n-bar{background:rgba(255,0,0,0.1);border-left:5px solid red;padding:15px;text-align:center;font-weight:bold;}
-.s-link{display:block;text-decoration:none!important;color:white!important;background:rgba(255,0,0,0.1);border:1px solid red;padding:15px;text-align:center;margin-bottom:10px;border-radius:10px;}
+.stApp{background:#050507;color:white;}
+.n-bar{background:rgba(255,0,0,0.1);border-left:5px solid red;padding:15px;text-align:center;}
+.s-link{display:block;text-decoration:none!important;color:white!important;background:rgba(255,0,0,0.2);border:1px solid red;padding:15px;text-align:center;margin-bottom:10px;border-radius:10px;}
 </style>""", unsafe_allow_html=True)
 
-# 3. Menu i nawigacja
-sel = option_menu(None, ["HOME", "LIVE", "SOCIALS", "PLAN"], icons=["house", "broadcast", "share", "calendar"], orientation="horizontal")
+# 3. Menu
+sel = option_menu(None, ["HOME", "LIVE", "SOCIALS"], icons=["house", "broadcast", "share"], orientation="horizontal")
 
 # 4. Podstrony
 if sel == "HOME":
     st.write("<br>", unsafe_allow_html=True)
-    c1, c2, c3 = st.columns([1, 2, 1])
-    with c2:
-        img = "e975d1ae-cb53-4242-a957-1db57413f05a.jfif"
-        if os.path.exists(img): st.image(img, use_container_width=True)
+    _, col, _ = st.columns([1, 2, 1])
+    with col:
+        if os.path.exists(L["img"]): st.image(L["img"], use_container_width=True)
         else: st.header("BLADY SNIADY")
-    st.markdown("<p style='text-align:center;opacity:0.5;letter-spacing:5px;'>OFFICIAL HUB</p>", unsafe_allow_html=True)
     st.markdown(f"<div class='n-bar'>📢 {st.session_state.msg}</div>", unsafe_allow_html=True)
 
 elif sel == "LIVE":
-    st.markdown(f"<div class='n-bar'>🔴 {st.session_state.msg}</div>", unsafe_allow_html=True)
-    h = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
-    u = f"https://player.twitch.tv/?channel=bladysniady&parent={h}&parent=localhost"
-    st.markdown(f"<iframe src='{u}' height='500' width='100%' allowfullscreen='true'></iframe>", unsafe_allow_html=True)
-    st.markdown("<br><a href='https://tipply.pl/@bladysniady' class='s-link' style='background:gold;color:black!important;'>💰 WESPRZYJ TIPPLY</a>", unsafe_allow_html=True)
+    st.markdown(f"<div class='n-bar'>🔴 LIVE: {st.session_state.msg}</div>", unsafe_allow_html=True)
+    url = f"https://player.twitch.tv/?channel=bladysniady&parent={L['parent']}&parent=localhost"
+    st.markdown(f"<iframe src='{url}' height='500' width='100%'></iframe>", unsafe_allow_html=True)
+    st.markdown(f"<br><a href='{L['tip']}' class='s-link' style='background:gold;color:black!important;'>💰 TIPPLY</a>", unsafe_allow_html=True)
 
 elif sel == "SOCIALS":
-    st.markdown("<br><h2 style='text-align:center;'>SOCIAL MEDIA</h2>", unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("<a href='https://kick.com/bladysniadyofficial' class='s-link'>🟢 KICK</a>", unsafe_allow_html=True)
-        st.markdown("<a href='
+    st.write("<br>", unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown(f"<a href='{L['kick']}' class='s-link'>🟢 KICK</a>", unsafe_allow_html=True)
+        st.markdown(f"<a href='{L['yt']}' class='s-link'>🎥 YOUTUBE</a>", unsafe_allow_html=True)
+    with c2:
+        st.markdown(f"<a href='{L['ig']}' class='s-link'>📸 INSTAGRAM</a>", unsafe_allow_html=True)
+        st.markdown(f"<a href='{L['tt']}' class='s-link'>🎵 TIKTOK</a>", unsafe_allow_html=True)
+
+st.markdown("<p style='text-align:center;margin-top:50px;opacity:0.2;'>v3.6</p>", unsafe_allow_html=True)
