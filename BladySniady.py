@@ -65,10 +65,15 @@ selected = option_menu(
     menu_title=None,
     options=["HOME", "LIVE ARENA", "SOCIALS", "SCHEDULE"],
     icons=["house", "broadcast", "share", "calendar-event"],
+    default_index=0,
     orientation="horizontal",
-    styles={"nav-link-selected": {"background-color": "#ff2222"}}
+    styles={
+        "container": {"padding": "0!important", "background-color": "transparent"},
+        "nav-link-selected": {"background-color": "#ff2222"}
+    }
 )
 
 # --- LOGIKA STRON ---
 
-if selected == "
+if selected == "HOME":
+    st.write("
