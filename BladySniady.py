@@ -45,17 +45,12 @@ st.markdown("""
     .stream-wrapper { 
         border: 2px solid #ff2222; border-radius: 15px; 
         overflow: hidden; background: black;
-        box-shadow: 0 0 20px rgba(255, 34, 34, 0.3);
     }
     .social-link {
         display: block; text-decoration: none !important; color: white !important;
-        background: linear-gradient(90deg, rgba(255,0,0,0.1), rgba(255,0,0,0.2));
+        background: rgba(255, 34, 34, 0.1);
         border: 1px solid #ff2222; padding: 18px; text-align: center;
-        margin-bottom: 12px; font-weight: bold; text-transform: uppercase;
-        letter-spacing: 2px; border-radius: 10px; transition: 0.3s;
-    }
-    .social-link:hover {
-        background: #ff2222; box-shadow: 0 0 20px #ff2222; transform: translateY(-3px);
+        margin-bottom: 12px; font-weight: bold; border-radius: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -63,17 +58,4 @@ st.markdown("""
 # --- NAWIGACJA ---
 selected = option_menu(
     menu_title=None,
-    options=["HOME", "LIVE ARENA", "SOCIALS", "SCHEDULE"],
-    icons=["house", "broadcast", "share", "calendar-event"],
-    default_index=0,
-    orientation="horizontal",
-    styles={
-        "container": {"padding": "0!important", "background-color": "transparent"},
-        "nav-link-selected": {"background-color": "#ff2222"}
-    }
-)
-
-# --- LOGIKA STRON ---
-
-if selected == "HOME":
-    st.write("
+    options=["
