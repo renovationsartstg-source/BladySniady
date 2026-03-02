@@ -1,97 +1,143 @@
 import streamlit as st
 import random
-st.set_page_config(layout="wide")
-if 'pg' not in st.session_state: st.session_state.pg = "H"
-if 'hp' not in st.session_state: st.session_state.hp = 100
-if 'yang' not in st.session_state: st.session_state.yang = 0
-if 'eq' not in st.session_state: st.session_state.eq = 0
-if 'fms' not in st.session_state: st.session_state.fms = 0
-if 'exp' not in st.session_state: st.session_state.exp = 0
-if 'teeth' not in st.session_state: st.session_state.teeth = 0
-if 'notes' not in st.session_state: st.session_state.notes = []
-if 'reg' not in st.session_state: st.session_state.reg = "Jinno"
 
-H = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
-T_URL = "https://tipply.pl/@bladysniady"
+# --- KONFIGURACJA STRONY ---
+st.set_page_config(page_title="METIN2 HUB", layout="wide", initial_sidebar_state="collapsed")
 
-# --- GM PANEL ---
-if st.query_params.get("admin") == "bladypanel":
- with st.sidebar:
-  st.header("🐲 GM INTERFACE")
-  st.session_state.reg = st.selectbox("KRÓLESTWO:", ["Shinsoo", "Chunjo", "Jinno"])
-  if st.button("EVENT ZUO (FULL HP)"): st.session_state.hp = 100
-  if st.button("ROZDAJ YANG (+1k)"): st.session_state.yang += 1000
+# --- INICJALIZACJA STANU ---
+for key, val in {
+    'hp': 100, 'yang': 500, 'exp': 0, 'lvl': 1, 'reg': "Jinno"
+}.items():
+    if key not in st.session_state: st.session_state[key] = val
 
-# --- STYLE METIN2 ---
-C = "#00ccff" # Jinno
-if st.session_state.reg == "Shinsoo": C = "#ff0000"
-elif st.session_state.reg == "Chunjo": C = "#ffff00"
+# --- DYNAMICZNY KOLOR KRÓLESTWA ---
+colors = {"Jinno": "#00ccff", "Shinsoo": "#ff4b4b", "Chunjo": "#fffd00"}
+C = colors.get(st.session_state.reg, "#00ccff")
 
-st.markdown("<style>footer{visibility:hidden;}.stApp{background:#050505;color:"+C+";}.b{display:block;padding:10px;border:1px solid "+C+";text-align:center;color:"+C+"!important;text-decoration:none!important;margin:5px;background:rgba(0,0,0,0.5);}</style>",1)
+# --- CUSTOM CSS (Styl Hero Wars / MMORPG) ---
+st.markdown(f"""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Metamorphous&display=swap');
 
-# --- HUD (STATUS BAR) ---
-st.markdown(f"### 🛡️ WOJOWNIK {st.session_state.reg} | LVL: {1 + (st.session_state.exp//1000)}")
-c1, c2 = st.columns(2)
-with c1:
- st.write(f"💰 YANG: {st.session_state.yang}")
- st.write(f"🦷 ZĘBY ORKA: {st.session_state.teeth}/10")
-with c2:
- st.write(f"⚔️ ATK: {5 + st.session_state.eq + st.session_state.fms}")
- st.progress(min(1.0, (st.session_state.exp % 1000) / 1000))
+    /* Tło z efektem "parallax" */
+    .stApp {{
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                    url("https://r4.wallpaperflare.com/wallpaper/740/490/342/dark-souls-iii-video-games-landscape-wallpaper-48660d2870102ce8a03ca14eb882811a.jpg");
+        background-size: cover;
+        background-attachment: fixed;
+    }}
 
-# --- NAWIGACJA ---
+    /* Kontener Główny */
+    .game-container {{
+        background: rgba(0, 0, 0, 0.85);
+        border: 3px solid {C};
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 0 30px {C}55;
+        text-align: center;
+    }}
+
+    /* Statystyki - styl "Pills" */
+    .stat-box {{
+        background: rgba(255,255,255,0.05);
+        border-left: 5px solid {C};
+        padding: 10px;
+        border-radius: 5px;
+        margin: 5px 0;
+        font-family: 'Metamorphous', serif;
+    }}
+
+    /* Przycisk Ataku - Mega duży i pulsujący */
+    .stButton>button {{
+        background: linear-gradient(135deg, {C} 0%, #003366 100%);
+        color: white !important;
+        font-family: 'Bangers', cursive;
+        font-size: 2rem !important;
+        height: 80px;
+        border: 2px solid white !important;
+        border-radius: 15px;
+        transition: 0.3s;
+        text-shadow: 2px 2px 4px #000;
+    }}
+    .stButton>button:hover {{
+        transform: scale(1.02);
+        box-shadow: 0 0 40px {C};
+        color: white !important;
+    }}
+
+    /* Customowy Progress Bar */
+    .custom-bar {{
+        width: 100%;
+        background-color: #222;
+        border-radius: 10px;
+        border: 1px solid #444;
+        margin: 10px 0;
+    }}
+    .fill-bar {{
+        height: 20px;
+        border-radius: 8px;
+        transition: width 0.5s ease-in-out;
+    }}
+
+    /* Ukrycie elementów Streamlit */
+    header, footer {{visibility: hidden;}}
+</style>
+""", unsafe_allow_html=True)
+
+# --- LAYOUT STRONY ---
+# Nagłówek
+st.markdown(f'<h1 style="text-align:center; font-family:\'Bangers\'; color:{C}; font-size:4rem; -webkit-text-stroke: 1px black;">DRAGON STREAM HUB</h1>', unsafe_allow_html=True)
+
+col_main, col_side = st.columns([3, 1])
+
+with col_main:
+    # Sekcja Stream (Zajmuje najwięcej miejsca jak w Hero Wars)
+    st.markdown(f"""
+    <div class="game-container" style="padding: 10px;">
+        <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=localhost&parent=streamlit.app" height="500" width="100%" frameborder="0" style="border-radius:10px;"></iframe>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Panel Akcji pod Streamem
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("⚔️ ROZPOCZNIJ BITWĘ (ATAKUJ METIN)"):
+        st.session_state.exp += random.randint(50, 150)
+        st.session_state.yang += random.randint(10, 100)
+        st.rerun()
+
+with col_side:
+    # Postać i Statystyki
+    st.markdown(f"""
+    <div class="game-container">
+        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Warrior" style="width:150px; filter: drop-shadow(0 0 10px {C});">
+        <h2 style="font-family:'Bangers'; color:{C};">LVL {1 + (st.session_state.exp//1000)}</h2>
+        
+        <div class="stat-box">💰 {st.session_state.yang} Yang</div>
+        <div class="stat-box">🦷 0/10 Zęby</div>
+        <div class="stat-box">⚔️ 55 Atak</div>
+        
+        <p style="margin-top:20px; font-size:0.8rem;">DOŚWIADCZENIE (EXP)</p>
+        <div class="custom-bar">
+            <div class="fill-bar" style="width:{(st.session_state.exp % 1000)/10}%; background:{C}; box-shadow: 0 0 10px {C};"></div>
+        </div>
+        
+        <hr style="border: 0.5px solid #333;">
+        <a href="https://tipply.pl/@bladysniady" target="_blank" style="text-decoration:none;">
+            <div style="background:#ff9900; color:black; padding:15px; border-radius:10px; font-weight:bold; font-family:'Bangers'; font-size:1.2rem;">
+                💎 KUP SMOCZE MONETY
+            </div>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
+
+# --- STOPKA / WYBÓR KRÓLESTWA ---
 st.write("---")
-m1, m2, m3, m4 = st.columns(4)
-with m1:
- if st.button("🏠 WIOSKA"): st.session_state.pg = "H"
-with m2:
- if st.button("⚔️ DOLINA"): st.session_state.pg = "L"
-with m3:
- if st.button("🧙 SKLEP"): st.session_state.pg = "S"
-with m4:
- if st.button("🗿 GROTA"): st.session_state.pg = "F"
-
-# --- LOKACJE ---
-if st.session_state.pg == "H":
- st.markdown(f"#### 💎 KAMIEŃ METIN (HP: {int(st.session_state.hp)}%)")
- st.progress(st.session_state.hp / 100)
- if st.button("ATAKUJ! ⚔️", use_container_width=True):
-  dmg = 5 + st.session_state.eq + st.session_state.fms
-  st.session_state.hp -= dmg
-  st.session_state.yang += random.randint(10, 50)
-  st.session_state.exp += 20
-  if random.random() < 0.05: # 5% szansy na drop zęba
-   st.session_state.teeth += 1
-   st.success("Znalazłeś Ząb Orka!")
-  if st.session_state.hp <= 0:
-   st.session_state.hp = 100
-   st.balloons()
-  st.rerun()
-
- st.write("---")
- st.markdown("#### 🧪 BIOLOG CHAEGIRAB")
- if st.button("ODDAJ ZĄB ORKA"):
-  if st.session_state.teeth > 0:
-   st.session_state.teeth -= 1
-   st.session_state.fms += 2
-   st.success("Biolog przyjął ząb! Twoja siła wzrosła (+2 ATK)!")
-   st.rerun()
-  else: st.error("Nie masz zębów orka!")
-
-elif st.session_state.pg == "L":
- st.write("🔴 TRANSMISJA Z ARENY:")
- u = "https://player.twitch.tv/?channel=bladysniady&parent="+H+"&parent=localhost"
- st.markdown("<iframe src='"+u+"' height='400' width='100%'></iframe>", 1)
- st.markdown("<a href='"+T_URL+"' class='b' style='background:"+C+";color:black!important;'>KUP SMOCZE MONETY</a>", 1)
-
-elif st.session_state.pg == "S":
- st.write("🧙 HANDLARKA RÓŻNOŚCIAMI:")
- if st.button("KUP MIECZ PEŁNI KSIĘŻYCA (FMS) - 3000 Yang"):
-  if st.session_state.yang >= 3000:
-   st.session_state.yang -= 3000
-   st.session_state.fms += 15
-   st.rerun()
- if st.button("KUP BODZIO (ULEPSZ EQ) - 1000 Yang"):
-  if st.session_state.yang >= 1000:
-   st.session_state.yang -= 1000
-   st.session_state.eq += 1
+cols = st.columns(6)
+with cols[0]:
+    if st.button("Shinsoo"): 
+        st.session_state.reg = "Shinsoo"
+        st.rerun()
+with cols[1]:
+    if st.button("Jinno"): 
+        st.session_state.reg = "Jinno"
+        st.rerun()
