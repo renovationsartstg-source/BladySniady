@@ -77,13 +77,37 @@ selected = option_menu(
 if selected == "HOME":
     st.write("<br><br>", unsafe_allow_html=True)
     
-    # Naprawiona sekcja logo z poprawnymi wcięciami
     col_l, col_logo, col_r = st.columns([1, 1.8, 1])
     with col_logo:
         img_file = "e975d1ae-cb53-4242-a957-1db57413f05a.jfif"
         if os.path.exists(img_file):
             st.image(img_file, use_container_width=True)
         else:
-            st.markdown("<h1 style='text-align:center;'>BLADY SNIADY</h1>", unsafe_allow_html=True)
+            st.markdown("""<h1 style='text-align:center;'>BLADY SNIADY</h1>""", unsafe_allow_html=True)
     
-    st.markdown("<p style='text
+    # Naprawiona linia 89 - użycie potrójnego cudzysłowu zapobiega błędom
+    st.markdown("""<p style='text-align:center; opacity:0.5; letter-spacing:8px;'>OFFICIAL HUB</p>""", unsafe_allow_html=True)
+    
+    _, col_n, _ = st.columns([1, 2, 1])
+    with col_n:
+        st.markdown(f"""<div class='news-bar'>📢 {st.session_state.news}</div>""", unsafe_allow_html=True)
+
+elif selected == "LIVE ARENA":
+    st.markdown(f"""<div class='news-bar'>🔴 LIVE STATUS: {st.session_state.news}</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class='stream-wrapper'><iframe src='https://player.twitch.tv/?channel=bladysniady&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost' height='500' width='100%' allowfullscreen='true'></iframe></div>""", unsafe_allow_html=True)
+
+elif selected == "SOCIALS":
+    st.markdown("<br>", unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("""<a href='https://kick.com/bladysniadyofficial' class='social-link'>🟢 KICK.COM</a>""", unsafe_allow_html=True)
+    with c2:
+        st.markdown("""<a href='https://tiktok.com/@bladysniady' class='social-link'>🎵 TIKTOK</a>""", unsafe_allow_html=True)
+
+elif selected == "SCHEDULE":
+    st.markdown("<br><h2 style='text-align:center;'>PLAN TRANSMISJI</h2>", unsafe_allow_html=True)
+    for day, time in st.session_state.schedule.items():
+        st.write(f"**{day}**: {time}")
+
+# Stopka
+st.markdown("""<p style='text-align:center; margin-top:50px; opacity:0.2;'>BladySniady v2.8</p>""", unsafe_allow_html=True)
