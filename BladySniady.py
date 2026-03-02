@@ -132,3 +132,23 @@ elif st.session_state.view == 'arena':
         # Sidebar Hubu
         st.markdown(f'<div style="border: 1px solid {C}44; padding:15px; border-radius:10px; background:rgba(0,0,0,0.4);">', unsafe_allow_html=True)
         st.markdown(f'<p style="color:{C}; text-align:center; font-weight:bold; letter-spacing:2px;">📅 HARMONOGRAM</p>', unsafe_allow_html=True)
+        for day, time in st.session_state.schedule.items():
+            st.markdown(f"<div style='display:flex; justify-content:space-between; font-size:12px;'><span>{day}</span><span style='color:{C};'>{time}</span></div>", unsafe_allow_html=True)
+        
+        st.write("---")
+        st.markdown(f'<p style="color:{C}; text-align:center; font-weight:bold; letter-spacing:2px;">🔗 LINKI</p>', unsafe_allow_html=True)
+        st.markdown('<a href="https://kick.com/bladysniadyofficial" target="_blank" class="social-link">🟢 KICK.COM</a>', unsafe_allow_html=True)
+        st.markdown('<a href="https://tipply.pl/@bladysniady" target="_blank" class="social-link" style="background:goldenrod; color:black !important; border:none;">💰 TIPPLY (SM)</a>', unsafe_allow_html=True)
+        st.markdown('<a href="https://www.youtube.com/@Blady%C5%9Aniady" target="_blank" class="social-link">🎥 YOUTUBE</a>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        if st.button("⬅ EXIT HUB"):
+            st.session_state.view = 'home'
+            st.rerun()
+
+# --- 5. ADMIN PANEL ---
+if is_admin():
+    st.write("---")
+    with st.expander("🛠️ ADMIN ARENA CONTROL"):
+        st.session_state.news = st.text_input("Komunikat:", value=st.session_state.news)
+        if st.button("DODAJ 5000 YANG"): st.session_state.yang += 5000; st.rerun()
