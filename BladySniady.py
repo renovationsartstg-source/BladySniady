@@ -1,92 +1,121 @@
 import streamlit as st
 import os
 
-# 1. SETUP
-st.set_page_config(page_title="BladyHub", layout="wide")
+# 1. KONFIGURACJA
+st.set_page_config(page_title="BLADY QUEST HUB", layout="wide")
 
+# Inicjalizacja stanów
 if 'pg' not in st.session_state: st.session_state.pg = "H"
-if 'clr' not in st.session_state: st.session_state.clr = "#FF0000"
+if 'clr' not in st.session_state: st.session_state.clr = "#00FF00" # Neonowy zielony domyślnie
+if 'lvl' not in st.session_state: st.session_state.lvl = 0
 if 'shout' not in st.session_state: st.session_state.shout = []
-if 'forum' not in st.session_state: st.session_state.forum = {"GRY": [], "OFF": []}
+if 'alert' not in st.session_state: st.session_state.alert = "WITAJ WĘDROWCZE NA ARENIE!"
 
-# SKŁADOWE LINKÓW (Bardzo krótkie linie)
-H = "bladysniady-pr8bwgj5upqytw4pjmlvcj"
-H += ".streamlit.app"
+# LINKI
+H = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
 P = "https://tipply.pl/@bladysniady"
 IMG = "e975d1ae-cb53-4242-a957-1db57413f05a.jfif"
 
-# 2. ADMIN (?admin=bladypanel)
+# 2. ROZBUDOWANY PANEL ADMINA
 if st.query_params.get("admin") == "bladypanel":
     with st.sidebar:
-        st.header("ADMIN")
-        st.session_state.clr = st.color_picker("Kolor:", st.session_state.clr)
-        if st.button("RESET"):
+        st.header("🎮 GAME MASTER PANEL")
+        st.session_state.alert = st.text_input("Globalne Ogłoszenie:", st.session_state.alert)
+        st.session_state.clr = st.color_picker("Kolor Energii (Motyw):", st.session_state.clr)
+        st.session_state.lvl = st.slider("Poziom trudności strony:", 0, 100, st.session_state.lvl)
+        if st.button("ZESŁAŁ KLĄTWĘ (Czyść czat)"):
             st.session_state.shout = []
             st.rerun()
 
-# 3. CSS
+# 3. GAMINGOWY CSS
 C = st.session_state.clr
-st.markdown("<style>#MainMenu,footer,header{visibility:hidden;}</style>",1)
-st.markdown("<style>.stApp{background:#000;color:white;}</style>",1)
-st.markdown("<style>.n{background:"+C+";padding:10px;text-align:center;}</style>",1)
-st.markdown("<style>.b{display:block;background:#111;padding:15px;}</style>",1)
-st.markdown("<style>.b{text-align:center;color:white!important;}</style>",1)
-st.markdown("<style>.b{text-decoration:none!important;border-radius:9px;}</style>",1)
-st.markdown("<style>.b{margin:5px;border:1px solid "+C+";}</style>",1)
+st.markdown(f"""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    #MainMenu, footer, header {{visibility: hidden;}}
+    .stApp {{
+        background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
+        color: #e0e0e0;
+    }}
+    /* Neonowe ramki */
+    .quest-card {{
+        border: 2px solid {C};
+        box-shadow: 0 0 15px {C};
+        padding: 20px;
+        border-radius: 15px;
+        background: rgba(0,0,0,0.6);
+        margin-bottom: 20px;
+    }}
+    .n-text {{
+        font-family: 'Press Start 2P', cursive;
+        font-size: 12px;
+        color: {C};
+        text-shadow: 2px 2px #000;
+        text-align: center;
+    }}
+    /* Przyciski jak z menu gry */
+    .btn-game {{
+        display: block;
+        width: 100%;
+        padding: 15px;
+        margin: 10px 0;
+        background: transparent;
+        border: 2px solid {C};
+        color: {C} !important;
+        text-decoration: none !important;
+        text-align: center;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: 0.3s;
+    }}
+    .btn-game:hover {{
+        background: {C};
+        color: black !important;
+        box-shadow: 0 0 30px {C};
+    }}
+</style>
+""", unsafe_allow_html=True)
 
-# 4. MENU
-c1,c2,c3,c4 = st.columns(4)
-with c1:
-    if st.button("HOME", key="h1"): st.session_state.pg = "H"
-with c2:
-    if st.button("LIVE", key="l1"): st.session_state.pg = "L"
-with c3:
-    if st.button("MEDIA", key="s1"): st.session_state.pg = "S"
-with c4:
-    if st.button("FORUM", key="f1"): st.session_state.pg = "F"
+# 4. NAGŁÓWEK / STATUS BAR
+st.markdown(f"<div class='n-text'>{st.session_state.alert}</div>", 1)
+col_xp, col_hp = st.columns(2)
+with col_xp:
+    st.write(f"EXP: {st.session_state.lvl}/100")
+    st.progress(st.session_state.lvl / 100)
 
-st.markdown("<div class='n'>SYSTEM AKTYWNY</div>", 1)
+# 5. MENU NAWIGACJI
+st.write("---")
+c1, c2, c3, c4 = st.columns(4)
+with c1: 
+    if st.button("🏰 KARCZMA", use_container_width=True): st.session_state.pg = "H"
+with c2: 
+    if st.button("⚔️ ARENA", use_container_width=True): st.session_state.pg = "L"
+with c3: 
+    if st.button("🎒 EKWIPUNEK", use_container_width=True): st.session_state.pg = "S"
+with c4: 
+    if st.button("📜 ZWOJE", use_container_width=True): st.session_state.pg = "F"
 
-# 5. STRONY
+# 6. TREŚĆ PRZYGODY
 if st.session_state.pg == "H":
-    if os.path.exists(IMG): st.image(IMG, use_container_width=True)
-    with st.form("sh", clear_on_submit=True):
-        nk = st.text_input("Nick")
-        ms = st.text_input("Msg")
-        if st.form_submit_button("OK"):
-            if ms:
-                st.session_state.shout.insert(0, nk+": "+ms)
-                st.rerun()
-    for m in st.session_state.shout[:5]: st.write(m)
-
-elif st.session_state.pg == "L":
-    # BUDOWA LINKU TWITCH (Ekstremalnie rozbita)
-    u = "https://player.twitch.tv/"
-    u += "?channel=bladysniady"
-    u += "&parent=" + H
-    u += "&parent=localhost"
-    
-    st.markdown("<iframe src='"+u+"' height='400' width='100%'></iframe>", 1)
-    
-    # LINK DO CZATU
-    c = "https://www.twitch.tv/"
-    c += "embed/bladysniady/chat"
-    c += "?parent=" + H
-    
-    st.markdown("<iframe src='"+c+"' height='400' width='100%'></iframe>", 1)
-    st.markdown("<a href='"+P+"' class='b'>TIPPLY</a>", 1)
-
-elif st.session_state.pg == "S":
-    st.markdown("<a href='https://twitch.tv/bladysniady' class='b'>TWITCH</a>", 1)
-    st.markdown("<a href='https://kick.com/bladysniadyofficial' class='b'>KICK</a>", 1)
-
-elif st.session_state.pg == "F":
-    cat = st.selectbox("Dział", ["GRY", "OFF"])
-    with st.form("f"):
-        t = st.text_input("T")
-        m = st.text_area("M")
-        if st.form_submit_button("ADD"):
-            st.session_state.forum[cat].append({"t":t,"m":m})
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        if os.path.exists(IMG): st.image(IMG, use_container_width=True)
+    with col2:
+        st.markdown(f"""
+        <div class='quest-card'>
+            <h3 style='color:{C}'>AKTUALNE ZADANIE:</h3>
+            <p>Przetrwaj na arenie Bladego Śniadego. <br> 
+            Nagroda: Wieczna chwała na czacie.</p>
+        </div>
+        """, 1)
+        
+    st.markdown("<h4 class='n-text'>OSTATNIE WPISY W KRONICE</h4>", 1)
+    with st.form("chronicle"):
+        name = st.text_input("Imię bohatera:")
+        txt = st.text_input("Treść wieści:")
+        if st.form_submit_button("DODAJ DO KRONIKI"):
+            st.session_state.shout.insert(0, f"[{name}]: {txt}")
             st.rerun()
-    for th in reversed(st.session_state.forum[cat]):
-        with st.expander(th["t"]): st.write(th["m"])
+    for s in st.session_state.shout[:5]:
+        st.markdown(f"<div style='border-bottom: 1px solid {C}; padding:5px;'>{s}</div>", 1)
