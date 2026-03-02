@@ -1,128 +1,134 @@
 import streamlit as st
 import random
 
-# --- KONFIGURACJA STRONY ---
-st.set_page_config(page_title="METIN2 HUB", layout="wide", initial_sidebar_state="collapsed")
+# --- 1. KONFIGURACJA STRONY ---
+st.set_page_config(page_title="BladySniady | MMORPG Arena", layout="wide", initial_sidebar_state="collapsed")
 
-# --- INICJALIZACJA STANU ---
+def is_admin():
+    return st.query_params.get("admin") == "true"
+
+# --- 2. INICJALIZACJA DANYCH (HUB + GRA) ---
+if 'view' not in st.session_state: st.session_state.view = 'home'
 if 'hp' not in st.session_state: st.session_state.hp = 100
-if 'yang' not in st.session_state: st.session_state.yang = 0
+if 'yang' not in st.session_state: st.session_state.yang = 500
 if 'exp' not in st.session_state: st.session_state.exp = 0
 if 'teeth' not in st.session_state: st.session_state.teeth = 0
-if 'eq_lvl' not in st.session_state: st.session_state.eq_lvl = 0
-if 'reg' not in st.session_state: st.session_state.reg = "Jinno"
+if 'atk_bonus' not in st.session_state: st.session_state.atk_bonus = 0
+if 'news' not in st.session_state: st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
+if 'schedule' not in st.session_state:
+    st.session_state.schedule = {
+        "Poniedziałek": "18:00", "Środa": "18:00", "Piątek": "20:00", "Sobota": "12:00"
+    }
 
-# --- KOLORY I LINKI ---
-COLORS = {"Jinno": "#00ccff", "Shinsoo": "#ff0000", "Chunjo": "#ffff00"}
-C = COLORS.get(st.session_state.reg, "#00ccff")
-T_URL = "https://tipply.pl/@bladysniady"
-H_HOST = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
-
-# --- CSS STYLING ---
+# --- 3. CUSTOM CSS (ARENA + METIN2 STYLE) ---
+C = "#ff2222" # Kolor przewodni (Neon Red)
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap');
-    .block-container {{ padding: 0rem !important; max-width: 100% !important; }}
-    [data-testid="stHeader"] {{ display: none; }}
-    .stApp {{
-        background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
-                    url("https://wallpaperaccess.com/full/1163459.jpg");
-        background-size: cover;
-        color: white;
+    #MainMenu, footer, header {{visibility: hidden;}}
+    .stApp {{ background: radial-gradient(circle at center, #1a0505 0%, #050507 100%); color: white; }}
+    
+    /* Nagłówki i Teksty */
+    .neon-title {{
+        color: {C}; font-family: 'Arial Black', sans-serif;
+        font-size: clamp(30px, 6vw, 75px); text-align: center; text-shadow: 0 0 20px {C}; text-transform: uppercase;
     }}
-    .hud-bar {{
-        background: rgba(0, 0, 0, 0.9);
-        border-bottom: 2px solid {C};
-        padding: 10px 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .news-bar {{
+        background: rgba(255, 0, 0, 0.1); border-left: 5px solid {C};
+        padding: 10px 20px; margin-bottom: 20px; color: #ffcccc; font-style: italic;
     }}
+    
+    /* Gra i Widgety */
     .game-window {{
-        background: rgba(20, 20, 20, 0.9);
-        border: 1px solid {C}44;
-        border-radius: 10px;
-        padding: 15px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        background: rgba(0, 0, 0, 0.6); border: 1px solid {C}44;
+        border-radius: 10px; padding: 20px; box-shadow: 0 0 15px rgba(255,0,0,0.1);
     }}
-    .bar-bg {{ width: 100%; background: #222; border-radius: 5px; height: 12px; overflow: hidden; }}
-    .bar-hp {{ height: 100%; background: linear-gradient(90deg, #ff0000, #880000); transition: 0.3s; }}
-    .stButton>button {{
-        background: linear-gradient(180deg, #333 0%, #111 100%);
-        color: {C} !important;
-        border: 1px solid {C} !important;
-        font-family: 'Oswald', sans-serif;
+    .stat-val {{ color: {C}; font-weight: bold; font-size: 20px; font-family: 'Courier New', monospace; }}
+    
+    /* Progress Bars */
+    .bar-bg {{ width: 100%; background: #222; border-radius: 5px; height: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid #444; }}
+    .bar-fill {{ height: 100%; background: linear-gradient(90deg, {C}, #880000); transition: width 0.3s; }}
+    
+    /* Przyciski i Linki */
+    .social-link {{
+        display: block; text-decoration: none !important; color: {C} !important;
+        background: rgba(255, 0, 0, 0.05); border: 1px solid {C};
+        padding: 10px; text-align: center; margin-bottom: 8px; border-radius: 5px; font-weight: bold; transition: 0.3s;
     }}
-    .stButton>button:hover {{ background: {C} !important; color: black !important; }}
+    .social-link:hover {{ background: {C}; color: white !important; box-shadow: 0 0 20px {C}; }}
+    
+    div.stButton > button {{
+        background: rgba(255,34,34,0.1) !important; color: white !important;
+        border: 1px solid {C} !important; width: 100%; transition: 0.3s;
+    }}
+    div.stButton > button:hover {{ background: {C} !important; box-shadow: 0 0 15px {C}; }}
 </style>
 """, unsafe_allow_html=True)
 
-# --- GM PANEL ---
-if st.query_params.get("admin") == "bladypanel":
-    with st.sidebar:
-        st.header("🐲 GM PANEL")
-        st.session_state.reg = st.selectbox("KRÓLESTWO:", ["Jinno", "Shinsoo", "Chunjo"])
-        if st.button("RESET HP"): st.session_state.hp = 100
+# --- 4. LOGIKA WIDOKÓW ---
 
-# --- HUD ---
-lvl = 1 + (st.session_state.exp // 1000)
-st.markdown(f"""
-<div class="hud-bar">
-    <div style="font-family:'Oswald'; font-size: 22px; color:{C};">🛡️ LVL {lvl}</div>
-    <div style="width: 300px; text-align: center;">
-        <div class="bar-bg"><div class="bar-hp" style="width: {st.session_state.hp}%;"></div></div>
-    </div>
-    <div style="font-family:'Oswald'; font-size: 22px; color: #ffd700;">💰 {st.session_state.yang}</div>
-</div>
-<br>
-""", unsafe_allow_html=True)
-
-# --- MAIN LAYOUT ---
-col_1, col_2, col_3 = st.columns([1, 2, 1])
-
-with col_1:
-    st.markdown('<div class="game-window">', unsafe_allow_html=True)
-    st.image(f"https://api.dicebear.com/7.x/adventurer/svg?seed={st.session_state.reg}", width=150)
-    st.write(f"⚔️ ATK: {10 + st.session_state.eq_lvl}")
-    st.write(f"🦷 ZĘBY: {st.session_state.teeth}/10")
-    if st.button("ODDAJ ZĄB"):
-        if st.session_state.teeth > 0:
-            st.session_state.teeth -= 1
-            st.session_state.eq_lvl += 5
+if st.session_state.view == 'home':
+    st.write("<br><br><br><br>", unsafe_allow_html=True)
+    st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
+    st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>MMORPG HUB ACCESS</p>", unsafe_allow_html=True)
+    _, col_btn, _ = st.columns([1, 1, 1])
+    with col_btn:
+        if st.button("ENTER ARENA", key="enter_btn"):
+            st.session_state.view = 'arena'
             st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
-with col_2:
-    tab_fight, tab_stream = st.tabs(["⚔️ WALKA", "📺 LIVE"])
-    with tab_fight:
-        st.markdown(f"""
-        <div style="height: 250px; background: url('https://i.imgur.com/E8W8C8U.jpeg'); background-size: cover; border-radius: 10px; border: 2px solid {C}; text-align:center;">
-            <h2 style="padding-top:20px; text-shadow: 2px 2px #000;">METIN</h2>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("🔥 ATAKUJ METIN 🔥", use_container_width=True):
-            st.session_state.hp -= (5 + st.session_state.eq_lvl)
-            st.session_state.exp += 25
-            st.session_state.yang += random.randint(20, 60)
-            if random.random() < 0.1: st.session_state.teeth += 1
-            if st.session_state.hp <= 0:
-                st.session_state.hp = 100
-                st.balloons()
-            st.rerun()
-    with tab_stream:
-        stream_url = f"https://player.twitch.tv/?channel=bladysniady&parent={H_HOST}&parent=localhost"
-        st.markdown(f"<iframe src='{stream_url}' height='400' width='100%' frameborder='0'></iframe>", unsafe_allow_html=True)
+elif st.session_state.view == 'arena':
+    # --- HUD / NEWS ---
+    st.markdown(f'<div class="news-bar">⚡ SYSTEM NEWS: {st.session_state.news}</div>', unsafe_allow_html=True)
+    
+    col_main, col_side = st.columns([3, 1])
 
-with col_3:
-    st.markdown('<div class="game-window">', unsafe_allow_html=True)
-    st.markdown("<h4>SKLEP</h4>", unsafe_allow_html=True)
-    if st.button("KUP MIECZ (3k)"):
-        if st.session_state.yang >= 3000:
-            st.session_state.yang -= 3000
-            st.session_state.eq_lvl += 20
-            st.rerun()
-    st.write("---")
-    st.markdown(f'<a href="{T_URL}" target="_blank" style="text-decoration:none;"><div style="background:{C}; color:black; padding:10px; border-radius:5px; text-align:center; font-weight:bold;">💎 DOŁADUJ SM</div></a>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    with col_main:
+        # TABS: Walka i Stream
+        tab_game, tab_stream = st.tabs(["⚔️ BITWA O YANG", "📺 LIVE ARENA"])
+        
+        with tab_game:
+            c1, c2 = st.columns([1, 2])
+            with c1:
+                st.markdown('<div class="game-window">', unsafe_allow_html=True)
+                st.image(f"https://api.dicebear.com/7.x/adventurer/svg?seed=Warrior&blood=true", width=150)
+                st.markdown(f"LVL: <span class='stat-val'>{1 + (st.session_state.exp//1000)}</span>", unsafe_allow_html=True)
+                st.markdown(f"YANG: <span class='stat-val'>{st.session_state.yang}</span>", unsafe_allow_html=True)
+                st.markdown(f"ATK: <span class='stat-val'>{10 + st.session_state.atk_bonus}</span>", unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            with c2:
+                st.markdown(f"### 💎 KAMIEŃ METIN (HP: {st.session_state.hp}%)")
+                st.markdown(f'<div class="bar-bg"><div class="bar-fill" style="width: {st.session_state.hp}%;"></div></div>', unsafe_allow_html=True)
+                
+                if st.button("WYPROWADŹ ATAK! ⚔️"):
+                    dmg = 10 + st.session_state.atk_bonus
+                    st.session_state.hp -= dmg
+                    st.session_state.yang += random.randint(15, 45)
+                    st.session_state.exp += 50
+                    if random.random() < 0.1: 
+                        st.session_state.teeth += 1
+                        st.toast("Znalazłeś Ząb Orka! 🦷")
+                    
+                    if st.session_state.hp <= 0:
+                        st.session_state.hp = 100
+                        st.balloons()
+                    st.rerun()
+                
+                with st.expander("🧙 BIOLOG CHAEGIRAB"):
+                    st.write(f"Zęby Orka: {st.session_state.teeth}/10")
+                    if st.button("ODDAJ ZĄB"):
+                        if st.session_state.teeth > 0:
+                            st.session_state.teeth -= 1
+                            st.session_state.atk_bonus += 5
+                            st.success("Siła ataku wzrosła! (+5)")
+                            st.rerun()
 
-st.markdown("<p style='text-align:center; color:#444; margin-top:30px;'>DRAGON HUB v2.2</p>", unsafe_allow_html=True)
+        with tab_stream:
+            st.markdown(f"""<div style="border: 2px solid {C}; border-radius: 10px; overflow: hidden;">
+                <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app&parent=localhost"
+                height="450" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
+
+    with col_side:
+        # Sidebar Hubu
+        st.markdown(f'<div style="border: 1px solid {C}44; padding:15px; border-radius:10px; background:rgba(0,0,0,0.4);">', unsafe_allow_html=True)
+        st.markdown(f'<p style="color:{C}; text-align:center; font-weight:bold; letter-spacing:2px;">📅 HARMONOGRAM</p>', unsafe_allow_html=True)
