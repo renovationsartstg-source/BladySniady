@@ -220,8 +220,8 @@ elif selected == "FORUM":
         """, unsafe_allow_html=True)
         
         # ============================================================
-        # TU WPISZ SWOJE ID SERWERA (Zamiast tych przykładowych zer)
-        DISCORD_SERVER_ID = "000000000000000000" 
+        # TWOJE ID SERWERA DISCORD
+        DISCORD_SERVER_ID = "907353530183082044" 
         # ============================================================
         
         components.html(f"""
@@ -299,4 +299,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V6.0 | MATRIX ENABLED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V6.1 | DISCORD INTEGRATED</p>", unsafe_allow_html=True)
