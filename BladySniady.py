@@ -231,3 +231,35 @@ if st.query_params.get("admin") == "true":
     st.write("<br><br><br>")
     with st.expander("🛠 SECURE ADMIN PANEL", expanded=True):
         password = st.text_input("Podaj hasło dostępu:", type="password")
+        if password == "TwojeHaslo123": 
+            st.success("Dostęp przyznany.")
+            st.session_state.db["news"] = st.text_input("Aktualny News:", value=st.session_state.db["news"])
+            st.divider()
+            
+            st.write("### 📊 ZARZĄDZANIE CELEM (GOAL BAR)")
+            st.session_state.db["goal_text"] = st.text_input("Nazwa celu:", value=st.session_state.db["goal_text"])
+            c1, c2 = st.columns(2)
+            st.session_state.db["goal_current"] = c1.number_input("Obecny stan (PLN):", value=st.session_state.db["goal_current"])
+            st.session_state.db["goal_max"] = c2.number_input("Kwota docelowa (PLN):", value=st.session_state.db["goal_max"])
+            
+            st.write("Szybkie dodawanie do paska:")
+            btn1, btn2, btn3, _ = st.columns([1, 1, 1, 3])
+            if btn1.button("+ 5 PLN"): st.session_state.db["goal_current"] += 5; save_data(st.session_state.db); st.rerun()
+            if btn2.button("+ 10 PLN"): st.session_state.db["goal_current"] += 10; save_data(st.session_state.db); st.rerun()
+            if btn3.button("+ 50 PLN"): st.session_state.db["goal_current"] += 50; save_data(st.session_state.db); st.rerun()
+            st.divider()
+            
+            st.write("### 📅 HARMONOGRAM")
+            cols = st.columns(2)
+            for i, (day, time) in enumerate(st.session_state.db["schedule"].items()):
+                with cols[i % 2]:
+                    st.session_state.db["schedule"][day] = st.text_input(f"{day}:", value=time)
+            st.write("<br>", unsafe_allow_html=True)
+            if st.button("💾 ZAPISZ WSZYSTKIE ZMIANY", use_container_width=True):
+                save_data(st.session_state.db)
+                st.success("System zaktualizowany trwale!")
+                st.rerun()
+        elif password != "":
+            st.error("Błędne hasło! Brak uprawnień do systemu.")
+
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V5.0 | MATRIX ENABLED</p>", unsafe_allow_html=True)
