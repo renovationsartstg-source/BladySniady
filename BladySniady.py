@@ -1,108 +1,112 @@
 import streamlit as st
-import random
-st.set_page_config(layout="wide")
-if 'pg' not in st.session_state: st.session_state.pg = "H"
-if 'hp' not in st.session_state: st.session_state.hp = 100
-if 'yang' not in st.session_state: st.session_state.yang = 0
-if 'eq' not in st.session_state: st.session_state.eq = 0
-if 'fms' not in st.session_state: st.session_state.fms = 0
-if 'exp' not in st.session_state: st.session_state.exp = 0
-if 'teeth' not in st.session_state: st.session_state.teeth = 0
-if 'notes' not in st.session_state: st.session_state.notes = []
-if 'reg' not in st.session_state: st.session_state.reg = "Jinno"
 
-H = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
-T_URL = "https://tipply.pl/@bladysniady"
+# 1. Konfiguracja strony
+st.set_page_config(page_title="BladySniady | Arena", layout="wide", initial_sidebar_state="collapsed")
 
-# --- GM PANEL ---
-if st.query_params.get("admin") == "bladypanel":
- with st.sidebar:
-  st.header("🐲 GM INTERFACE")
-  st.session_state.reg = st.selectbox("KRÓLESTWO:", ["Shinsoo", "Chunjo", "Jinno"])
-  if st.button("EVENT ZUO (FULL HP)"): st.session_state.hp = 100
-  if st.button("ROZDAJ YANG (+1k)"): st.session_state.yang += 1000
+def is_admin():
+    return st.query_params.get("admin") == "true"
 
-# --- STYLE METIN2 ---
-C = "#00ccff" # Jinno
-if st.session_state.reg == "Shinsoo": C = "#ff0000"
-elif st.session_state.reg == "Chunjo": C = "#ffff00"
+# Inicjalizacja danych sesji
+if 'schedule' not in st.session_state:
+    st.session_state.schedule = {
+        "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
+        "Czwartek": "19:00", "Piątek": "20:00", "Sobota": "12:00", "Niedziela": "BRAK"
+    }
+if 'news' not in st.session_state: 
+    st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
+if 'view' not in st.session_state: 
+    st.session_state.view = 'home'
+if 'is_live' not in st.session_state:
+    st.session_state.is_live = False
 
-st.markdown("<style>footer{visibility:hidden;}.stApp{background:#050505;color:"+C+";}.b{display:block;padding:10px;border:1px solid "+C+";text-align:center;color:"+C+"!important;text-decoration:none!important;margin:5px;background:rgba(0,0,0,0.5);}</style>",1)
+# 2. CSS i HTML5 Styling
+st.markdown("""
+<style>
+    #MainMenu, footer, header {visibility: hidden;}
+    .stApp { 
+        background: linear-gradient(45deg, #050507, #1a0505, #050507);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        color: white; 
+    }
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    .neon-title {
+        color: #ff2222; font-family: 'Arial Black', sans-serif;
+        font-size: clamp(30px, 6vw, 75px); font-weight: 900;
+        text-align: center; text-shadow: 0 0 20px #ff2222; text-transform: uppercase;
+    }
+    .live-indicator {
+        display: inline-flex; align-items: center;
+        background: rgba(255, 0, 0, 0.2); padding: 5px 15px;
+        border-radius: 20px; border: 1px solid #ff2222;
+        animation: pulse-red 2s infinite;
+    }
+    @keyframes pulse-red {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 34, 34, 0.7); }
+        70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 34, 34, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 34, 34, 0); }
+    }
+    .stream-wrapper { border: 2px solid #ff2222; border-radius: 15px; overflow: hidden; background: black; }
+    .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .social-btn {
+        display: flex; align-items: center; justify-content: center;
+        padding: 12px; text-decoration: none !important; color: white !important;
+        background: rgba(255, 0, 0, 0.1); border: 1px solid #ff2222;
+        border-radius: 8px; transition: 0.3s; font-size: 11px; font-weight: bold;
+    }
+    .social-btn:hover { background: #ff2222; box-shadow: 0 0 15px #ff2222; transform: translateY(-2px); }
+</style>
+""", unsafe_allow_html=True)
 
-# --- HUD (STATUS BAR) ---
-st.markdown(f"### 🛡️ WOJOWNIK {st.session_state.reg} | LVL: {1 + (st.session_state.exp//1000)}")
-c1, c2 = st.columns(2)
-with c1:
- st.write(f"💰 YANG: {st.session_state.yang}")
- st.write(f"🦷 ZĘBY ORKA: {st.session_state.teeth}/10")
-with c2:
- st.write(f"⚔️ ATK: {5 + st.session_state.eq + st.session_state.fms}")
- st.progress(min(1.0, (st.session_state.exp % 1000) / 1000))
+# --- LOGIKA WIDOKÓW ---
+if st.session_state.view == 'home':
+    st.write("<br><br><br>", unsafe_allow_html=True)
+    st.markdown('<div class="neon-title">BLADY SNIADY</div>', unsafe_allow_html=True)
+    st.write("<p style='text-align:center; opacity:0.6; letter-spacing:8px;'>ACCESS GRANTED</p>", unsafe_allow_html=True)
+    _, col_btn, _ = st.columns([1, 1, 1])
+    with col_btn:
+        if st.button("ENTER ARENA", use_container_width=True):
+            st.session_state.view = 'arena'
+            st.rerun()
 
-# --- NAWIGACJA ---
-st.write("---")
-m1, m2, m3, m4 = st.columns(4)
-with m1:
- if st.button("🏠 WIOSKA"): st.session_state.pg = "H"
-with m2:
- if st.button("⚔️ DOLINA"): st.session_state.pg = "L"
-with m3:
- if st.button("🧙 SKLEP"): st.session_state.pg = "S"
-with m4:
- if st.button("🗿 GROTA"): st.session_state.pg = "F"
+elif st.session_state.view == 'arena':
+    # Pasek statusu
+    s1, s2 = st.columns([1, 1])
+    with s1:
+        if st.session_state.is_live:
+            st.markdown('<div class="live-indicator"><span style="color:white; font-weight:bold;">● ON AIR</span></div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div style="color:#666; font-size:12px;">● SYSTEM STANDBY</div>', unsafe_allow_html=True)
+    
+    st.write("<br>", unsafe_allow_html=True)
+    col_main, col_side = st.columns([3, 1])
+    
+    with col_main:
+        # Stream
+        st.markdown(f"""<div class="stream-wrapper">
+            <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=localhost"
+            height="480" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
+        
+        # Chat Hub
+        st.write("<br>", unsafe_allow_html=True)
+        chat_platform = st.radio("WYBIERZ CZAT:", ["TWITCH", "KICK"], horizontal=True)
+        if chat_platform == "TWITCH":
+            st.markdown(f"""<iframe src="https://www.twitch.tv/embed/bladysniady/chat?parent=localhost"
+                height="350" width="100%"></iframe>""", unsafe_allow_html=True)
+        else:
+            st.markdown(f"""<iframe src="https://kick.com/bladysniadyofficial/chatroom" height="350" width="100%"></iframe>""", unsafe_allow_html=True)
 
-# --- LOKACJE ---
-if st.session_state.pg == "H":
- st.markdown(f"#### 💎 KAMIEŃ METIN (HP: {int(st.session_state.hp)}%)")
- st.progress(st.session_state.hp / 100)
- if st.button("ATAKUJ! ⚔️", use_container_width=True):
-  dmg = 5 + st.session_state.eq + st.session_state.fms
-  st.session_state.hp -= dmg
-  st.session_state.yang += random.randint(10, 50)
-  st.session_state.exp += 20
-  if random.random() < 0.05: # 5% szansy na drop zęba
-   st.session_state.teeth += 1
-   st.success("Znalazłeś Ząb Orka!")
-  if st.session_state.hp <= 0:
-   st.session_state.hp = 100
-   st.balloons()
-  st.rerun()
-
- st.write("---")
- st.markdown("#### 🧪 BIOLOG CHAEGIRAB")
- if st.button("ODDAJ ZĄB ORKA"):
-  if st.session_state.teeth > 0:
-   st.session_state.teeth -= 1
-   st.session_state.fms += 2
-   st.success("Biolog przyjął ząb! Twoja siła wzrosła (+2 ATK)!")
-   st.rerun()
-  else: st.error("Nie masz zębów orka!")
-
-elif st.session_state.pg == "L":
- st.write("🔴 TRANSMISJA Z ARENY:")
- u = "https://player.twitch.tv/?channel=bladysniady&parent="+H+"&parent=localhost"
- st.markdown("<iframe src='"+u+"' height='400' width='100%'></iframe>", 1)
- st.markdown("<a href='"+T_URL+"' class='b' style='background:"+C+";color:black!important;'>KUP SMOCZE MONETY</a>", 1)
-
-elif st.session_state.pg == "S":
- st.write("🧙 HANDLARKA RÓŻNOŚCIAMI:")
- if st.button("KUP MIECZ PEŁNI KSIĘŻYCA (FMS) - 3000 Yang"):
-  if st.session_state.yang >= 3000:
-   st.session_state.yang -= 3000
-   st.session_state.fms += 15
-   st.rerun()
- if st.button("KUP BODZIO (ULEPSZ EQ) - 1000 Yang"):
-  if st.session_state.yang >= 1000:
-   st.session_state.yang -= 1000
-   st.session_state.eq += 1
-   st.rerun()
-
-elif st.session_state.pg == "F":
- st.write("🗿 GROTA WYGNAŃCÓW (WPISY):")
- with st.form("sh"):
-  txt = st.text_input("Napisz coś na ścianie groty:")
-  if st.form_submit_button("RYJUJ W KAMIENIU"):
-   st.session_state.notes.insert(0, txt)
-   st.rerun()
- for n in st.session_state.notes[:10]:
-  st.markdown(f"> {n}")
+    with col_side:
+        st.markdown('<p style="color:#ff2222; font-weight:bold;">📅 HARMONOGRAM</p>', unsafe_allow_html=True)
+        for day, time in st.session_state.schedule.items():
+            st.markdown(f"<small>{day}: **{time}**</small>", unsafe_allow_html=True)
+        
+        st.write("<br>", unsafe_allow_html=True)
+        st.markdown('<p style="color:#ff2222; font-weight:bold;">🔗 LINKI</p>', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="nav-grid">
+            <a href="https://kick.com/bladysniadyofficial" class="social-btn">KICK</a>
