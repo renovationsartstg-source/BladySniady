@@ -22,88 +22,117 @@ if 'schedule' not in st.session_state:
 if 'news' not in st.session_state: 
     st.session_state.news = "ZAPRASZAM NA DZISIEJSZĄ ARENĘ! STARTUJEMY O 18:00!"
 
-# --- STYLIZACJA CSS3 / HTML5 ---
+# --- MATRIX BACKGROUND & CSS ---
+# Dodajemy Canvas i Skrypt JS do tła
+matrix_html = """
+<canvas id="matrix-canvas" style="position: fixed; top: 0; left: 0; z-index: -1;"></canvas>
+<script>
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()*&^%";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+
+    const drops = [];
+    for (let i = 0; i < columns; i++) {
+        drops[i] = 1;
+    }
+
+    function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#ff2222'; // Zmieniony na czerwony, by pasował do Twojego stylu
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = characters.charAt(Math.floor(Math.random() * characters.length));
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    setInterval(draw, 33);
+</script>
+"""
+
 style_css = """
 <style>
-    /* Ukrycie domyślnych elementów Streamlit */
+    /* Ukrycie domyślnych elementów */
     #MainMenu, footer, header {visibility: hidden;}
     [data-testid="stSidebar"] {display: none;}
     
-    /* Animowane tło Mesh Gradient */
+    /* Przezroczyste tło aplikacji, by widzieć Matrix */
     .stApp {
-        background: linear-gradient(45deg, #050507, #1a0505, #0a0a12, #050507);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
+        background: transparent;
         color: white;
     }
-    @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
     
-    /* Glassmorphism Card Style */
+    /* Stylizacja kontenerów (Glassmorphism) */
     .glass-card {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 34, 34, 0.2);
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 34, 34, 0.3);
         border-radius: 15px;
         padding: 25px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        box-shadow: 0 0 20px rgba(255, 34, 34, 0.2);
     }
 
-    /* Neonowy pasek newsów z animacją wejścia */
     .news-bar {
-        background: rgba(255, 0, 0, 0.1);
+        background: rgba(255, 0, 0, 0.2);
         border-left: 4px solid #ff2222;
         padding: 15px;
         margin: 20px 0;
         color: #ffcccc;
-        font-weight: 500;
+        font-weight: bold;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        animation: slideIn 1s ease-out;
-    }
-    @keyframes slideIn {
-        from { transform: translateX(-20px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
     }
 
-    /* Stream Wrapper z neonowym poświatą */
     .stream-container { 
         border: 2px solid #ff2222; 
         border-radius: 15px; 
         overflow: hidden; 
-        box-shadow: 0 0 30px rgba(255, 34, 34, 0.3); 
         background: black;
     }
 
-    /* Przyciski Social z efektem HTML5 transition */
     .btn-social {
         display: block;
         text-decoration: none !important;
         color: white !important;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 34, 34, 0.5);
-        padding: 15px;
+        background: rgba(255, 34, 34, 0.1);
+        border: 1px solid #ff2222;
+        padding: 12px;
         text-align: center;
-        margin-bottom: 15px;
-        font-weight: 900;
-        border-radius: 10px;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin-bottom: 10px;
+        font-weight: bold;
+        border-radius: 8px;
+        transition: 0.3s;
     }
     .btn-social:hover {
         background: #ff2222;
-        box-shadow: 0 0 25px #ff2222;
-        transform: scale(1.03);
+        box-shadow: 0 0 20px #ff2222;
     }
-
-    /* Tabela harmonogramu */
-    .sched-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-    .sched-table tr { background: rgba(255,255,255,0.02); }
-    .sched-table td { padding: 15px; border-radius: 5px; }
+    
+    .sched-table { width: 100%; color: white; }
+    .sched-table td { padding: 10px; border-bottom: 1px solid rgba(255,34,34,0.1); }
 </style>
 """
+
+# Wstrzyknięcie HTML i CSS
+st.markdown(matrix_html, unsafe_allow_html=True)
 st.markdown(style_css, unsafe_allow_html=True)
 
 # --- NAWIGACJA ---
@@ -114,9 +143,9 @@ selected = option_menu(
     default_index=0,
     orientation="horizontal",
     styles={
-        "container": {"padding": "10px!important", "background-color": "rgba(0,0,0,0.5)"},
+        "container": {"padding": "10px!important", "background-color": "rgba(0,0,0,0.8)"},
         "icon": {"color": "#ff2222", "font-size": "18px"}, 
-        "nav-link": {"font-size": "15px", "color": "white", "text-transform": "uppercase"},
+        "nav-link": {"font-size": "15px", "color": "white"},
         "nav-link-selected": {"background-color": "#ff2222"},
     }
 )
@@ -124,7 +153,7 @@ selected = option_menu(
 # --- LOGIKA STRON ---
 
 if selected == "HOME":
-    st.write("<br>", unsafe_allow_html=True)
+    st.write("<br><br>", unsafe_allow_html=True)
     col_l, col_logo, col_r = st.columns([1, 2, 1])
     with col_logo:
         try:
@@ -132,59 +161,45 @@ if selected == "HOME":
         except:
             st.markdown('<div class="glass-card" style="text-align:center;"><h1>BLADY SNIADY</h1></div>', unsafe_allow_html=True)
     
-    st.markdown("<h1 style='text-align:center; letter-spacing:15px; font-weight:900;'>OFFICIAL HUB</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align:center; letter-spacing:15px; font-weight:900; text-shadow: 0 0 20px #ff2222;'>OFFICIAL HUB</h1>", unsafe_allow_html=True)
     
     _, col_n, _ = st.columns([1,2,1])
     with col_n:
-        st.markdown(f'<div class="news-bar">⚡ SYSTEM UPDATE: {st.session_state.news}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="news-bar">⚡ SYSTEM STATUS: {st.session_state.news}</div>', unsafe_allow_html=True)
 
 elif selected == "LIVE ARENA":
-    st.markdown(f'<div class="news-bar">🔴 STATUS: {st.session_state.news}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="news-bar">🔴 LIVE: {st.session_state.news}</div>', unsafe_allow_html=True)
     col_main, col_side = st.columns([3, 1])
     
     with col_main:
-        # Stream Player
         st.markdown("""<div class="stream-container">
             <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=localhost&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
             height="550" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
-        
-        st.write("<br>", unsafe_allow_html=True)
-        with st.expander("🔥 ZOBACZ OSTATNI HIT (CLIP)"):
-            st.markdown("""<div class="stream-container">
-                <iframe src="https://clips.twitch.tv/embed?clip=CoyTransparentWrenCopyThis-f_3WbVvS5Z6Uv0Kx&parent=localhost&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app" 
-                height="400" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
 
     with col_side:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown('<h3 style="color:#ff2222; text-align:center;">INTERAKCJA</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 style="color:#ff2222; text-align:center;">TERMINAL</h3>', unsafe_allow_html=True)
         st.markdown('<a href="https://tipply.pl/@bladysniady" target="_blank" class="btn-social" style="background:#53fc18; color:black !important;">💰 DONATE</a>', unsafe_allow_html=True)
-        st.markdown("""
-            <div style="font-size:0.9em; opacity:0.8;">
-            <b>KOMENDY:</b><br>
-            <code>!discord</code><br>
-            <code>!arena</code><br>
-            <code>!setup</code>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown("<b>COMMANDS:</b><br><code>!discord</code><br><code>!setup</code>", unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
 elif selected == "SOCIALS":
     st.write("<br>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align:center;'>NETWORK ACCESS</h2>", unsafe_allow_html=True)
-    _, col_soc, _ = st.columns([1,2,1])
+    st.markdown("<h2 style='text-align:center; text-shadow: 0 0 15px #ff2222;'>NETWORK ACCESS</h2>", unsafe_allow_html=True)
+    _, col_soc, _ = st.columns([1,1.5,1])
     with col_soc:
         st.markdown("""
             <div class="glass-card">
                 <a href="https://kick.com/bladysniadyofficial" target="_blank" class="btn-social">🟢 KICK.COM</a>
                 <a href="https://www.youtube.com/@BladySniady" target="_blank" class="btn-social">🎥 YOUTUBE</a>
                 <a href="https://www.instagram.com/bladysniady/" target="_blank" class="btn-social">📸 INSTAGRAM</a>
-                <a href="https://tiktok.com/@bladysniady" target="_blank" class="social-btn">🎵 TIKTOK</a>
+                <a href="https://tiktok.com/@bladysniady" target="_blank" class="btn-social">🎵 TIKTOK</a>
             </div>
         """, unsafe_allow_html=True)
 
 elif selected == "SCHEDULE":
     st.write("<br>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align:center;'>MISSION PLAN</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; text-shadow: 0 0 15px #ff2222;'>MISSION PLAN</h2>", unsafe_allow_html=True)
     _, col_sch, _ = st.columns([1, 1.5, 1])
     with col_sch:
         rows = "".join([f'<tr><td style="color:#ff2222; font-weight:bold;">{d}</td><td style="text-align:right;">{t}</td></tr>' 
@@ -193,14 +208,9 @@ elif selected == "SCHEDULE":
 
 # --- PANEL ADMINA ---
 if is_admin():
-    st.write("<br><br><br>")
+    st.write("<br><br>")
     with st.expander("🛠 CONTROL PANEL"):
         st.session_state.news = st.text_input("News update:", value=st.session_state.news)
-        cols = st.columns(2)
-        for i, (day, time) in enumerate(st.session_state.schedule.items()):
-            with cols[i % 2]:
-                st.session_state.schedule[day] = st.text_input(f"{day}:", value=time)
-        if st.button("UPDATE SYSTEM"):
-            st.rerun()
+        if st.button("UPDATE"): st.rerun()
 
-st.markdown("<p style='text-align:center; margin-top:100px; opacity:0.2;'>BLADY SNIADY CORE V3.0</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; margin-top:50px; opacity:0.4;'>CORE V3.5 | MATRIX PROTOCOL ACTIVE</p>", unsafe_allow_html=True)
