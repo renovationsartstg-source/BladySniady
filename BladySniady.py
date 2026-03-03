@@ -41,23 +41,23 @@ def save_data(data):
 if 'db' not in st.session_state:
     st.session_state.db = load_data()
 
-# --- CSS Wymuszający przezroczystość i mroczny klimat ---
+# --- CSS Wymuszający przezroczystość ---
 st.markdown("""
 <style>
     /* Ukrycie domyślnych elementów Streamlit */
     #MainMenu, footer, header {visibility: hidden;}
     [data-testid="stSidebar"] {display: none;}
     
-    /* Wymuszenie przezroczystości całego tła aplikacji (dla Matrixa) */
-    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] { 
-        background: transparent !important; 
-        background-color: transparent !important;
+    /* Główne tło strony (pod Matrixem) na wypadek ładowania */
+    html, body {
+        background-color: #050507 !important;
         color: white !important;
     }
     
-    /* Wymuszenie ogólnego ciemnego tła na wypadek, gdyby Matrix się ładował dłużej */
-    .stApp {
-        background-color: #050507 !important;
+    /* Wymuszenie całkowitej przezroczystości warstw Streamlita, żeby Matrix mógł prześwitywać */
+    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] { 
+        background: transparent !important; 
+        background-color: transparent !important;
     }
     
     /* Karty Glassmorphism */
@@ -124,7 +124,7 @@ components.html("""
         canvas.style.width = '100vw';
         canvas.style.height = '100vh';
         canvas.style.zIndex = '-1';
-        canvas.style.opacity = '0.4';
+        canvas.style.opacity = '0.5';
         canvas.style.pointerEvents = 'none';
         window.parent.document.body.appendChild(canvas);
 
@@ -166,7 +166,7 @@ components.html("""
 </script>
 """, height=0, width=0)
 
-# --- NAWIGACJA Z WYMUSZONYM CIEMNYM TŁEM ---
+# --- NAWIGACJA ---
 selected = option_menu(
     menu_title=None, 
     options=["HOME", "LIVE ARENA", "SOCIALS", "SCHEDULE"], 
@@ -335,4 +335,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V4.6 | MATRIX ENABLED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V4.7 | MATRIX ENABLED</p>", unsafe_allow_html=True)
