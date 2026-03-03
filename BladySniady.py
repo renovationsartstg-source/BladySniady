@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from streamlit_option_menu import option_menu
 import json
 import os
@@ -40,44 +41,20 @@ def save_data(data):
 if 'db' not in st.session_state:
     st.session_state.db = load_data()
 
-# --- CSS & MATRIX HTML5 ---
+# --- CSS & MATRIX HTML5 (POPRAWKA DLA STREAMLIT CLOUD) ---
+
+# 1. CSS wymuszający całkowitą przezroczystość Streamlita
 st.markdown("""
-<canvas id="matrix-canvas" style="position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4;"></canvas>
-<script>
-    const canvas = document.getElementById('matrix-canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth; 
-    canvas.height = window.innerHeight;
-    
-    const characters = "01"; 
-    const fontSize = 14; 
-    const columns = canvas.width / fontSize;
-    const drops = []; 
-    for (let i = 0; i < columns; i++) drops[i] = 1;
-    
-    function draw() {
-        ctx.fillStyle = 'rgba(5, 5, 7, 0.1)'; 
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ff2222'; 
-        ctx.font = fontSize + 'px monospace';
-        
-        for (let i = 0; i < drops.length; i++) {
-            const text = characters.charAt(Math.floor(Math.random() * characters.length));
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        }
-    }
-    setInterval(draw, 35);
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
-</script>
 <style>
     #MainMenu, footer, header {visibility: hidden;}
     [data-testid="stSidebar"] {display: none;}
-    .stApp { background: transparent; color: white; }
+    
+    /* KLUCZOWE: Przezroczyste tło wszystkich warstw Streamlita */
+    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] { 
+        background: transparent !important; 
+        background-color: transparent !important;
+        color: white;
+    }
     
     .glass-card { 
         background: rgba(0,0,0,0.8); 
@@ -127,6 +104,61 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# 2. Skrypt Matrix - wstrzykiwany bezpiecznie przez components.html
+components.html("""
+<script>
+    // Sprawdza czy canvas już istnieje, żeby nie tworzyć go podwójnie
+    if (!window.parent.document.getElementById('matrix-canvas')) {
+        const canvas = window.parent.document.createElement('canvas');
+        canvas.id = 'matrix-canvas';
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100vw';
+        canvas.style.height = '100vh';
+        canvas.style.zIndex = '-1';
+        canvas.style.opacity = '0.4';
+        canvas.style.pointerEvents = 'none'; // Nie blokuje kliknięć
+        window.parent.document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.parent.innerWidth; 
+            canvas.height = window.parent.innerHeight;
+        }
+        resizeCanvas();
+        
+        const characters = "01"; 
+        const fontSize = 14; 
+        let columns = canvas.width / fontSize;
+        let drops = []; 
+        for (let i = 0; i < columns; i++) drops[i] = 1;
+        
+        function draw() {
+            ctx.fillStyle = 'rgba(5, 5, 7, 0.1)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ff2222'; 
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 35);
+        window.parent.addEventListener('resize', () => {
+            resizeCanvas();
+            columns = canvas.width / fontSize;
+            drops = [];
+            for (let i = 0; i < columns; i++) drops[i] = 1;
+        });
+    }
+</script>
+""", height=0, width=0)
+
 # --- NAWIGACJA ---
 selected = option_menu(
     menu_title=None, 
@@ -134,7 +166,7 @@ selected = option_menu(
     icons=["house", "broadcast", "share", "calendar-event"], 
     orientation="horizontal", 
     styles={
-        "container": {"background-color": "rgba(0,0,0,0.9)", "padding": "5px"},
+        "container": {"background-color": "rgba(0,0,0,0.9)", "padding": "5px", "border": "1px solid #ff2222"},
         "nav-link-selected": {"background-color": "#ff2222"}
     }
 )
@@ -149,20 +181,20 @@ if selected == "HOME":
         except:
             pass
             
-    st.markdown("<h1 style='text-align:center; letter-spacing:10px; color:#ff2222;'>BLADY SNIADY</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align:center; letter-spacing:10px; color:#ff2222; text-shadow: 0 0 15px #ff2222;'>BLADY SNIADY</h1>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align:center; letter-spacing:8px; opacity:0.6;'>OFFICIAL HUB</h3>", unsafe_allow_html=True)
     
     st.write("<br>", unsafe_allow_html=True)
     _, col_news, _ = st.columns([1,2,1])
     with col_news:
-        st.markdown(f'<div style="background:rgba(255,0,0,0.1); border-left:5px solid #ff2222; padding:15px; text-align:center; text-transform:uppercase; font-weight:bold;">📢 SYSTEM STATUS: {st.session_state.db["news"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="background:rgba(255,0,0,0.1); border-left:5px solid #ff2222; padding:15px; text-align:center; text-transform:uppercase; font-weight:bold; box-shadow: 0 0 15px rgba(255,34,34,0.2);">📢 SYSTEM STATUS: {st.session_state.db["news"]}</div>', unsafe_allow_html=True)
 
 elif selected == "LIVE ARENA":
     parent_domain = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
     
     col_main, col_side = st.columns([3, 1])
     with col_main:
-        st.markdown(f'<div style="border:2px solid #ff2222; border-radius:10px; overflow:hidden; background:black;"><iframe src="https://player.twitch.tv/?channel=bladysniady&parent=localhost&parent={parent_domain}" height="550" width="100%" allowfullscreen="true"></iframe></div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="border:2px solid #ff2222; border-radius:10px; overflow:hidden; background:black; box-shadow: 0 0 20px rgba(255,34,34,0.3);"><iframe src="https://player.twitch.tv/?channel=bladysniady&parent=localhost&parent={parent_domain}" height="550" width="100%" allowfullscreen="true"></iframe></div>', unsafe_allow_html=True)
         
         db = st.session_state.db
         max_val = db["goal_max"] if db["goal_max"] > 0 else 1
@@ -183,7 +215,7 @@ elif selected == "LIVE ARENA":
         st.markdown("""
         <div class="glass-card">
             <h3 style="color:#ff2222; text-align:center;">TERMINAL</h3>
-            <a href="https://tipply.pl/@bl4dyygaming" target="_blank" class="btn-social" style="background:#53fc18; color:black !important;">💰 WESPRZYJ</a>
+            <a href="https://tipply.pl/@bl4dyygaming" target="_blank" class="btn-social" style="background:#53fc18; color:black !important; box-shadow: 0 0 15px #53fc18;">💰 WESPRZYJ</a>
             <hr style="border-color:rgba(255,34,34,0.2);">
             <div style="font-family:monospace; font-size:13px; opacity:0.8;">
                 <b>COMMANDS:</b><br>
@@ -266,4 +298,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V4.2 | DEVELOPED FOR BLADYSNIADY</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V4.3 | MATRIX ENABLED</p>", unsafe_allow_html=True)
