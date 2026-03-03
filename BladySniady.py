@@ -53,11 +53,17 @@ def get_default_db():
             "Monitor": {"name": "ZOWIE XL2546K 240Hz", "link": ""},
             "PC": {"name": "RTX 4090, i9-13900K, 64GB RAM", "link": ""}
         },
-        # NOWOŚĆ: Ściana Chwały
         "wall_of_fame": {
             "donators": "Widz1, SuperWspierajacy",
             "vips": "MegaFan, StarySub",
             "mods": "Nightbot, ZaufanyMod"
+        },
+        # NOWOŚĆ: Baza dla Kina / Galerii Klipów
+        "highlights": {
+            "title": "KLIP TYGODNIA",
+            "vid1_title": "Moja najlepsza akcja!", "vid1_url": "",
+            "vid2_title": "Śmieszny moment", "vid2_url": "",
+            "vid3_title": "Złota myśl na dziś", "vid3_url": ""
         }
     }
 
@@ -94,6 +100,7 @@ links = db["links"]
 poll = db["poll"]
 gear = db["gear"]
 fame = db["wall_of_fame"]
+highlights = db["highlights"]
 
 # --- GŁÓWNY CSS & STYLE ---
 st.markdown("""
@@ -115,11 +122,9 @@ st.markdown("""
     .goal-bg { background: rgba(255, 255, 255, 0.1); border-radius: 10px; height: 25px; width: 100%; overflow: hidden; border: 1px solid #ff2222; margin-top: 5px; }
     .goal-bar { background: linear-gradient(90deg, #660000, #ff2222); height: 100%; transition: 1s ease-in-out; box-shadow: 0 0 15px #ff2222; }
     
-    /* STYLE DLA GŁOSOWANIA (POLL) */
     .poll-bg { background: rgba(255, 255, 255, 0.1); border-radius: 8px; height: 20px; width: 100%; overflow: hidden; margin-top: 5px; margin-bottom: 15px; }
     .poll-bar { background: linear-gradient(90deg, #ff2222, #ff5555); height: 100%; transition: 0.5s ease-in-out; box-shadow: 0 0 10px #ff2222; }
     
-    /* STYLE DLA SPRZĘTU (GEAR) */
     .gear-item { border-left: 4px solid #ff2222; background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 8px; margin-bottom: 15px; transition: 0.3s; }
     .gear-item:hover { background: rgba(255, 34, 34, 0.1); transform: scale(1.02); }
     .gear-title { color: #ffcccc; font-size: 14px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
@@ -127,7 +132,6 @@ st.markdown("""
     .gear-btn { display: inline-block; margin-top: 10px; background: transparent; color: #ff2222 !important; border: 1px solid #ff2222; padding: 5px 15px; text-decoration: none !important; border-radius: 5px; font-size: 12px; font-weight: bold; transition: 0.3s;}
     .gear-btn:hover { background: #ff2222; color: white !important; box-shadow: 0 0 10px #ff2222; }
 
-    /* STYLE DLA ŚCIANY CHWAŁY (FAME) */
     .fame-section { margin-bottom: 25px; }
     .fame-header { color: #ffcccc; text-transform: uppercase; font-size: 15px; letter-spacing: 2px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,34,34,0.3); padding-bottom: 5px; font-weight: bold; }
     .fame-badge-gold { display: inline-block; background: rgba(255, 215, 0, 0.1); border: 1px solid gold; padding: 8px 15px; border-radius: 20px; margin: 5px; font-weight: bold; color: gold !important; box-shadow: 0 0 10px rgba(255,215,0,0.2); transition: 0.3s; }
@@ -137,7 +141,6 @@ st.markdown("""
     .fame-badge-shield { display: inline-block; background: rgba(83, 252, 24, 0.1); border: 1px solid #53fc18; padding: 8px 15px; border-radius: 20px; margin: 5px; font-weight: bold; color: #53fc18 !important; box-shadow: 0 0 10px rgba(83,252,24,0.2); transition: 0.3s; }
     .fame-badge-shield:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(83,252,24,0.5); background: rgba(83, 252, 24, 0.2); }
 
-    /* EFEKTOWNE PRZYCISKI SOCIAL MEDIA */
     .soc-btn { display: block; width: 100%; text-decoration: none !important; padding: 15px; margin-bottom: 12px; border-radius: 8px; text-align: center; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s ease; border: 2px solid; }
     .soc-twitch { color: #bf94ff !important; border-color: #9146ff; background: rgba(145, 70, 255, 0.1); }
     .soc-twitch:hover { background: #9146ff; color: white !important; box-shadow: 0 0 25px #9146ff; transform: scale(1.03); }
@@ -152,7 +155,6 @@ st.markdown("""
     .soc-tt { color: #69C9D0 !important; border-color: #EE1D52; background: rgba(238, 29, 82, 0.1); }
     .soc-tt:hover { background: #010101; color: white !important; box-shadow: -5px 5px 0px 0px #69C9D0, 5px -5px 0px 0px #EE1D52; transform: scale(1.03); }
 
-    /* KALENDARZ */
     .schedule-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; margin-bottom: 12px; border-radius: 10px; transition: all 0.3s ease; }
     .schedule-row:hover { transform: translateX(10px); }
     .schedule-active { background: rgba(255, 34, 34, 0.08); border-left: 5px solid #ff2222; box-shadow: 0 4px 15px rgba(255, 34, 34, 0.05); }
@@ -199,16 +201,16 @@ components.html("""
 </script>
 """, height=0, width=0)
 
-# --- PASEK NAWIGACJI (8 Zakładek!) ---
+# --- PASEK NAWIGACJI (Z nowym modułem HIGHLIGHTS) ---
 selected = option_menu(
     menu_title=None, 
-    options=["HOME", "LIVE ARENA", "VOTING", "GEAR", "HALL OF FAME", "FORUM", "SOCIALS", "SCHEDULE"], 
-    icons=["house", "broadcast", "bar-chart", "pc-display", "trophy", "chat-right-text", "share", "calendar-event"], 
+    options=["HOME", "LIVE ARENA", "HIGHLIGHTS", "VOTING", "GEAR", "HALL OF FAME", "FORUM", "SOCIALS", "SCHEDULE"], 
+    icons=["house", "broadcast", "film", "bar-chart", "pc-display", "trophy", "chat-right-text", "share", "calendar-event"], 
     orientation="horizontal", 
     styles={
         "container": {"padding": "5px", "background-color": "#0a0a0f", "border": "1px solid #ff2222", "border-radius": "10px", "margin-top": "15px"},
-        "icon": {"color": "#ffcccc", "font-size": "14px"},
-        "nav-link": {"font-size": "11px", "text-align": "center", "margin": "0px 2px", "color": "#ffffff", "border-radius": "5px", "transition": "0.3s"},
+        "icon": {"color": "#ffcccc", "font-size": "13px"},
+        "nav-link": {"font-size": "10px", "text-align": "center", "margin": "0px 1px", "color": "#ffffff", "border-radius": "5px", "transition": "0.3s"},
         "nav-link-selected": {"background-color": "#ff2222", "color": "white", "font-weight": "bold"}
     }
 )
@@ -261,6 +263,40 @@ elif selected == "LIVE ARENA":
             <a href="{links['tipply']}" target="_blank" class="soc-btn" style="color:black !important; background:#53fc18; border-color:#53fc18; box-shadow: 0 0 15px #53fc18; font-size: 16px;">💰 WESPRZYJ</a>
         </div>
         """, unsafe_allow_html=True)
+
+elif selected == "HIGHLIGHTS":
+    st.write("<br><br>", unsafe_allow_html=True)
+    _, col_kino, _ = st.columns([1, 2, 1])
+    with col_kino:
+        st.markdown(f"""
+        <div class="glass-card" style="text-align:center; margin-bottom:30px;">
+            <h2 style="color:#ff2222; letter-spacing:3px; text-shadow: 0 0 10px #ff2222;">🎬 {highlights['title']}</h2>
+            <p style="color:#aaa; font-size:14px;">Najlepsze i najciekawsze momenty wprost ze streama!</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Odtwarzanie do 3 filmów z bazy
+        for i in range(1, 4):
+            v_title = highlights[f"vid{i}_title"]
+            v_url = highlights[f"vid{i}_url"]
+            
+            if v_url.strip() != "":
+                st.markdown(f"""
+                <div class="glass-card" style="margin-bottom: 25px; padding: 10px;">
+                    <h4 style="color:#ffcccc; text-align:center; margin-bottom:15px; text-transform:uppercase;">{v_title}</h4>
+                """, unsafe_allow_html=True)
+                
+                # Streamlit natywnie obsługuje odtwarzacze wideo (najlepiej działa z YouTube)
+                try:
+                    st.video(v_url)
+                except Exception:
+                    st.error("Nie udało się załadować wideo. Upewnij się, że używasz linku YouTube.")
+                    
+                st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Komunikat jeśli nie ma filmów
+        if all(highlights[f"vid{i}_url"].strip() == "" for i in range(1, 4)):
+            st.info("Aktualnie nie ma żadnych klipów do wyświetlenia. Wróć tu później!")
 
 elif selected == "VOTING":
     st.write("<br><br>", unsafe_allow_html=True)
@@ -343,12 +379,10 @@ elif selected == "HALL OF FAME":
             <div class="fame-header">👑 TOP DONATORZY</div>
             {format_badges(fame['donators'], 'fame-badge-gold', '👑')}
         </div>
-        
         <div class="glass-card fame-section">
             <div class="fame-header">💎 VIPY / NAJDŁUŻSZE SUBY</div>
             {format_badges(fame['vips'], 'fame-badge-diamond', '💎')}
         </div>
-        
         <div class="glass-card fame-section" style="margin-bottom: 0;">
             <div class="fame-header">🛡️ MODERATORZY</div>
             {format_badges(fame['mods'], 'fame-badge-shield', '🛡️')}
@@ -405,18 +439,18 @@ elif selected == "SCHEDULE":
                 
         st.markdown(f'<div class="glass-card"><h2 style="text-align:center; color:#ff2222; margin-bottom:25px; text-shadow: 0 0 10px #ff2222; letter-spacing: 3px;">📅 MISSION PLAN</h2>{rows_html}</div>', unsafe_allow_html=True)
 
-# --- PANEL ADMINA 4.0 ---
+# --- PANEL ADMINA 5.0 ---
 if st.query_params.get("admin") == "true":
     st.write("<br><br><br>")
-    with st.expander("🛠 SECURE ADMIN PANEL 4.0", expanded=True):
+    with st.expander("🛠 SECURE ADMIN PANEL 5.0", expanded=True):
         
         password = st.text_input("Podaj hasło dostępu:", type="password")
         
         if password == db["password"]: 
             st.success("Dostęp przyznany. Witaj w systemie dowodzenia!")
             
-            tab_news, tab_goal, tab_poll, tab_gear, tab_fame, tab_sch, tab_links, tab_sec = st.tabs([
-                "📢 Info", "📊 Cel", "🗳️ Głosowania", "💻 Sprzęt", "🏆 Chwała", "📅 Harmonogram", "⚙️ Linki", "🔒 Hasło"
+            tab_news, tab_goal, tab_poll, tab_gear, tab_fame, tab_kino, tab_sch, tab_links, tab_sec = st.tabs([
+                "📢 Info", "📊 Cel", "🗳️ Głosowania", "💻 Sprzęt", "🏆 Chwała", "🎬 Kino", "📅 Harmonogram", "⚙️ Linki", "🔒 Hasło"
             ])
             
             with tab_news:
@@ -469,6 +503,17 @@ if st.query_params.get("admin") == "true":
                 db["wall_of_fame"]["vips"] = st.text_area("💎 VIPY / NAJDŁUŻSZE SUBY:", value=db["wall_of_fame"]["vips"])
                 db["wall_of_fame"]["mods"] = st.text_area("🛡️ MODERATORZY:", value=db["wall_of_fame"]["mods"])
 
+            with tab_kino:
+                st.write("### 🎬 KINO / GALERIA KLIPÓW")
+                st.info("Wklej linki do YouTube (zwykłe lub Shorts). Zostaw pole 'Link URL' puste, aby ukryć dany slot wideo.")
+                db["highlights"]["title"] = st.text_input("Główny tytuł sekcji:", value=db["highlights"]["title"])
+                st.divider()
+                for i in range(1, 4):
+                    st.write(f"**Wideo #{i}**")
+                    c_title, c_url = st.columns(2)
+                    db["highlights"][f"vid{i}_title"] = c_title.text_input(f"Tytuł {i}:", value=db["highlights"][f"vid{i}_title"])
+                    db["highlights"][f"vid{i}_url"] = c_url.text_input(f"Link URL {i}:", value=db["highlights"][f"vid{i}_url"])
+
             with tab_sch:
                 st.write("### 📅 HARMONOGRAM STREAMÓW")
                 cols = st.columns(2)
@@ -503,4 +548,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V11.0 | WALL OF FAME ENABLED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V12.0 | HIGHLIGHTS MODULE ACTIVE</p>", unsafe_allow_html=True)
