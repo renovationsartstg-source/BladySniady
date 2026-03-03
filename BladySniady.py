@@ -17,6 +17,7 @@ CONFIG_FILE = "config.json"
 
 def get_default_db():
     return {
+        "password": "TwojeHaslo123",  # <--- SYSTEM HASŁA W BAZIE
         "news": "ZAPRASZAM NA DZISIEJSZĄ ARENĘ!",
         "schedule": {
             "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
@@ -26,7 +27,7 @@ def get_default_db():
         "goal_current": 0,
         "goal_max": 1000,
         "twitch_channel": "bladysniady",
-        "discord_id": "907353530183082044",
+        "discord_id": "YOUR_DISCORD_SERVER_ID_HERE", # CHANGE ME
         "links": {
             "twitch": "https://www.twitch.tv/bladysniady",
             "discord": "https://discord.gg/2MUn5W3u",
@@ -56,7 +57,6 @@ if 'db' not in st.session_state:
     st.session_state.db = load_data()
 
 # --- BEZPIECZNIK STAREJ SESJI (AUTO-FIX) ---
-# Wymuszenie uzupełnienia brakujących kluczy (np. po aktualizacji kodu)
 default_db = get_default_db()
 for k, v in default_db.items():
     if k not in st.session_state.db:
@@ -230,7 +230,7 @@ elif selected == "LIVE ARENA":
 
 elif selected == "FORUM":
     st.write("<br><br>", unsafe_allow_html=True)
-    _, col_forum, _ = st.columns([1, 2, 1])
+    _, col_forum = st.columns([1, 2]) # Removed third column to make it wider
     with col_forum:
         st.markdown("""
         <div class="glass-card" style="text-align:center; padding-bottom: 30px;">
@@ -282,11 +282,14 @@ elif selected == "SCHEDULE":
 if st.query_params.get("admin") == "true":
     st.write("<br><br><br>")
     with st.expander("🛠 SECURE ADMIN PANEL 2.0", expanded=True):
+        
+        # Logowanie używa teraz hasła zapisanego w Twojej bazie!
         password = st.text_input("Podaj hasło dostępu:", type="password")
-        if password == "TwojeHaslo123": 
+        
+        if password == db["password"]: 
             st.success("Dostęp przyznany. Witaj w systemie dowodzenia!")
             
-            tab_news, tab_goal, tab_sch, tab_links = st.tabs(["📢 Wiadomości", "📊 Pasek Celu", "📅 Harmonogram", "⚙️ Konfiguracja i Linki"])
+            tab_news, tab_goal, tab_sch, tab_links, tab_sec = st.tabs(["📢 Wiadomości", "📊 Pasek Celu", "📅 Harmonogram", "⚙️ Konfiguracja i Linki", "🔒 Bezpieczeństwo"])
             
             with tab_news:
                 st.write("### 📢 SYSTEM STATUS")
@@ -326,9 +329,18 @@ if st.query_params.get("admin") == "true":
                 for i, platform in enumerate(links_keys):
                     with cols_links[i % 2]:
                         db["links"][platform] = st.text_input(f"Link {platform.capitalize()}:", value=db["links"][platform])
+                        
+            with tab_sec:
+                st.write("### 🔒 ZMIANA HASŁA DO PANELU")
+                st.info("Wpisz nowe hasło poniżej, a następnie kliknij główny przycisk ZAPISZ na samym dole, aby zablokować system nowym kluczem.")
+                new_password = st.text_input("Nowe hasło (zostaw puste, jeśli nie chcesz zmieniać):", type="password")
 
             st.write("<br>", unsafe_allow_html=True)
             if st.button("💾 ZAPISZ WSZYSTKIE ZMIANY DO BAZY", use_container_width=True):
+                # Jeśli wpisałeś coś w polu nowego hasła, zapisz to do bazy
+                if new_password:
+                    db["password"] = new_password
+                    
                 save_data(db)
                 st.success("Wszystkie moduły zaktualizowane pomyślnie!")
                 st.rerun()
@@ -336,4 +348,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V7.2 | ADMIN PANEL UPGRADED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V9.0 | FULL CONTROL PANEL</p>", unsafe_allow_html=True)
