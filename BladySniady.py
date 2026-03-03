@@ -88,25 +88,14 @@ elif st.session_state.view == 'arena':
     with col_main:
         # Stream
         st.markdown(f"""<div class="stream-wrapper">
-            <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=localhost"
+            <iframe src="https://player.twitch.tv/?channel=bladysniady&parent=localhost&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
             height="480" width="100%" allowfullscreen="true"></iframe></div>""", unsafe_allow_html=True)
         
         # Chat Hub
         st.write("<br>", unsafe_allow_html=True)
         chat_platform = st.radio("WYBIERZ CZAT:", ["TWITCH", "KICK"], horizontal=True)
         if chat_platform == "TWITCH":
-            st.markdown(f"""<iframe src="https://www.twitch.tv/embed/bladysniady/chat?parent=localhost"
+            st.markdown(f"""<iframe src="https://www.twitch.tv/embed/bladysniady/chat?parent=localhost&parent=bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
                 height="350" width="100%"></iframe>""", unsafe_allow_html=True)
         else:
-            st.markdown(f"""<iframe src="https://kick.com/bladysniadyofficial/chatroom" height="350" width="100%"></iframe>""", unsafe_allow_html=True)
-
-    with col_side:
-        st.markdown('<p style="color:#ff2222; font-weight:bold;">📅 HARMONOGRAM</p>', unsafe_allow_html=True)
-        for day, time in st.session_state.schedule.items():
-            st.markdown(f"<small>{day}: **{time}**</small>", unsafe_allow_html=True)
-        
-        st.write("<br>", unsafe_allow_html=True)
-        st.markdown('<p style="color:#ff2222; font-weight:bold;">🔗 LINKI</p>', unsafe_allow_html=True)
-        st.markdown("""
-        <div class="nav-grid">
-            <a href="https://kick.com/bladysniadyofficial" class="social-btn">KICK</a>
+            st.markdown("""<iframe src="https://kick.com/bladysniadyofficial/chatroom" height="350" width="100%"></iframe>""", unsafe_allow_html=True)
