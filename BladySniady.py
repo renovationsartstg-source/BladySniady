@@ -12,17 +12,11 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- SYSTEM TRWAŁOŚCI DANYCH (JSON) ---
+# --- SYSTEM TRWAŁOŚCI DANYCH I ZAAWANSOWANY UPDATE (JSON) ---
 CONFIG_FILE = "config.json"
 
 def load_data():
-    if os.path.exists(CONFIG_FILE):
-        try:
-            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
-    return {
+    default_db = {
         "news": "ZAPRASZAM NA DZISIEJSZĄ ARENĘ!",
         "schedule": {
             "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
@@ -30,8 +24,36 @@ def load_data():
         },
         "goal_text": "Cel: Nowy Sprzęt",
         "goal_current": 0,
-        "goal_max": 1000
+        "goal_max": 1000,
+        "twitch_channel": "bladysniady",
+        "discord_id": "907353530183082044",
+        "links": {
+            "twitch": "https://www.twitch.tv/bladysniady",
+            "discord": "https://discord.gg/2MUn5W3u",
+            "kick": "https://kick.com/bladysniadyofficial",
+            "youtube": "https://www.youtube.com/@BladySniady",
+            "instagram": "https://www.instagram.com/bladysniady/",
+            "tiktok": "https://tiktok.com/@bladysniady",
+            "tipply": "https://tipply.pl/@bl4dyygaming"
+        }
     }
+    
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                loaded_db = json.load(f)
+                # Bezpieczne uzupełnianie brakujących kluczy (Smart Merge)
+                for k, v in default_db.items():
+                    if k not in loaded_db:
+                        loaded_db[k] = v
+                    elif isinstance(v, dict):
+                        for sub_k, sub_v in v.items():
+                            if sub_k not in loaded_db[k]:
+                                loaded_db[k][sub_k] = sub_v
+                return loaded_db
+        except Exception:
+            pass
+    return default_db
 
 def save_data(data):
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
@@ -40,7 +62,7 @@ def save_data(data):
 if 'db' not in st.session_state:
     st.session_state.db = load_data()
 
-# --- GŁÓWNY CSS & STYLE DEDYKOWANE DLA SOCIALI I KALENDARZA ---
+# --- GŁÓWNY CSS & STYLE ---
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -68,7 +90,6 @@ st.markdown("""
         text-transform: uppercase; transition: all 0.3s ease; border: 2px solid;
     }
     
-    /* Socials Kolory */
     .soc-twitch { color: #bf94ff !important; border-color: #9146ff; background: rgba(145, 70, 255, 0.1); }
     .soc-twitch:hover { background: #9146ff; color: white !important; box-shadow: 0 0 25px #9146ff; transform: scale(1.03); }
     
@@ -89,13 +110,8 @@ st.markdown("""
 
     /* NOWY, ŻYWY KALENDARZ */
     .schedule-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 20px;
-        margin-bottom: 12px;
-        border-radius: 10px;
-        transition: all 0.3s ease;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 15px 20px; margin-bottom: 12px; border-radius: 10px; transition: all 0.3s ease;
     }
     .schedule-row:hover { transform: translateX(10px); }
     .schedule-active { background: rgba(255, 34, 34, 0.08); border-left: 5px solid #ff2222; box-shadow: 0 4px 15px rgba(255, 34, 34, 0.05); }
@@ -142,7 +158,7 @@ components.html("""
 </script>
 """, height=0, width=0)
 
-# --- STABILNY I CZYSTY PASEK NAWIGACJI ---
+# --- PASEK NAWIGACJI ---
 selected = option_menu(
     menu_title=None, 
     options=["HOME", "LIVE ARENA", "FORUM", "SOCIALS", "SCHEDULE"], 
@@ -150,11 +166,8 @@ selected = option_menu(
     orientation="horizontal", 
     styles={
         "container": {
-            "padding": "5px", 
-            "background-color": "#0a0a0f", 
-            "border": "1px solid #ff2222", 
-            "border-radius": "10px",
-            "margin-top": "15px"
+            "padding": "5px", "background-color": "#0a0a0f", 
+            "border": "1px solid #ff2222", "border-radius": "10px", "margin-top": "15px"
         },
         "icon": {"color": "#ffcccc", "font-size": "18px"},
         "nav-link": {
@@ -166,6 +179,9 @@ selected = option_menu(
 )
 
 # --- LOGIKA WIDOKÓW ---
+db = st.session_state.db # Szybki dostęp do bazy
+links = db["links"] # Szybki dostęp do linków
+
 if selected == "HOME":
     st.write("<br>", unsafe_allow_html=True)
     col_l, col_logo, col_r = st.columns([1, 2, 1])
@@ -179,14 +195,14 @@ if selected == "HOME":
     st.write("<br>", unsafe_allow_html=True)
     _, col_news, _ = st.columns([1,2,1])
     with col_news:
-        st.markdown(f'<div style="background:rgba(255,0,0,0.1); border-left:5px solid #ff2222; padding:15px; text-align:center; text-transform:uppercase; font-weight:bold; box-shadow: 0 0 15px rgba(255,34,34,0.2);">📢 SYSTEM STATUS: {st.session_state.db["news"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="background:rgba(255,0,0,0.1); border-left:5px solid #ff2222; padding:15px; text-align:center; text-transform:uppercase; font-weight:bold; box-shadow: 0 0 15px rgba(255,34,34,0.2);">📢 SYSTEM STATUS: {db["news"]}</div>', unsafe_allow_html=True)
 
 elif selected == "LIVE ARENA":
     parent_domain = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
     col_main, col_side = st.columns([3, 1])
     with col_main:
-        st.markdown(f'<div style="border:2px solid #ff2222; border-radius:10px; overflow:hidden; background:black; box-shadow: 0 0 20px rgba(255,34,34,0.3);"><iframe src="https://player.twitch.tv/?channel=bladysniady&parent=localhost&parent={parent_domain}" height="550" width="100%" allowfullscreen="true"></iframe></div>', unsafe_allow_html=True)
-        db = st.session_state.db
+        # Player używa teraz zmiennej z bazy!
+        st.markdown(f'<div style="border:2px solid #ff2222; border-radius:10px; overflow:hidden; background:black; box-shadow: 0 0 20px rgba(255,34,34,0.3);"><iframe src="https://player.twitch.tv/?channel={db["twitch_channel"]}&parent=localhost&parent={parent_domain}" height="550" width="100%" allowfullscreen="true"></iframe></div>', unsafe_allow_html=True)
         max_val = db["goal_max"] if db["goal_max"] > 0 else 1
         pct = min(100, int((db["goal_current"] / max_val) * 100))
         st.write("<br>", unsafe_allow_html=True)
@@ -201,10 +217,10 @@ elif selected == "LIVE ARENA":
         """, unsafe_allow_html=True)
 
     with col_side:
-        st.markdown("""
+        st.markdown(f"""
         <div class="glass-card">
             <h3 style="color:#ff2222; text-align:center; margin-bottom: 20px;">TERMINAL</h3>
-            <a href="https://tipply.pl/@bl4dyygaming" target="_blank" class="soc-btn" style="color:black !important; background:#53fc18; border-color:#53fc18; box-shadow: 0 0 15px #53fc18; font-size: 16px;">💰 WESPRZYJ</a>
+            <a href="{links['tipply']}" target="_blank" class="soc-btn" style="color:black !important; background:#53fc18; border-color:#53fc18; box-shadow: 0 0 15px #53fc18; font-size: 16px;">💰 WESPRZYJ</a>
         </div>
         """, unsafe_allow_html=True)
 
@@ -219,18 +235,13 @@ elif selected == "FORUM":
         </div>
         """, unsafe_allow_html=True)
         
-        # ============================================================
-        # TWOJE ID SERWERA DISCORD
-        DISCORD_SERVER_ID = "907353530183082044" 
-        # ============================================================
-        
         components.html(f"""
-        <iframe src="https://discord.com/widget?id={DISCORD_SERVER_ID}&theme=dark" width="100%" height="450" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" style="border-radius:15px; box-shadow: 0 0 20px rgba(88, 101, 242, 0.2);"></iframe>
+        <iframe src="https://discord.com/widget?id={db["discord_id"]}&theme=dark" width="100%" height="450" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" style="border-radius:15px; box-shadow: 0 0 20px rgba(88, 101, 242, 0.2);"></iframe>
         """, height=470)
         
-        st.markdown("""
+        st.markdown(f"""
         <div style="text-align:center;">
-            <a href="https://discord.gg/2MUn5W3u" target="_blank" class="soc-btn soc-discord" style="display:inline-block; padding: 15px 40px; font-size: 18px;">💬 OTWÓRZ DISCORD</a>
+            <a href="{links['discord']}" target="_blank" class="soc-btn soc-discord" style="display:inline-block; padding: 15px 40px; font-size: 18px;">💬 OTWÓRZ DISCORD</a>
         </div>
         """, unsafe_allow_html=True)
 
@@ -238,15 +249,15 @@ elif selected == "SOCIALS":
     st.write("<br><br>", unsafe_allow_html=True)
     _, col_soc, _ = st.columns([1, 1.5, 1])
     with col_soc:
-        st.markdown("""
+        st.markdown(f"""
         <div class="glass-card">
             <h2 style="text-align:center; color:#ff2222; margin-bottom:25px; letter-spacing:3px; text-shadow: 0 0 10px #ff2222;">🔥 ZNAJDŹ MNIE W SIECI 🔥</h2>
-            <a href="https://www.twitch.tv/bladysniady" target="_blank" class="soc-btn soc-twitch">🟪 TWITCH</a>
-            <a href="https://discord.gg/2MUn5W3u" target="_blank" class="soc-btn soc-discord">💬 DISCORD</a>
-            <a href="https://kick.com/bladysniadyofficial" target="_blank" class="soc-btn soc-kick">🟢 KICK</a>
-            <a href="https://www.youtube.com/@BladySniady" target="_blank" class="soc-btn soc-yt">🎥 YOUTUBE</a>
-            <a href="https://www.instagram.com/bladysniady/" target="_blank" class="soc-btn soc-ig">📸 INSTAGRAM</a>
-            <a href="https://tiktok.com/@bladysniady" target="_blank" class="soc-btn soc-tt">🎵 TIKTOK</a>
+            <a href="{links['twitch']}" target="_blank" class="soc-btn soc-twitch">🟪 TWITCH</a>
+            <a href="{links['discord']}" target="_blank" class="soc-btn soc-discord">💬 DISCORD</a>
+            <a href="{links['kick']}" target="_blank" class="soc-btn soc-kick">🟢 KICK</a>
+            <a href="{links['youtube']}" target="_blank" class="soc-btn soc-yt">🎥 YOUTUBE</a>
+            <a href="{links['instagram']}" target="_blank" class="soc-btn soc-ig">📸 INSTAGRAM</a>
+            <a href="{links['tiktok']}" target="_blank" class="soc-btn soc-tt">🎵 TIKTOK</a>
         </div>
         """, unsafe_allow_html=True)
 
@@ -255,7 +266,7 @@ elif selected == "SCHEDULE":
     _, col_sch, _ = st.columns([1, 1.5, 1])
     with col_sch:
         rows_html = ""
-        for d, t in st.session_state.db["schedule"].items():
+        for d, t in db["schedule"].items():
             if t.upper() == "BRAK":
                 rows_html += f'<div class="schedule-row schedule-inactive"><span class="day-name day-inactive-text">{d}</span><span class="time-brak">{t}</span></div>'
             else:
@@ -263,40 +274,63 @@ elif selected == "SCHEDULE":
                 
         st.markdown(f'<div class="glass-card"><h2 style="text-align:center; color:#ff2222; margin-bottom:25px; text-shadow: 0 0 10px #ff2222; letter-spacing: 3px;">📅 MISSION PLAN</h2>{rows_html}</div>', unsafe_allow_html=True)
 
-# --- PANEL ADMINA Z HASŁEM ---
+# --- PANEL ADMINA 2.0 Z ZAKŁADKAMI ---
 if st.query_params.get("admin") == "true":
     st.write("<br><br><br>")
-    with st.expander("🛠 SECURE ADMIN PANEL", expanded=True):
+    with st.expander("🛠 SECURE ADMIN PANEL 2.0", expanded=True):
         password = st.text_input("Podaj hasło dostępu:", type="password")
         if password == "TwojeHaslo123": 
-            st.success("Dostęp przyznany.")
-            st.session_state.db["news"] = st.text_input("Aktualny News:", value=st.session_state.db["news"])
-            st.divider()
+            st.success("Dostęp przyznany. Witaj w systemie dowodzenia!")
             
-            st.write("### 📊 ZARZĄDZANIE CELEM (GOAL BAR)")
-            st.session_state.db["goal_text"] = st.text_input("Nazwa celu:", value=st.session_state.db["goal_text"])
-            c1, c2 = st.columns(2)
-            st.session_state.db["goal_current"] = c1.number_input("Obecny stan (PLN):", value=st.session_state.db["goal_current"])
-            st.session_state.db["goal_max"] = c2.number_input("Kwota docelowa (PLN):", value=st.session_state.db["goal_max"])
+            # Podział na estetyczne zakładki!
+            tab_news, tab_goal, tab_sch, tab_links = st.tabs(["📢 Wiadomości", "📊 Pasek Celu", "📅 Harmonogram", "⚙️ Konfiguracja i Linki"])
             
-            st.write("Szybkie dodawanie do paska:")
-            btn1, btn2, btn3, _ = st.columns([1, 1, 1, 3])
-            if btn1.button("+ 5 PLN"): st.session_state.db["goal_current"] += 5; save_data(st.session_state.db); st.rerun()
-            if btn2.button("+ 10 PLN"): st.session_state.db["goal_current"] += 10; save_data(st.session_state.db); st.rerun()
-            if btn3.button("+ 50 PLN"): st.session_state.db["goal_current"] += 50; save_data(st.session_state.db); st.rerun()
-            st.divider()
-            
-            st.write("### 📅 HARMONOGRAM")
-            cols = st.columns(2)
-            for i, (day, time) in enumerate(st.session_state.db["schedule"].items()):
-                with cols[i % 2]:
-                    st.session_state.db["schedule"][day] = st.text_input(f"{day}:", value=time)
+            with tab_news:
+                st.write("### 📢 SYSTEM STATUS")
+                db["news"] = st.text_input("Komunikat wyświetlany na stronie głównej:", value=db["news"])
+                
+            with tab_goal:
+                st.write("### 📊 ZARZĄDZANIE CELEM (GOAL BAR)")
+                db["goal_text"] = st.text_input("Nazwa celu zbiórki:", value=db["goal_text"])
+                c1, c2 = st.columns(2)
+                db["goal_current"] = c1.number_input("Obecny stan (PLN):", value=db["goal_current"])
+                db["goal_max"] = c2.number_input("Kwota docelowa (PLN):", value=db["goal_max"])
+                
+                st.write("Szybkie akcje podczas streama:")
+                btn1, btn2, btn3, btn4 = st.columns(4)
+                if btn1.button("Dodaj + 5 PLN"): db["goal_current"] += 5; save_data(db); st.rerun()
+                if btn2.button("Dodaj + 10 PLN"): db["goal_current"] += 10; save_data(db); st.rerun()
+                if btn3.button("Dodaj + 50 PLN"): db["goal_current"] += 50; save_data(db); st.rerun()
+                if btn4.button("Zeruj Cel 🔄", type="primary"): db["goal_current"] = 0; save_data(db); st.rerun()
+                
+            with tab_sch:
+                st.write("### 📅 HARMONOGRAM STREAMÓW")
+                st.info("Wpisz 'BRAK', jeśli w dany dzień nie streamujesz.")
+                cols = st.columns(2)
+                for i, (day, time) in enumerate(db["schedule"].items()):
+                    with cols[i % 2]:
+                        db["schedule"][day] = st.text_input(f"{day}:", value=time)
+                        
+            with tab_links:
+                st.write("### ⚙️ INTEGRACJE GŁÓWNE")
+                db["twitch_channel"] = st.text_input("Twoja dokładna nazwa na Twitch (do Player'a):", value=db["twitch_channel"])
+                db["discord_id"] = st.text_input("ID Serwera Discord (do Widżetu):", value=db["discord_id"])
+                
+                st.divider()
+                st.write("### 🔗 TWOJE LINKI SOCIAL MEDIA")
+                cols_links = st.columns(2)
+                links_keys = list(db["links"].keys())
+                for i, platform in enumerate(links_keys):
+                    with cols_links[i % 2]:
+                        db["links"][platform] = st.text_input(f"Link {platform.capitalize()}:", value=db["links"][platform])
+
             st.write("<br>", unsafe_allow_html=True)
-            if st.button("💾 ZAPISZ WSZYSTKIE ZMIANY", use_container_width=True):
-                save_data(st.session_state.db)
-                st.success("System zaktualizowany trwale!")
+            if st.button("💾 ZAPISZ WSZYSTKIE ZMIANY DO BAZY", use_container_width=True):
+                save_data(db)
+                st.success("Wszystkie moduły zaktualizowane pomyślnie!")
                 st.rerun()
+                
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V6.1 | DISCORD INTEGRATED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V7.0 | ADMIN PANEL UPGRADED</p>", unsafe_allow_html=True)
