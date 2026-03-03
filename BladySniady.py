@@ -52,6 +52,12 @@ def get_default_db():
             "Mikrofon": {"name": "Shure SM7B", "link": ""},
             "Monitor": {"name": "ZOWIE XL2546K 240Hz", "link": ""},
             "PC": {"name": "RTX 4090, i9-13900K, 64GB RAM", "link": ""}
+        },
+        # NOWOŚĆ: Ściana Chwały
+        "wall_of_fame": {
+            "donators": "Widz1, SuperWspierajacy",
+            "vips": "MegaFan, StarySub",
+            "mods": "Nightbot, ZaufanyMod"
         }
     }
 
@@ -87,6 +93,7 @@ db = st.session_state.db
 links = db["links"]
 poll = db["poll"]
 gear = db["gear"]
+fame = db["wall_of_fame"]
 
 # --- GŁÓWNY CSS & STYLE ---
 st.markdown("""
@@ -119,6 +126,16 @@ st.markdown("""
     .gear-name { color: white; font-size: 18px; font-weight: 900; }
     .gear-btn { display: inline-block; margin-top: 10px; background: transparent; color: #ff2222 !important; border: 1px solid #ff2222; padding: 5px 15px; text-decoration: none !important; border-radius: 5px; font-size: 12px; font-weight: bold; transition: 0.3s;}
     .gear-btn:hover { background: #ff2222; color: white !important; box-shadow: 0 0 10px #ff2222; }
+
+    /* STYLE DLA ŚCIANY CHWAŁY (FAME) */
+    .fame-section { margin-bottom: 25px; }
+    .fame-header { color: #ffcccc; text-transform: uppercase; font-size: 15px; letter-spacing: 2px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,34,34,0.3); padding-bottom: 5px; font-weight: bold; }
+    .fame-badge-gold { display: inline-block; background: rgba(255, 215, 0, 0.1); border: 1px solid gold; padding: 8px 15px; border-radius: 20px; margin: 5px; font-weight: bold; color: gold !important; box-shadow: 0 0 10px rgba(255,215,0,0.2); transition: 0.3s; }
+    .fame-badge-gold:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,215,0,0.5); background: rgba(255, 215, 0, 0.2); }
+    .fame-badge-diamond { display: inline-block; background: rgba(0, 255, 255, 0.1); border: 1px solid cyan; padding: 8px 15px; border-radius: 20px; margin: 5px; font-weight: bold; color: cyan !important; box-shadow: 0 0 10px rgba(0,255,255,0.2); transition: 0.3s; }
+    .fame-badge-diamond:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0,255,255,0.5); background: rgba(0, 255, 255, 0.2); }
+    .fame-badge-shield { display: inline-block; background: rgba(83, 252, 24, 0.1); border: 1px solid #53fc18; padding: 8px 15px; border-radius: 20px; margin: 5px; font-weight: bold; color: #53fc18 !important; box-shadow: 0 0 10px rgba(83,252,24,0.2); transition: 0.3s; }
+    .fame-badge-shield:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(83,252,24,0.5); background: rgba(83, 252, 24, 0.2); }
 
     /* EFEKTOWNE PRZYCISKI SOCIAL MEDIA */
     .soc-btn { display: block; width: 100%; text-decoration: none !important; padding: 15px; margin-bottom: 12px; border-radius: 8px; text-align: center; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s ease; border: 2px solid; }
@@ -182,19 +199,26 @@ components.html("""
 </script>
 """, height=0, width=0)
 
-# --- PASEK NAWIGACJI ---
+# --- PASEK NAWIGACJI (8 Zakładek!) ---
 selected = option_menu(
     menu_title=None, 
-    options=["HOME", "LIVE ARENA", "VOTING", "GEAR", "FORUM", "SOCIALS", "SCHEDULE"], 
-    icons=["house", "broadcast", "bar-chart", "pc-display", "chat-right-text", "share", "calendar-event"], 
+    options=["HOME", "LIVE ARENA", "VOTING", "GEAR", "HALL OF FAME", "FORUM", "SOCIALS", "SCHEDULE"], 
+    icons=["house", "broadcast", "bar-chart", "pc-display", "trophy", "chat-right-text", "share", "calendar-event"], 
     orientation="horizontal", 
     styles={
         "container": {"padding": "5px", "background-color": "#0a0a0f", "border": "1px solid #ff2222", "border-radius": "10px", "margin-top": "15px"},
-        "icon": {"color": "#ffcccc", "font-size": "16px"},
-        "nav-link": {"font-size": "12px", "text-align": "center", "margin": "0px 2px", "color": "#ffffff", "border-radius": "5px", "transition": "0.3s"},
+        "icon": {"color": "#ffcccc", "font-size": "14px"},
+        "nav-link": {"font-size": "11px", "text-align": "center", "margin": "0px 2px", "color": "#ffffff", "border-radius": "5px", "transition": "0.3s"},
         "nav-link-selected": {"background-color": "#ff2222", "color": "white", "font-weight": "bold"}
     }
 )
+
+# --- FUNKCJE POMOCNICZE WIDOKÓW ---
+def format_badges(names_string, badge_class, icon=""):
+    names = [n.strip() for n in names_string.split(',') if n.strip()]
+    if not names:
+        return "<span style='color:#555; font-style:italic;'>Brak wpisów</span>"
+    return "".join([f"<div class='{badge_class}'>{icon} {name}</div>" for name in names])
 
 # --- LOGIKA WIDOKÓW ---
 if selected == "HOME":
@@ -303,6 +327,34 @@ elif selected == "GEAR":
                 </div>
                 """, unsafe_allow_html=True)
 
+elif selected == "HALL OF FAME":
+    st.write("<br><br>", unsafe_allow_html=True)
+    _, col_fame, _ = st.columns([1, 2, 1])
+    with col_fame:
+        st.markdown("""
+        <div class="glass-card" style="margin-bottom: 20px; text-align:center;">
+            <h2 style="color:#ff2222; text-shadow: 0 0 10px #ff2222; letter-spacing: 3px;">🏆 ŚCIANA CHWAŁY</h2>
+            <p style="color:#aaa; font-size:14px;">Elita społeczności. Dziękuję za ogromne wsparcie i obecność!</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown(f"""
+        <div class="glass-card fame-section">
+            <div class="fame-header">👑 TOP DONATORZY</div>
+            {format_badges(fame['donators'], 'fame-badge-gold', '👑')}
+        </div>
+        
+        <div class="glass-card fame-section">
+            <div class="fame-header">💎 VIPY / NAJDŁUŻSZE SUBY</div>
+            {format_badges(fame['vips'], 'fame-badge-diamond', '💎')}
+        </div>
+        
+        <div class="glass-card fame-section" style="margin-bottom: 0;">
+            <div class="fame-header">🛡️ MODERATORZY</div>
+            {format_badges(fame['mods'], 'fame-badge-shield', '🛡️')}
+        </div>
+        """, unsafe_allow_html=True)
+
 elif selected == "FORUM":
     st.write("<br><br>", unsafe_allow_html=True)
     _, col_forum = st.columns([1, 2])
@@ -353,18 +405,18 @@ elif selected == "SCHEDULE":
                 
         st.markdown(f'<div class="glass-card"><h2 style="text-align:center; color:#ff2222; margin-bottom:25px; text-shadow: 0 0 10px #ff2222; letter-spacing: 3px;">📅 MISSION PLAN</h2>{rows_html}</div>', unsafe_allow_html=True)
 
-# --- PANEL ADMINA 3.0 ---
+# --- PANEL ADMINA 4.0 ---
 if st.query_params.get("admin") == "true":
     st.write("<br><br><br>")
-    with st.expander("🛠 SECURE ADMIN PANEL 3.0", expanded=True):
+    with st.expander("🛠 SECURE ADMIN PANEL 4.0", expanded=True):
         
         password = st.text_input("Podaj hasło dostępu:", type="password")
         
         if password == db["password"]: 
             st.success("Dostęp przyznany. Witaj w systemie dowodzenia!")
             
-            tab_news, tab_goal, tab_poll, tab_gear, tab_sch, tab_links, tab_sec = st.tabs([
-                "📢 Info", "📊 Cel", "🗳️ Głosowania", "💻 Sprzęt", "📅 Harmonogram", "⚙️ Linki", "🔒 Hasło"
+            tab_news, tab_goal, tab_poll, tab_gear, tab_fame, tab_sch, tab_links, tab_sec = st.tabs([
+                "📢 Info", "📊 Cel", "🗳️ Głosowania", "💻 Sprzęt", "🏆 Chwała", "📅 Harmonogram", "⚙️ Linki", "🔒 Hasło"
             ])
             
             with tab_news:
@@ -409,7 +461,14 @@ if st.query_params.get("admin") == "true":
                     c_name, c_link = st.columns([2, 2])
                     db["gear"][category]["name"] = c_name.text_input(f"{category} (Nazwa):", value=db["gear"][category]["name"])
                     db["gear"][category]["link"] = c_link.text_input(f"{category} (Link / Reflink):", value=db["gear"][category]["link"])
-                
+            
+            with tab_fame:
+                st.write("### 🏆 ŚCIANA CHWAŁY (HALL OF FAME)")
+                st.info("Wpisz nicki oddzielając je przecinkiem (np. Janek, Tomek, Ania)")
+                db["wall_of_fame"]["donators"] = st.text_area("👑 TOP DONATORZY:", value=db["wall_of_fame"]["donators"])
+                db["wall_of_fame"]["vips"] = st.text_area("💎 VIPY / NAJDŁUŻSZE SUBY:", value=db["wall_of_fame"]["vips"])
+                db["wall_of_fame"]["mods"] = st.text_area("🛡️ MODERATORZY:", value=db["wall_of_fame"]["mods"])
+
             with tab_sch:
                 st.write("### 📅 HARMONOGRAM STREAMÓW")
                 cols = st.columns(2)
@@ -444,4 +503,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V10.0 | FULL COMBINE</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V11.0 | WALL OF FAME ENABLED</p>", unsafe_allow_html=True)
