@@ -15,8 +15,8 @@ st.set_page_config(
 # --- SYSTEM TRWAŁOŚCI DANYCH I ZAAWANSOWANY UPDATE (JSON) ---
 CONFIG_FILE = "config.json"
 
-def load_data():
-    default_db = {
+def get_default_db():
+    return {
         "news": "ZAPRASZAM NA DZISIEJSZĄ ARENĘ!",
         "schedule": {
             "Poniedziałek": "18:00", "Wtorek": "BRAK", "Środa": "18:00",
@@ -37,37 +37,38 @@ def load_data():
             "tipply": "https://tipply.pl/@bl4dyygaming"
         }
     }
-    
+
+def load_data():
     if os.path.exists(CONFIG_FILE):
         try:
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-                loaded_db = json.load(f)
-                # Bezpieczne uzupełnianie brakujących kluczy (Smart Merge)
-                for k, v in default_db.items():
-                    if k not in loaded_db:
-                        loaded_db[k] = v
-                    elif isinstance(v, dict):
-                        for sub_k, sub_v in v.items():
-                            if sub_k not in loaded_db[k]:
-                                loaded_db[k][sub_k] = sub_v
-                return loaded_db
+                return json.load(f)
         except Exception:
             pass
-    return default_db
+    return get_default_db()
 
 def save_data(data):
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-# Inicjalizacja danych
+# Inicjalizacja danych w sesji
 if 'db' not in st.session_state:
     st.session_state.db = load_data()
 
 # --- BEZPIECZNIK STAREJ SESJI (AUTO-FIX) ---
-# Jeśli Streamlit pamięta starą wersję w przeglądarce, zmuszamy go do aktualizacji
-if "links" not in st.session_state.db or "twitch_channel" not in st.session_state.db:
-    st.session_state.db = load_data()
-    save_data(st.session_state.db)
+# Wymuszenie uzupełnienia brakujących kluczy (np. po aktualizacji kodu)
+default_db = get_default_db()
+for k, v in default_db.items():
+    if k not in st.session_state.db:
+        st.session_state.db[k] = v
+    elif isinstance(v, dict):
+        for sub_k, sub_v in v.items():
+            if sub_k not in st.session_state.db[k]:
+                st.session_state.db[k][sub_k] = sub_v
+
+# Szybki dostęp do bazy
+db = st.session_state.db
+links = db["links"]
 
 # --- GŁÓWNY CSS & STYLE ---
 st.markdown("""
@@ -186,9 +187,6 @@ selected = option_menu(
 )
 
 # --- LOGIKA WIDOKÓW ---
-db = st.session_state.db
-links = db["links"]
-
 if selected == "HOME":
     st.write("<br>", unsafe_allow_html=True)
     col_l, col_logo, col_r = st.columns([1, 2, 1])
@@ -338,4 +336,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V7.1 | ADMIN PANEL UPGRADED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V7.2 | ADMIN PANEL UPGRADED</p>", unsafe_allow_html=True)
