@@ -97,43 +97,16 @@ st.markdown("""
         border-radius: 10px;
         transition: all 0.3s ease;
     }
-    .schedule-row:hover {
-        transform: translateX(10px);
-    }
-    .schedule-active {
-        background: rgba(255, 34, 34, 0.08);
-        border-left: 5px solid #ff2222;
-        box-shadow: 0 4px 15px rgba(255, 34, 34, 0.05);
-    }
-    .schedule-active:hover {
-        background: rgba(255, 34, 34, 0.15);
-        box-shadow: 0 0 20px rgba(255, 34, 34, 0.2);
-    }
-    .schedule-inactive {
-        background: rgba(255, 255, 255, 0.02);
-        border-left: 5px solid #444;
-    }
-    .schedule-inactive:hover {
-        background: rgba(255, 255, 255, 0.05);
-    }
+    .schedule-row:hover { transform: translateX(10px); }
+    .schedule-active { background: rgba(255, 34, 34, 0.08); border-left: 5px solid #ff2222; box-shadow: 0 4px 15px rgba(255, 34, 34, 0.05); }
+    .schedule-active:hover { background: rgba(255, 34, 34, 0.15); box-shadow: 0 0 20px rgba(255, 34, 34, 0.2); }
+    .schedule-inactive { background: rgba(255, 255, 255, 0.02); border-left: 5px solid #444; }
+    .schedule-inactive:hover { background: rgba(255, 255, 255, 0.05); }
     .day-name { font-weight: 900; letter-spacing: 1px; text-transform: uppercase; font-size: 15px; }
     .day-active-text { color: #ffcccc; }
     .day-inactive-text { color: #666; }
-    
-    .time-badge { 
-        background: #ff2222; 
-        color: white; 
-        padding: 5px 15px; 
-        border-radius: 20px; 
-        font-weight: 900; 
-        letter-spacing: 1px;
-        box-shadow: 0 0 10px #ff2222;
-    }
-    .time-brak {
-        color: #555;
-        font-style: italic;
-        font-weight: bold;
-    }
+    .time-badge { background: #ff2222; color: white; padding: 5px 15px; border-radius: 20px; font-weight: 900; letter-spacing: 1px; box-shadow: 0 0 10px #ff2222; }
+    .time-brak { color: #555; font-style: italic; font-weight: bold; }
 
 </style>
 """, unsafe_allow_html=True)
@@ -172,8 +145,8 @@ components.html("""
 # --- STABILNY I CZYSTY PASEK NAWIGACJI ---
 selected = option_menu(
     menu_title=None, 
-    options=["HOME", "LIVE ARENA", "SOCIALS", "SCHEDULE"], 
-    icons=["house", "broadcast", "share", "calendar-event"], 
+    options=["HOME", "LIVE ARENA", "FORUM", "SOCIALS", "SCHEDULE"], 
+    icons=["house", "broadcast", "chat-right-text", "share", "calendar-event"], 
     orientation="horizontal", 
     styles={
         "container": {
@@ -210,15 +183,12 @@ if selected == "HOME":
 
 elif selected == "LIVE ARENA":
     parent_domain = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
-    
     col_main, col_side = st.columns([3, 1])
     with col_main:
         st.markdown(f'<div style="border:2px solid #ff2222; border-radius:10px; overflow:hidden; background:black; box-shadow: 0 0 20px rgba(255,34,34,0.3);"><iframe src="https://player.twitch.tv/?channel=bladysniady&parent=localhost&parent={parent_domain}" height="550" width="100%" allowfullscreen="true"></iframe></div>', unsafe_allow_html=True)
-        
         db = st.session_state.db
         max_val = db["goal_max"] if db["goal_max"] > 0 else 1
         pct = min(100, int((db["goal_current"] / max_val) * 100))
-        
         st.write("<br>", unsafe_allow_html=True)
         st.markdown(f"""
         <div class="glass-card">
@@ -235,6 +205,32 @@ elif selected == "LIVE ARENA":
         <div class="glass-card">
             <h3 style="color:#ff2222; text-align:center; margin-bottom: 20px;">TERMINAL</h3>
             <a href="https://tipply.pl/@bl4dyygaming" target="_blank" class="soc-btn" style="color:black !important; background:#53fc18; border-color:#53fc18; box-shadow: 0 0 15px #53fc18; font-size: 16px;">💰 WESPRZYJ</a>
+        </div>
+        """, unsafe_allow_html=True)
+
+elif selected == "FORUM":
+    st.write("<br><br>", unsafe_allow_html=True)
+    _, col_forum, _ = st.columns([1, 2, 1])
+    with col_forum:
+        st.markdown("""
+        <div class="glass-card" style="text-align:center; padding-bottom: 30px;">
+            <h2 style="color:#ff2222; margin-bottom:15px; letter-spacing:3px; text-shadow: 0 0 10px #ff2222;">🔥 DISCORD HQ 🔥</h2>
+            <p style="color:#aaa; font-size:14px; margin-bottom:20px;">Podejrzyj kto z ekipy jest online i dołącz do dyskusji na żywo!</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # ============================================================
+        # TU WPISZ SWOJE ID SERWERA (Zamiast tych przykładowych zer)
+        DISCORD_SERVER_ID = "000000000000000000" 
+        # ============================================================
+        
+        components.html(f"""
+        <iframe src="https://discord.com/widget?id={DISCORD_SERVER_ID}&theme=dark" width="100%" height="450" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" style="border-radius:15px; box-shadow: 0 0 20px rgba(88, 101, 242, 0.2);"></iframe>
+        """, height=470)
+        
+        st.markdown("""
+        <div style="text-align:center;">
+            <a href="https://discord.gg/2MUn5W3u" target="_blank" class="soc-btn soc-discord" style="display:inline-block; padding: 15px 40px; font-size: 18px;">💬 OTWÓRZ DISCORD</a>
         </div>
         """, unsafe_allow_html=True)
 
@@ -258,7 +254,6 @@ elif selected == "SCHEDULE":
     st.write("<br><br>", unsafe_allow_html=True)
     _, col_sch, _ = st.columns([1, 1.5, 1])
     with col_sch:
-        # ZModyfikowany, poprawnie sformatowany kalendarz bez wcięć HTML
         rows_html = ""
         for d, t in st.session_state.db["schedule"].items():
             if t.upper() == "BRAK":
@@ -304,4 +299,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V5.2 | MATRIX ENABLED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V6.0 | MATRIX ENABLED</p>", unsafe_allow_html=True)
