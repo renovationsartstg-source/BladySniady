@@ -37,7 +37,6 @@ def get_default_db():
             "tiktok": "https://tiktok.com/@bladysniady",
             "tipply": "https://tipply.pl/@bl4dyygaming"
         },
-        # NOWOŚĆ: Baza dla głosowania
         "poll": {
             "active": False,
             "question": "W co gramy na dzisiejszym streamie?",
@@ -46,7 +45,6 @@ def get_default_db():
             "opt3_name": "Valorant", "opt3_votes": 0,
             "opt4_name": "TFT", "opt4_votes": 0
         },
-        # NOWOŚĆ: Baza sprzętu (Zbrojownia)
         "gear": {
             "Myszka": {"name": "Logitech G Pro X Superlight", "link": ""},
             "Klawiatura": {"name": "Razer Huntsman Mini", "link": ""},
@@ -123,13 +121,7 @@ st.markdown("""
     .gear-btn:hover { background: #ff2222; color: white !important; box-shadow: 0 0 10px #ff2222; }
 
     /* EFEKTOWNE PRZYCISKI SOCIAL MEDIA */
-    .soc-btn { 
-        display: block; width: 100%; text-decoration: none !important;
-        padding: 15px; margin-bottom: 12px; border-radius: 8px;
-        text-align: center; font-weight: 900; letter-spacing: 2px;
-        text-transform: uppercase; transition: all 0.3s ease; border: 2px solid;
-    }
-    
+    .soc-btn { display: block; width: 100%; text-decoration: none !important; padding: 15px; margin-bottom: 12px; border-radius: 8px; text-align: center; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s ease; border: 2px solid; }
     .soc-twitch { color: #bf94ff !important; border-color: #9146ff; background: rgba(145, 70, 255, 0.1); }
     .soc-twitch:hover { background: #9146ff; color: white !important; box-shadow: 0 0 25px #9146ff; transform: scale(1.03); }
     .soc-discord { color: #8ea1e1 !important; border-color: #5865F2; background: rgba(88, 101, 242, 0.1); }
@@ -190,22 +182,16 @@ components.html("""
 </script>
 """, height=0, width=0)
 
-# --- PASEK NAWIGACJI (Rozbudowany) ---
+# --- PASEK NAWIGACJI ---
 selected = option_menu(
     menu_title=None, 
     options=["HOME", "LIVE ARENA", "VOTING", "GEAR", "FORUM", "SOCIALS", "SCHEDULE"], 
     icons=["house", "broadcast", "bar-chart", "pc-display", "chat-right-text", "share", "calendar-event"], 
     orientation="horizontal", 
     styles={
-        "container": {
-            "padding": "5px", "background-color": "#0a0a0f", 
-            "border": "1px solid #ff2222", "border-radius": "10px", "margin-top": "15px"
-        },
+        "container": {"padding": "5px", "background-color": "#0a0a0f", "border": "1px solid #ff2222", "border-radius": "10px", "margin-top": "15px"},
         "icon": {"color": "#ffcccc", "font-size": "16px"},
-        "nav-link": {
-            "font-size": "12px", "text-align": "center", "margin": "0px 2px", 
-            "color": "#ffffff", "border-radius": "5px", "transition": "0.3s"
-        },
+        "nav-link": {"font-size": "12px", "text-align": "center", "margin": "0px 2px", "color": "#ffffff", "border-radius": "5px", "transition": "0.3s"},
         "nav-link-selected": {"background-color": "#ff2222", "color": "white", "font-weight": "bold"}
     }
 )
@@ -218,4 +204,244 @@ if selected == "HOME":
         try: st.image("e975d1ae-cb53-4242-a957-1db57413f05a.jfif", use_container_width=True)
         except: pass
             
-    st.markdown("<h1 style='text-align:center; letter-spacing:10px; color:#ff
+    st.markdown("<h1 style='text-align:center; letter-spacing:10px; color:#ff2222; text-shadow: 0 0 15px #ff2222;'>BLADY SNIADY</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center; letter-spacing:8px; opacity:0.6;'>OFFICIAL HUB</h3>", unsafe_allow_html=True)
+    
+    st.write("<br>", unsafe_allow_html=True)
+    _, col_news, _ = st.columns([1,2,1])
+    with col_news:
+        st.markdown(f'<div style="background:rgba(255,0,0,0.1); border-left:5px solid #ff2222; padding:15px; text-align:center; text-transform:uppercase; font-weight:bold; box-shadow: 0 0 15px rgba(255,34,34,0.2);">📢 SYSTEM STATUS: {db["news"]}</div>', unsafe_allow_html=True)
+
+elif selected == "LIVE ARENA":
+    parent_domain = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
+    col_main, col_side = st.columns([3, 1])
+    with col_main:
+        st.markdown(f'<div style="border:2px solid #ff2222; border-radius:10px; overflow:hidden; background:black; box-shadow: 0 0 20px rgba(255,34,34,0.3);"><iframe src="https://player.twitch.tv/?channel={db["twitch_channel"]}&parent=localhost&parent={parent_domain}" height="550" width="100%" allowfullscreen="true"></iframe></div>', unsafe_allow_html=True)
+        max_val = db["goal_max"] if db["goal_max"] > 0 else 1
+        pct = min(100, int((db["goal_current"] / max_val) * 100))
+        st.write("<br>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="glass-card">
+            <div style="display:flex; justify-content:space-between; font-size:18px;">
+                <b style="color:#ff2222; letter-spacing:1px;">{db["goal_text"]}</b> 
+                <span style="font-weight:bold;">{db["goal_current"]} / {db["goal_max"]} PLN ({pct}%)</span>
+            </div>
+            <div class="goal-bg"><div class="goal-bar" style="width: {pct}%;"></div></div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_side:
+        st.markdown(f"""
+        <div class="glass-card">
+            <h3 style="color:#ff2222; text-align:center; margin-bottom: 20px;">TERMINAL</h3>
+            <a href="{links['tipply']}" target="_blank" class="soc-btn" style="color:black !important; background:#53fc18; border-color:#53fc18; box-shadow: 0 0 15px #53fc18; font-size: 16px;">💰 WESPRZYJ</a>
+        </div>
+        """, unsafe_allow_html=True)
+
+elif selected == "VOTING":
+    st.write("<br><br>", unsafe_allow_html=True)
+    _, col_poll, _ = st.columns([1, 2, 1])
+    with col_poll:
+        if poll["active"]:
+            st.markdown(f"""
+            <div class="glass-card">
+                <h2 style="text-align:center; color:#ff2222; margin-bottom:10px; text-shadow: 0 0 10px #ff2222;">🗳️ GŁOSOWANIE NA ŻYWO</h2>
+                <h4 style="text-align:center; margin-bottom:30px; opacity:0.8;">{poll['question']}</h4>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            total_votes = sum([poll[f"opt{i}_votes"] for i in range(1, 5)])
+            
+            for i in range(1, 5):
+                opt_name = poll[f"opt{i}_name"]
+                if opt_name.strip() != "":
+                    opt_votes = poll[f"opt{i}_votes"]
+                    pct = int((opt_votes / total_votes) * 100) if total_votes > 0 else 0
+                    
+                    st.write("<br>", unsafe_allow_html=True)
+                    c_btn, c_bar = st.columns([1, 3])
+                    with c_btn:
+                        if st.button(f"GŁOSUJ: {opt_name}", key=f"btn_vote_{i}", use_container_width=True):
+                            db["poll"][f"opt{i}_votes"] += 1
+                            save_data(db)
+                            st.rerun()
+                    with c_bar:
+                        st.markdown(f"""
+                        <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:-5px;">
+                            <span>{opt_name}</span>
+                            <b style="color:#ff2222;">{pct}% ({opt_votes} głosów)</b>
+                        </div>
+                        <div class="poll-bg"><div class="poll-bar" style="width: {pct}%;"></div></div>
+                        """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div class="glass-card" style="text-align:center;">
+                <h2 style="color:#ff2222; opacity:0.5;">🗳️ GŁOSOWANIE ZAMKNIĘTE</h2>
+                <p style="color:#aaa;">Aktualnie nie prowadzimy żadnego głosowania. Oglądaj stream, aby dowiedzieć się o kolejnych ankietach!</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+elif selected == "GEAR":
+    st.write("<br><br>", unsafe_allow_html=True)
+    _, col_gear, _ = st.columns([1, 2, 1])
+    with col_gear:
+        st.markdown("""
+        <div class="glass-card" style="margin-bottom: 20px;">
+            <h2 style="text-align:center; color:#ff2222; text-shadow: 0 0 10px #ff2222; letter-spacing: 3px;">💻 ZBROJOWNIA</h2>
+            <p style="text-align:center; color:#aaa; font-size:14px;">Zastanawiasz się, na czym gram? Oto mój kompletny setup!</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        for category, info in gear.items():
+            if info["name"].strip() != "":
+                link_html = f'<a href="{info["link"]}" target="_blank" class="gear-btn">🛒 KUP / SPRAWDŹ</a>' if info["link"].strip() != "" else ""
+                st.markdown(f"""
+                <div class="gear-item">
+                    <div class="gear-title">{category}</div>
+                    <div class="gear-name">{info['name']}</div>
+                    {link_html}
+                </div>
+                """, unsafe_allow_html=True)
+
+elif selected == "FORUM":
+    st.write("<br><br>", unsafe_allow_html=True)
+    _, col_forum = st.columns([1, 2])
+    with col_forum:
+        st.markdown("""
+        <div class="glass-card" style="text-align:center; padding-bottom: 30px;">
+            <h2 style="color:#ff2222; margin-bottom:15px; letter-spacing:3px; text-shadow: 0 0 10px #ff2222;">🔥 DISCORD HQ 🔥</h2>
+            <p style="color:#aaa; font-size:14px; margin-bottom:20px;">Podejrzyj kto z ekipy jest online i dołącz do dyskusji na żywo!</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        components.html(f"""
+        <iframe src="https://discord.com/widget?id={db["discord_id"]}&theme=dark" width="100%" height="450" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" style="border-radius:15px; box-shadow: 0 0 20px rgba(88, 101, 242, 0.2);"></iframe>
+        """, height=470)
+        
+        st.markdown(f"""
+        <div style="text-align:center;">
+            <a href="{links['discord']}" target="_blank" class="soc-btn soc-discord" style="display:inline-block; padding: 15px 40px; font-size: 18px;">💬 OTWÓRZ DISCORD</a>
+        </div>
+        """, unsafe_allow_html=True)
+
+elif selected == "SOCIALS":
+    st.write("<br><br>", unsafe_allow_html=True)
+    _, col_soc, _ = st.columns([1, 1.5, 1])
+    with col_soc:
+        st.markdown(f"""
+        <div class="glass-card">
+            <h2 style="text-align:center; color:#ff2222; margin-bottom:25px; letter-spacing:3px; text-shadow: 0 0 10px #ff2222;">🔥 ZNAJDŹ MNIE W SIECI 🔥</h2>
+            <a href="{links['twitch']}" target="_blank" class="soc-btn soc-twitch">🟪 TWITCH</a>
+            <a href="{links['discord']}" target="_blank" class="soc-btn soc-discord">💬 DISCORD</a>
+            <a href="{links['kick']}" target="_blank" class="soc-btn soc-kick">🟢 KICK</a>
+            <a href="{links['youtube']}" target="_blank" class="soc-btn soc-yt">🎥 YOUTUBE</a>
+            <a href="{links['instagram']}" target="_blank" class="soc-btn soc-ig">📸 INSTAGRAM</a>
+            <a href="{links['tiktok']}" target="_blank" class="soc-btn soc-tt">🎵 TIKTOK</a>
+        </div>
+        """, unsafe_allow_html=True)
+
+elif selected == "SCHEDULE":
+    st.write("<br><br>", unsafe_allow_html=True)
+    _, col_sch, _ = st.columns([1, 1.5, 1])
+    with col_sch:
+        rows_html = ""
+        for d, t in db["schedule"].items():
+            if t.upper() == "BRAK":
+                rows_html += f'<div class="schedule-row schedule-inactive"><span class="day-name day-inactive-text">{d}</span><span class="time-brak">{t}</span></div>'
+            else:
+                rows_html += f'<div class="schedule-row schedule-active"><span class="day-name day-active-text">{d}</span><span class="time-badge">⏰ {t}</span></div>'
+                
+        st.markdown(f'<div class="glass-card"><h2 style="text-align:center; color:#ff2222; margin-bottom:25px; text-shadow: 0 0 10px #ff2222; letter-spacing: 3px;">📅 MISSION PLAN</h2>{rows_html}</div>', unsafe_allow_html=True)
+
+# --- PANEL ADMINA 3.0 ---
+if st.query_params.get("admin") == "true":
+    st.write("<br><br><br>")
+    with st.expander("🛠 SECURE ADMIN PANEL 3.0", expanded=True):
+        
+        password = st.text_input("Podaj hasło dostępu:", type="password")
+        
+        if password == db["password"]: 
+            st.success("Dostęp przyznany. Witaj w systemie dowodzenia!")
+            
+            tab_news, tab_goal, tab_poll, tab_gear, tab_sch, tab_links, tab_sec = st.tabs([
+                "📢 Info", "📊 Cel", "🗳️ Głosowania", "💻 Sprzęt", "📅 Harmonogram", "⚙️ Linki", "🔒 Hasło"
+            ])
+            
+            with tab_news:
+                st.write("### 📢 SYSTEM STATUS")
+                db["news"] = st.text_input("Komunikat wyświetlany na stronie głównej:", value=db["news"])
+                
+            with tab_goal:
+                st.write("### 📊 ZARZĄDZANIE CELEM")
+                db["goal_text"] = st.text_input("Nazwa celu zbiórki:", value=db["goal_text"])
+                c1, c2 = st.columns(2)
+                db["goal_current"] = c1.number_input("Obecny stan (PLN):", value=db["goal_current"])
+                db["goal_max"] = c2.number_input("Kwota docelowa (PLN):", value=db["goal_max"])
+                st.write("Szybkie akcje:")
+                btn1, btn2, btn3, btn4 = st.columns(4)
+                if btn1.button("Dodaj + 5 PLN"): db["goal_current"] += 5; save_data(db); st.rerun()
+                if btn2.button("Dodaj + 10 PLN"): db["goal_current"] += 10; save_data(db); st.rerun()
+                if btn3.button("Dodaj + 50 PLN"): db["goal_current"] += 50; save_data(db); st.rerun()
+                if btn4.button("Zeruj Cel 🔄", type="primary"): db["goal_current"] = 0; save_data(db); st.rerun()
+
+            with tab_poll:
+                st.write("### 🗳️ ZARZĄDZANIE GŁOSOWANIEM")
+                db["poll"]["active"] = st.checkbox("Głosowanie włączone / widoczne dla widzów", value=db["poll"]["active"])
+                db["poll"]["question"] = st.text_input("Pytanie (np. W co gramy?):", value=db["poll"]["question"])
+                st.write("Opcje odpowiedzi (zostaw puste, by ukryć):")
+                
+                for i in range(1, 5):
+                    c_name, c_votes, _ = st.columns([3, 1, 1])
+                    db["poll"][f"opt{i}_name"] = c_name.text_input(f"Opcja {i}:", value=db["poll"][f"opt{i}_name"])
+                    c_votes.text_input(f"Głosy opcji {i}:", value=db["poll"][f"opt{i}_votes"], disabled=True)
+                
+                if st.button("🗑️ ZERUJ WSZYSTKIE GŁOSY", type="primary"):
+                    for i in range(1, 5):
+                        db["poll"][f"opt{i}_votes"] = 0
+                    save_data(db)
+                    st.success("Głosy zresetowane!")
+                    st.rerun()
+
+            with tab_gear:
+                st.write("### 💻 ZBROJOWNIA / TWÓJ SPRZĘT")
+                st.info("Wpisz model sprzętu. Jeśli masz reflink do sklepu (afiliacja), wklej go w odpowiednie pole.")
+                for category in db["gear"].keys():
+                    c_name, c_link = st.columns([2, 2])
+                    db["gear"][category]["name"] = c_name.text_input(f"{category} (Nazwa):", value=db["gear"][category]["name"])
+                    db["gear"][category]["link"] = c_link.text_input(f"{category} (Link / Reflink):", value=db["gear"][category]["link"])
+                
+            with tab_sch:
+                st.write("### 📅 HARMONOGRAM STREAMÓW")
+                cols = st.columns(2)
+                for i, (day, time) in enumerate(db["schedule"].items()):
+                    with cols[i % 2]:
+                        db["schedule"][day] = st.text_input(f"{day}:", value=time)
+                        
+            with tab_links:
+                st.write("### ⚙️ INTEGRACJE GŁÓWNE")
+                db["twitch_channel"] = st.text_input("Twoja dokładna nazwa na Twitch:", value=db["twitch_channel"])
+                db["discord_id"] = st.text_input("ID Serwera Discord:", value=db["discord_id"])
+                st.divider()
+                st.write("### 🔗 TWOJE LINKI SOCIAL MEDIA")
+                cols_links = st.columns(2)
+                links_keys = list(db["links"].keys())
+                for i, platform in enumerate(links_keys):
+                    with cols_links[i % 2]:
+                        db["links"][platform] = st.text_input(f"Link {platform.capitalize()}:", value=db["links"][platform])
+                        
+            with tab_sec:
+                st.write("### 🔒 ZMIANA HASŁA DO PANELU")
+                new_password = st.text_input("Nowe hasło (zostaw puste, jeśli nie chcesz zmieniać):", type="password")
+
+            st.write("<br>", unsafe_allow_html=True)
+            if st.button("💾 ZAPISZ WSZYSTKIE ZMIANY DO BAZY", use_container_width=True):
+                if new_password:
+                    db["password"] = new_password
+                save_data(db)
+                st.success("Wszystkie moduły zaktualizowane pomyślnie!")
+                st.rerun()
+                
+        elif password != "":
+            st.error("Błędne hasło! Brak uprawnień do systemu.")
+
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V10.0 | FULL COMBINE</p>", unsafe_allow_html=True)
