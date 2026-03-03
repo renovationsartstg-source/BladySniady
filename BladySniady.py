@@ -59,8 +59,15 @@ def save_data(data):
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+# Inicjalizacja danych
 if 'db' not in st.session_state:
     st.session_state.db = load_data()
+
+# --- BEZPIECZNIK STAREJ SESJI (AUTO-FIX) ---
+# Jeśli Streamlit pamięta starą wersję w przeglądarce, zmuszamy go do aktualizacji
+if "links" not in st.session_state.db or "twitch_channel" not in st.session_state.db:
+    st.session_state.db = load_data()
+    save_data(st.session_state.db)
 
 # --- GŁÓWNY CSS & STYLE ---
 st.markdown("""
@@ -179,8 +186,8 @@ selected = option_menu(
 )
 
 # --- LOGIKA WIDOKÓW ---
-db = st.session_state.db # Szybki dostęp do bazy
-links = db["links"] # Szybki dostęp do linków
+db = st.session_state.db
+links = db["links"]
 
 if selected == "HOME":
     st.write("<br>", unsafe_allow_html=True)
@@ -201,7 +208,6 @@ elif selected == "LIVE ARENA":
     parent_domain = "bladysniady-pr8bwgj5upqytw4pjmlvcj.streamlit.app"
     col_main, col_side = st.columns([3, 1])
     with col_main:
-        # Player używa teraz zmiennej z bazy!
         st.markdown(f'<div style="border:2px solid #ff2222; border-radius:10px; overflow:hidden; background:black; box-shadow: 0 0 20px rgba(255,34,34,0.3);"><iframe src="https://player.twitch.tv/?channel={db["twitch_channel"]}&parent=localhost&parent={parent_domain}" height="550" width="100%" allowfullscreen="true"></iframe></div>', unsafe_allow_html=True)
         max_val = db["goal_max"] if db["goal_max"] > 0 else 1
         pct = min(100, int((db["goal_current"] / max_val) * 100))
@@ -282,7 +288,6 @@ if st.query_params.get("admin") == "true":
         if password == "TwojeHaslo123": 
             st.success("Dostęp przyznany. Witaj w systemie dowodzenia!")
             
-            # Podział na estetyczne zakładki!
             tab_news, tab_goal, tab_sch, tab_links = st.tabs(["📢 Wiadomości", "📊 Pasek Celu", "📅 Harmonogram", "⚙️ Konfiguracja i Linki"])
             
             with tab_news:
@@ -333,4 +338,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V7.0 | ADMIN PANEL UPGRADED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V7.1 | ADMIN PANEL UPGRADED</p>", unsafe_allow_html=True)
