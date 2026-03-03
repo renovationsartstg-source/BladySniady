@@ -1,1 +1,15 @@
-{"news": "ZAPRASZAM!", "schedule": {}, "goal_text": "Nowy Mikrofon", "goal_current": 0, "goal_max": 1000}
+{
+  "news": "ZAPRASZAM NA DZISIEJSZĄ ARENĘ!",
+  "schedule": {
+    "Poniedziałek": "18:00",
+    "Wtorek": "BRAK",
+    "Środa": "18:00",
+    "Czwartek": "19:00",
+    "Piątek": "20:00",
+    "Sobota": "12:00",
+    "Niedziela": "BRAK"
+  },
+  "goal_text": "Cel: Nowy Mikrofon",
+  "goal_current": 100,
+  "goal_max": 1000
+}
