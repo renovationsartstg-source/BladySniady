@@ -4,7 +4,7 @@ from streamlit_option_menu import option_menu
 import json
 import os
 
-# 1. Konfiguracja strony (MUSI być pierwszą komendą)
+# 1. Konfiguracja strony
 st.set_page_config(
     page_title="BladySniady | Hub & Arena", 
     page_icon="🔥", 
@@ -41,33 +41,39 @@ def save_data(data):
 if 'db' not in st.session_state:
     st.session_state.db = load_data()
 
-# --- CSS Wymuszający przezroczystość i style ---
+# --- CSS Wymuszający przezroczystość i mroczny klimat ---
 st.markdown("""
 <style>
     /* Ukrycie domyślnych elementów Streamlit */
     #MainMenu, footer, header {visibility: hidden;}
     [data-testid="stSidebar"] {display: none;}
     
-    /* Wymuszenie przezroczystości, aby Matrix był widoczny na Streamlit Cloud */
-    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] { 
+    /* Wymuszenie przezroczystości całego tła aplikacji (dla Matrixa) */
+    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] { 
         background: transparent !important; 
         background-color: transparent !important;
-        color: white;
+        color: white !important;
+    }
+    
+    /* Wymuszenie ogólnego ciemnego tła na wypadek, gdyby Matrix się ładował dłużej */
+    .stApp {
+        background-color: #050507 !important;
     }
     
     /* Karty Glassmorphism */
     .glass-card { 
-        background: rgba(0,0,0,0.85); 
+        background: rgba(10, 10, 15, 0.85) !important; 
         backdrop-filter: blur(10px); 
-        border: 1px solid rgba(255,34,34,0.3); 
+        border: 1px solid rgba(255, 34, 34, 0.3); 
         border-radius: 15px; 
         padding: 20px; 
-        box-shadow: 0 0 20px rgba(255,34,34,0.1);
+        box-shadow: 0 0 20px rgba(255, 34, 34, 0.1);
+        color: white !important;
     }
     
     /* Pasek Celu (Goal Bar) */
     .goal-bg { 
-        background: rgba(255,255,255,0.1); 
+        background: rgba(255, 255, 255, 0.1); 
         border-radius: 10px; 
         height: 25px; 
         width: 100%; 
@@ -88,7 +94,7 @@ st.markdown("""
         display: block; 
         text-decoration: none !important; 
         color: white !important; 
-        background: rgba(255,34,34,0.1); 
+        background: rgba(255, 34, 34, 0.1); 
         border: 1px solid #ff2222; 
         padding: 12px; 
         text-align: center; 
@@ -106,7 +112,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- SKRYPT MATRIX (Bezpieczne wstrzyknięcie) ---
+# --- SKRYPT MATRIX ---
 components.html("""
 <script>
     if (!window.parent.document.getElementById('matrix-canvas')) {
@@ -160,7 +166,7 @@ components.html("""
 </script>
 """, height=0, width=0)
 
-# --- NAWIGACJA Z NOWYM WYGLĄDEM ---
+# --- NAWIGACJA Z WYMUSZONYM CIEMNYM TŁEM ---
 selected = option_menu(
     menu_title=None, 
     options=["HOME", "LIVE ARENA", "SOCIALS", "SCHEDULE"], 
@@ -168,22 +174,23 @@ selected = option_menu(
     orientation="horizontal", 
     styles={
         "container": {
-            "padding": "8px!important", 
-            "background-color": "rgba(10, 10, 15, 0.85)", 
-            "border": "1px solid rgba(255, 34, 34, 0.4)", 
-            "border-radius": "20px",
-            "box-shadow": "0 0 20px rgba(255, 34, 34, 0.15)",
-            "margin-top": "10px"
+            "padding": "8px !important", 
+            "background-color": "#0a0a0f !important", 
+            "border": "1px solid rgba(255, 34, 34, 0.5) !important", 
+            "border-radius": "20px !important",
+            "box-shadow": "0 0 20px rgba(255, 34, 34, 0.2) !important",
+            "margin-top": "15px"
         },
         "icon": {
-            "color": "#ffcccc", 
+            "color": "#ffcccc !important", 
             "font-size": "20px"
         },
         "nav-link": {
             "font-size": "14px", 
             "text-align": "center", 
             "margin": "0px 5px", 
-            "color": "#ffffff", 
+            "color": "#ffffff !important", 
+            "background-color": "transparent !important",
             "text-transform": "uppercase", 
             "letter-spacing": "2px", 
             "font-weight": "600",
@@ -192,11 +199,11 @@ selected = option_menu(
             "transition": "all 0.3s ease-in-out"
         },
         "nav-link-selected": {
-            "background-color": "#ff2222", 
-            "color": "white", 
+            "background-color": "#ff2222 !important", 
+            "color": "white !important", 
             "font-weight": "900",
-            "box-shadow": "0 0 15px #ff2222",
-            "border-radius": "15px"
+            "box-shadow": "0 0 15px #ff2222 !important",
+            "border-radius": "15px !important"
         }
     }
 )
@@ -328,4 +335,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V4.5 | MATRIX ENABLED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V4.6 | MATRIX ENABLED</p>", unsafe_allow_html=True)
