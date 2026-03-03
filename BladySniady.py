@@ -40,7 +40,7 @@ def save_data(data):
 if 'db' not in st.session_state:
     st.session_state.db = load_data()
 
-# --- GŁÓWNY CSS & STYLE DEDYKOWANE DLA SOCIALI ---
+# --- GŁÓWNY CSS & STYLE DEDYKOWANE DLA SOCIALI I KALENDARZA ---
 st.markdown("""
 <style>
     #MainMenu, footer, header {visibility: hidden;}
@@ -68,29 +68,72 @@ st.markdown("""
         text-transform: uppercase; transition: all 0.3s ease; border: 2px solid;
     }
     
-    /* Twitch */
+    /* Socials Kolory */
     .soc-twitch { color: #bf94ff !important; border-color: #9146ff; background: rgba(145, 70, 255, 0.1); }
     .soc-twitch:hover { background: #9146ff; color: white !important; box-shadow: 0 0 25px #9146ff; transform: scale(1.03); }
     
-    /* Discord */
     .soc-discord { color: #8ea1e1 !important; border-color: #5865F2; background: rgba(88, 101, 242, 0.1); }
     .soc-discord:hover { background: #5865F2; color: white !important; box-shadow: 0 0 25px #5865F2; transform: scale(1.03); }
     
-    /* Kick */
     .soc-kick { color: #53fc18 !important; border-color: #53fc18; background: rgba(83, 252, 24, 0.1); }
     .soc-kick:hover { background: #53fc18; color: black !important; box-shadow: 0 0 25px #53fc18; transform: scale(1.03); }
     
-    /* YouTube */
     .soc-yt { color: #ffcccc !important; border-color: #ff0000; background: rgba(255, 0, 0, 0.1); }
     .soc-yt:hover { background: #ff0000; color: white !important; box-shadow: 0 0 25px #ff0000; transform: scale(1.03); }
     
-    /* Instagram */
     .soc-ig { color: #fbad50 !important; border-color: #e1306c; background: rgba(225, 48, 108, 0.1); }
     .soc-ig:hover { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white !important; border-color: transparent; box-shadow: 0 0 25px #e1306c; transform: scale(1.03); }
     
-    /* TikTok */
     .soc-tt { color: #69C9D0 !important; border-color: #EE1D52; background: rgba(238, 29, 82, 0.1); }
     .soc-tt:hover { background: #010101; color: white !important; box-shadow: -5px 5px 0px 0px #69C9D0, 5px -5px 0px 0px #EE1D52; transform: scale(1.03); }
+
+    /* NOWY, ŻYWY KALENDARZ */
+    .schedule-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    .schedule-row:hover {
+        transform: translateX(10px);
+    }
+    .schedule-active {
+        background: rgba(255, 34, 34, 0.08);
+        border-left: 5px solid #ff2222;
+        box-shadow: 0 4px 15px rgba(255, 34, 34, 0.05);
+    }
+    .schedule-active:hover {
+        background: rgba(255, 34, 34, 0.15);
+        box-shadow: 0 0 20px rgba(255, 34, 34, 0.2);
+    }
+    .schedule-inactive {
+        background: rgba(255, 255, 255, 0.02);
+        border-left: 5px solid #444;
+    }
+    .schedule-inactive:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    .day-name { font-weight: 900; letter-spacing: 1px; text-transform: uppercase; font-size: 15px; }
+    .day-active-text { color: #ffcccc; }
+    .day-inactive-text { color: #666; }
+    
+    .time-badge { 
+        background: #ff2222; 
+        color: white; 
+        padding: 5px 15px; 
+        border-radius: 20px; 
+        font-weight: 900; 
+        letter-spacing: 1px;
+        box-shadow: 0 0 10px #ff2222;
+    }
+    .time-brak {
+        color: #555;
+        font-style: italic;
+        font-weight: bold;
+    }
 
 </style>
 """, unsafe_allow_html=True)
@@ -188,17 +231,11 @@ elif selected == "LIVE ARENA":
         """, unsafe_allow_html=True)
 
     with col_side:
+        # Zmieniona sekcja boczna Areny - tylko wsparcie, bez komend
         st.markdown("""
         <div class="glass-card">
-            <h3 style="color:#ff2222; text-align:center;">TERMINAL</h3>
-            <a href="https://tipply.pl/@bl4dyygaming" target="_blank" class="soc-btn" style="color:black !important; background:#53fc18; border-color:#53fc18; box-shadow: 0 0 15px #53fc18;">💰 WESPRZYJ</a>
-            <hr style="border-color:rgba(255,34,34,0.2);">
-            <div style="font-family:monospace; font-size:13px; opacity:0.8;">
-                <b>COMMANDS:</b><br>
-                > !discord<br>
-                > !arena<br>
-                > !setup
-            </div>
+            <h3 style="color:#ff2222; text-align:center; margin-bottom: 20px;">TERMINAL</h3>
+            <a href="https://tipply.pl/@bl4dyygaming" target="_blank" class="soc-btn" style="color:black !important; background:#53fc18; border-color:#53fc18; box-shadow: 0 0 15px #53fc18; font-size: 16px;">💰 WESPRZYJ</a>
         </div>
         """, unsafe_allow_html=True)
 
@@ -206,10 +243,10 @@ elif selected == "SOCIALS":
     st.write("<br><br>", unsafe_allow_html=True)
     _, col_soc, _ = st.columns([1, 1.5, 1])
     with col_soc:
-        # NOWE, EFEKTOWNE LINKI SOCIAL MEDIA
+        # Zmieniony nagłówek na bardziej atrakcyjny
         st.markdown("""
         <div class="glass-card">
-            <h2 style="text-align:center; color:#ff2222; margin-bottom:25px; letter-spacing:3px;">NETWORK ACCESS</h2>
+            <h2 style="text-align:center; color:#ff2222; margin-bottom:25px; letter-spacing:3px; text-shadow: 0 0 10px #ff2222;">🔥 ZNAJDŹ MNIE W SIECI 🔥</h2>
             <a href="https://www.twitch.tv/bladysniady" target="_blank" class="soc-btn soc-twitch">🟪 TWITCH</a>
             <a href="https://discord.gg/2MUn5W3u" target="_blank" class="soc-btn soc-discord">💬 DISCORD</a>
             <a href="https://kick.com/bladysniadyofficial" target="_blank" class="soc-btn soc-kick">🟢 KICK</a>
@@ -223,8 +260,30 @@ elif selected == "SCHEDULE":
     st.write("<br><br>", unsafe_allow_html=True)
     _, col_sch, _ = st.columns([1, 1.5, 1])
     with col_sch:
-        rows = "".join([f'<tr><td style="color:#ff2222; padding:12px; border-bottom:1px solid rgba(255,34,34,0.1);"><b>{d}</b></td><td style="text-align:right; border-bottom:1px solid rgba(255,34,34,0.1);">{t}</td></tr>' for d, t in st.session_state.db["schedule"].items()])
-        st.markdown(f'<div class="glass-card"><h2 style="text-align:center; color:#ff2222; margin-bottom:20px;">MISSION PLAN</h2><table width="100%" style="border-collapse: collapse;">{rows}</table></div>', unsafe_allow_html=True)
+        # Przebudowany, interaktywny kalendarz
+        rows_html = ""
+        for d, t in st.session_state.db["schedule"].items():
+            if t.upper() == "BRAK":
+                rows_html += f'''
+                <div class="schedule-row schedule-inactive">
+                    <span class="day-name day-inactive-text">{d}</span>
+                    <span class="time-brak">{t}</span>
+                </div>
+                '''
+            else:
+                rows_html += f'''
+                <div class="schedule-row schedule-active">
+                    <span class="day-name day-active-text">{d}</span>
+                    <span class="time-badge">⏰ {t}</span>
+                </div>
+                '''
+                
+        st.markdown(f'''
+        <div class="glass-card">
+            <h2 style="text-align:center; color:#ff2222; margin-bottom:25px; text-shadow: 0 0 10px #ff2222; letter-spacing: 3px;">📅 MISSION PLAN</h2>
+            {rows_html}
+        </div>
+        ''', unsafe_allow_html=True)
 
 # --- PANEL ADMINA Z HASŁEM ---
 if st.query_params.get("admin") == "true":
@@ -262,4 +321,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V5.0 | MATRIX ENABLED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V5.1 | MATRIX ENABLED</p>", unsafe_allow_html=True)
