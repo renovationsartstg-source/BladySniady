@@ -231,7 +231,6 @@ elif selected == "LIVE ARENA":
         """, unsafe_allow_html=True)
 
     with col_side:
-        # Zmieniona sekcja boczna Areny - tylko wsparcie, bez komend
         st.markdown("""
         <div class="glass-card">
             <h3 style="color:#ff2222; text-align:center; margin-bottom: 20px;">TERMINAL</h3>
@@ -243,7 +242,6 @@ elif selected == "SOCIALS":
     st.write("<br><br>", unsafe_allow_html=True)
     _, col_soc, _ = st.columns([1, 1.5, 1])
     with col_soc:
-        # Zmieniony nagłówek na bardziej atrakcyjny
         st.markdown("""
         <div class="glass-card">
             <h2 style="text-align:center; color:#ff2222; margin-bottom:25px; letter-spacing:3px; text-shadow: 0 0 10px #ff2222;">🔥 ZNAJDŹ MNIE W SIECI 🔥</h2>
@@ -260,30 +258,15 @@ elif selected == "SCHEDULE":
     st.write("<br><br>", unsafe_allow_html=True)
     _, col_sch, _ = st.columns([1, 1.5, 1])
     with col_sch:
-        # Przebudowany, interaktywny kalendarz
+        # ZModyfikowany, poprawnie sformatowany kalendarz bez wcięć HTML
         rows_html = ""
         for d, t in st.session_state.db["schedule"].items():
             if t.upper() == "BRAK":
-                rows_html += f'''
-                <div class="schedule-row schedule-inactive">
-                    <span class="day-name day-inactive-text">{d}</span>
-                    <span class="time-brak">{t}</span>
-                </div>
-                '''
+                rows_html += f'<div class="schedule-row schedule-inactive"><span class="day-name day-inactive-text">{d}</span><span class="time-brak">{t}</span></div>'
             else:
-                rows_html += f'''
-                <div class="schedule-row schedule-active">
-                    <span class="day-name day-active-text">{d}</span>
-                    <span class="time-badge">⏰ {t}</span>
-                </div>
-                '''
+                rows_html += f'<div class="schedule-row schedule-active"><span class="day-name day-active-text">{d}</span><span class="time-badge">⏰ {t}</span></div>'
                 
-        st.markdown(f'''
-        <div class="glass-card">
-            <h2 style="text-align:center; color:#ff2222; margin-bottom:25px; text-shadow: 0 0 10px #ff2222; letter-spacing: 3px;">📅 MISSION PLAN</h2>
-            {rows_html}
-        </div>
-        ''', unsafe_allow_html=True)
+        st.markdown(f'<div class="glass-card"><h2 style="text-align:center; color:#ff2222; margin-bottom:25px; text-shadow: 0 0 10px #ff2222; letter-spacing: 3px;">📅 MISSION PLAN</h2>{rows_html}</div>', unsafe_allow_html=True)
 
 # --- PANEL ADMINA Z HASŁEM ---
 if st.query_params.get("admin") == "true":
@@ -321,4 +304,4 @@ if st.query_params.get("admin") == "true":
         elif password != "":
             st.error("Błędne hasło! Brak uprawnień do systemu.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V5.1 | MATRIX ENABLED</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; margin-top:50px;'>CORE V5.2 | MATRIX ENABLED</p>", unsafe_allow_html=True)
